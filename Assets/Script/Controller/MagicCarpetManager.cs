@@ -1,0 +1,205 @@
+﻿
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using VRTK;
+
+public class MagicCarpetManager : MonoBehaviour
+{
+    public GameObject markerPrefab;
+    public GameObject DataManagerGO;
+    public Transform visParent;
+    public Transform visHolderParent;
+    public Transform markerParent;
+    public Transform human;
+    public GameObject leftController;
+    public GameObject rightController;
+    public float speed;
+    public float markerRadius = 0.2f;
+
+    private int counter = 1;
+
+    private bool startLoad = false;
+    private bool onMarker = false;
+    private Marker currentMarker;
+    private List<GameObject> multiples;
+
+    VRTK_ControllerEvents rightCE;
+    VRTK_ControllerEvents leftCE;
+    ObjectGeneratorNoColumn og;
+    DataManager3D dm3D;
+
+    private void Start()
+    {
+        multiples = new List<GameObject>();
+
+        dm3D = DataManagerGO.GetComponent<DataManager3D>();
+        og = visParent.GetComponent<ObjectGeneratorNoColumn>();
+        rightCE = rightController.GetComponent<VRTK_ControllerEvents>();
+        leftCE = leftController.GetComponent<VRTK_ControllerEvents>();
+
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown("s") || rightCE.triggerClicked)
+        {
+            Debug.Log("Save");
+            if (!onMarker)
+                SaveView();
+        }
+
+        if (Input.GetKeyDown("h") || rightCE.gripClicked)
+        {
+            Debug.Log("Shuffle");
+            og.ShuffleSmallMultiples(multiples); 
+        }
+
+        if (Input.GetKeyDown("w") || rightCE.touchpadPressed)
+        {
+            Debug.Log("move forward");
+            og.MoveSmallMultiples(multiples);
+        }
+
+
+        if (Input.GetKeyDown("r") || rightCE.buttonTwoPressed)
+        {
+            Debug.Log("Remove");
+            if (onMarker && currentMarker != null)
+            {
+                Destroy(currentMarker.gameObject);
+                onMarker = false;
+            }
+        }
+
+        if (startLoad)
+        {
+            bool allMoved = true; 
+
+            for (int i = 0; i < visParent.childCount; i++)
+            {
+                Transform sm = visParent.GetChild(i);
+                sm.position = currentMarker.savedSMPositions[i];
+
+                List<Transform> currentDataPoints = currentMarker.savedDataPoints[sm.name];
+                for (int j = 0; j < currentDataPoints.Count; j++)
+                {
+                    currentDataPoints[j].SetParent(sm);
+                    currentDataPoints[j].localPosition = Vector3.Lerp(currentDataPoints[j].localPosition,
+                        currentMarker.savedDataPointPositions[sm.name][j], Time.deltaTime * speed);
+
+                    if (Vector3.Distance(currentDataPoints[j].localPosition,
+                        currentMarker.savedDataPointPositions[sm.name][j]) > 0.01f)
+                    {
+                        allMoved = false;
+                    }
+                }
+            }
+
+            if (visHolderParent.childCount > 0) {
+                foreach (Transform t in visHolderParent)
+                    Destroy(t.gameObject);
+            }
+
+            if (allMoved) {
+                startLoad = false;
+                Debug.Log("all moved");
+            }
+                
+        }
+    }
+
+    public void UpdateCurrentSM(List<GameObject> sm) {
+        multiples = sm;
+    }
+
+    public void SaveViewFromController()
+    {
+        if (!onMarker)
+        {
+            Debug.Log("Save");
+            SaveView();
+        }
+    }
+
+
+    private void SaveView()
+    {
+        GameObject savePoint = Instantiate(markerPrefab, new Vector3(human.position.x, 0, human.position.z), Quaternion.identity);
+        savePoint.transform.SetParent(markerParent);
+        savePoint.name = "marker";
+
+        float parentScaleDeltaX = 1 / markerParent.parent.localScale.x;
+        float parentScaleDeltaZ = 1 / markerParent.parent.localScale.z;
+
+        savePoint.transform.localScale = new Vector3(parentScaleDeltaX * markerRadius,
+            0.05f, parentScaleDeltaZ * markerRadius);
+
+        Marker marker = savePoint.GetComponent<Marker>();
+        marker.savePointIndex = counter;
+        counter++;
+
+        List<Transform> sm = new List<Transform>();
+        List<Vector3> smPositions = new List<Vector3>();
+        Dictionary<string, List<Transform>> dataPoints = new Dictionary<string, List<Transform>>();
+        Dictionary<string, List<Vector3>> dataPointPositions = new Dictionary<string, List<Vector3>>();
+        for (int i = 0; i < visParent.childCount; i++)
+        {
+            sm.Add(visParent.GetChild(i));
+            smPositions.Add(visParent.GetChild(i).position);
+
+
+            
+            List<Transform> dataPointsList = new List<Transform>();
+            List<Vector3> dataPointPositionsList = new List<Vector3>();
+
+            for (int j = 0; j < visParent.GetChild(i).childCount; j++)
+            {
+                dataPointsList.Add(visParent.GetChild(i).GetChild(j));
+                dataPointPositionsList.Add(visParent.GetChild(i).GetChild(j).localPosition);
+            }
+
+            dataPoints.Add(visParent.GetChild(i).name, dataPointsList);
+            dataPointPositions.Add(visParent.GetChild(i).name, dataPointPositionsList);
+        }
+        marker.colNumber = dm3D.facetedColumns;
+        marker.rowNumber = dm3D.facetedRows;
+        Debug.Log("saved row: " + marker.rowNumber + "; saved column: " + marker.colNumber);
+        marker.savedSMs = sm;
+        marker.savedSMPositions = smPositions;
+        marker.savedDataPoints = dataPoints;
+        marker.savedDataPointPositions = dataPointPositions;
+    }
+
+    public void LoadView(Marker marker)
+    {
+        Debug.Log("LOAD");
+        startLoad = true;
+        onMarker = true;
+        currentMarker = marker;
+
+        for (int i = 0; i < visParent.childCount; i++)
+        {
+            Transform sm = visParent.GetChild(i);
+
+            GameObject go = new GameObject();
+            go.transform.SetParent(visHolderParent);
+            go.transform.position = sm.position;
+            go.transform.localScale = sm.localScale;
+
+            int childCount = sm.childCount;
+            for (int j = 0; j < childCount; j++)
+            {
+                sm.GetChild(0).SetParent(go.transform);
+            }
+        }
+
+        multiples = og.UpdateSM(multiples, currentMarker.colNumber, currentMarker.rowNumber);
+    }
+
+    public void OffMarker(Marker marker)
+    {
+        if(marker == currentMarker)
+            onMarker = false;
+    }
+}
