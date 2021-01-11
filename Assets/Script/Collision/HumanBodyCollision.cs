@@ -13,20 +13,13 @@ public class HumanBodyCollision : MonoBehaviour
     {
         
         if (other.gameObject.name == "marker")
-        {
-            Debug.Log("TriggerEnter");
             mcm.LoadView(other.gameObject.GetComponent<Marker>());
-        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        
         if (other.gameObject.name == "marker")
-        {
-            Debug.Log("TriggerExit");
             mcm.OffMarker(other.gameObject.GetComponent<Marker>());
-        }
     }
 
     private void Update()

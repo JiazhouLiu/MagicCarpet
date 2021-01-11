@@ -1,10 +1,9 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTK;
 
-public class MagicCarpetManager : MonoBehaviour
+public class MagicCarpetManager_PCD : MonoBehaviour
 {
     public GameObject markerPrefab;
     public GameObject DataManagerGO;

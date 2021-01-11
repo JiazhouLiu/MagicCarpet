@@ -24,10 +24,7 @@ public class DataManager3D : MonoBehaviour
 
     private List<GameObject> MarkCollection;
     private List<GameObject> CurrentSM;
-    private List<Transform> MapLocations;
     private List<Housing> PropertyCollection;
-
-    private List<Vector3> MapGroundPositions;
 
     private bool canMove = false;
     private bool showCase = true;
@@ -43,27 +40,27 @@ public class DataManager3D : MonoBehaviour
         MarkCollection = new List<GameObject>();
         CurrentSM = new List<GameObject>();
         PropertyCollection = new List<Housing>();
-        MapLocations = new List<Transform>();
-        MapGroundPositions = new List<Vector3>();
 
         ReadData(DataSource);
 
         ShowCaseScenario();
     }
 
-    private void ReadData(TextAsset ta) {
+    private void ReadData(TextAsset ta)
+    {
 
         string[] lines = ta.text.Split(lineSeperater);
-        int dataLength = 1;
-
+        int dataLength;
         if (dataPointLimit == 0)
             dataLength = lines.Length;
         else
             dataLength = dataPointLimit;
 
-        for (int i = 1; i < dataLength; i++) {
+        for (int i = 1; i < dataLength; i++)
+        {
 
-            if (lines[i].Length > 10) {
+            if (lines[i].Length > 10)
+            {
                 GameObject mark = Instantiate(markPrefab, new Vector3(0, 0, 0),
             Quaternion.identity, visParent);
                 mark.transform.localScale = Vector3.one * markSize;
@@ -80,7 +77,7 @@ public class DataManager3D : MonoBehaviour
                 MarkCollection.Add(mark);
                 PropertyCollection.Add(property);
             }
-            
+
         }
     }
 
@@ -99,21 +96,17 @@ public class DataManager3D : MonoBehaviour
 
                 if (Vector3.Distance(mark.transform.localPosition,
                         new Vector3(h.XPosition, h.YPosition, h.ZPosition)) > 0.01f)
-                {
                     allMoved = false;
-                }
 
             }
 
             if (allMoved)
-            {
                 canMove = false;
-            }
         }
 
         if (Input.GetKeyDown("x"))
         {
-            if(showCase)
+            if (showCase)
                 ShowCaseScenario2();
             else
                 ShowCaseScenario();
@@ -130,8 +123,10 @@ public class DataManager3D : MonoBehaviour
 
     }
 
-    private void UpdateFacetingVariable(int newRow, int newColumn) {
-        if (newRow > 0 && newColumn > 0) {
+    private void UpdateFacetingVariable(int newRow, int newColumn)
+    {
+        if (newRow > 0 && newColumn > 0)
+        {
             facetedColumns = newColumn;
             facetedRows = newRow;
 
@@ -154,9 +149,7 @@ public class DataManager3D : MonoBehaviour
                 for (int i = 0; i < smallMultiplesNumber; i++)
                 {
                     if (h.YearBuilt >= minYear + (facetDelta * i) && h.YearBuilt < minYear + (facetDelta * (i + 1)))
-                    {
                         mark.transform.SetParent(CurrentSM[i].transform);
-                    }
                 }
             }
             canMove = true;
@@ -228,10 +221,7 @@ public class DataManager3D : MonoBehaviour
             for (int i = 0; i < smallMultiplesNumber; i++)
             {
                 if (h.YearBuilt >= minYear + (facetDelta * i) && h.YearBuilt < minYear + (facetDelta * (i + 1)))
-                {
                     mark.transform.SetParent(CurrentSM[i].transform);
-                }
-
             }
         }
 
@@ -302,10 +292,7 @@ public class DataManager3D : MonoBehaviour
             for (int i = 0; i < smallMultiplesNumber; i++)
             {
                 if (h.YearBuilt >= minYear + (facetDelta * i) && h.YearBuilt < minYear + (facetDelta * (i + 1)))
-                {
                     mark.transform.SetParent(CurrentSM[i].transform);
-                }
-
             }
         }
 
