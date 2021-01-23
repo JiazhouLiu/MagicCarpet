@@ -7,59 +7,74 @@ public class MagicCarpetManager_PCD : MonoBehaviour
 {
     public GameObject markerPrefab;
     public GameObject DataManagerGO;
+    public Transform viewBoard;
     public Transform visParent;
     public Transform visHolderParent;
     public Transform markerParent;
     public Transform human;
     public GameObject leftController;
     public GameObject rightController;
-    public float speed;
     public float markerRadius = 0.2f;
 
     private int counter = 1;
 
     private bool startLoad = false;
     private bool onMarker = false;
+    private bool hasComparison = false;
     private Marker currentMarker;
     private List<GameObject> multiples;
 
     VRTK_ControllerEvents rightCE;
     VRTK_ControllerEvents leftCE;
-    ObjectGeneratorNoColumn og;
-    DataManager3D dm3D;
+    SMGenerator_PCD og;
+    DataManagerPCD dm3D;
+
+    // vis grid update
+    private Vector3 prevHumanPosition;
+    private Vector3 prevHumanRotation;
+
+    private GameObject prevClosestMarker;
 
     private void Awake()
     {
         multiples = new List<GameObject>();
 
-        dm3D = DataManagerGO.GetComponent<DataManager3D>();
-        og = visParent.GetComponent<ObjectGeneratorNoColumn>();
+        dm3D = DataManagerGO.GetComponent<DataManagerPCD>();
+        og = visParent.GetComponent<SMGenerator_PCD>();
         rightCE = rightController.GetComponent<VRTK_ControllerEvents>();
         leftCE = leftController.GetComponent<VRTK_ControllerEvents>();
 
+        prevHumanPosition = human.position;
+        prevHumanRotation = human.eulerAngles;
     }
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("s") || rightCE.triggerClicked)
+        if (Input.GetKeyDown("e") || rightCE.triggerClicked)
         {
             Debug.Log("SAVE");
+            
             if (!onMarker)
                 SaveView();
         }
 
-        if (Input.GetKeyDown("h") || rightCE.gripClicked)
+        if (Input.GetKeyDown("q") || rightCE.gripClicked)
         {
             Debug.Log("SHUFFLE");
             og.ShuffleSmallMultiples(multiples);
         }
 
-        if (Input.GetKeyDown("w") || rightCE.touchpadPressed)
+        if (Input.GetKeyDown("t") || rightCE.touchpadPressed)
         {
-            Debug.Log("MOVE");
-            og.MoveSmallMultiples(multiples);
+            Debug.Log("MOVE FORWARD");
+            og.MoveSmallMultiples(multiples, Vector3.forward);
         }
 
+        if (Input.GetKeyDown("g") || rightCE.touchpadPressed)
+        {
+            Debug.Log("MOVE BACK");
+            og.MoveSmallMultiples(multiples, Vector3.back);
+        }
 
         if (Input.GetKeyDown("r") || rightCE.buttonTwoPressed)
         {
@@ -71,41 +86,121 @@ public class MagicCarpetManager_PCD : MonoBehaviour
             }
         }
 
-        if (startLoad)
+        if (human.position != prevHumanPosition || human.eulerAngles != prevHumanRotation || 
+            Input.GetKeyDown("n") || Input.GetKeyDown("m") || onMarker || Input.GetKeyDown("i") || 
+            Input.GetKeyDown("l") || Input.GetKeyDown("k") || Input.GetKeyDown("j"))
         {
-            bool allMoved = true;
+            if (Input.GetKeyDown("n") && dm3D.forwardParameter > 10)
+                dm3D.forwardParameter -= 2;
+            if (Input.GetKeyDown("m") && dm3D.forwardParameter < 50)
+                dm3D.forwardParameter += 2;
+            UpdateViewBoardTransform();
 
-            for (int i = 0; i < visParent.childCount; i++)
+            GameObject closestMarker = CheckMarkerDistance();
+            if (closestMarker != null)
             {
-                Transform sm = visParent.GetChild(i);
-                sm.position = currentMarker.savedSMPositions[i];
-
-                List<Transform> currentDataPoints = currentMarker.savedDataPoints[sm.name];
-                for (int j = 0; j < currentDataPoints.Count; j++)
+                if (viewBoard.childCount == 1)
                 {
-                    currentDataPoints[j].SetParent(sm);
-                    currentDataPoints[j].localPosition = Vector3.Lerp(currentDataPoints[j].localPosition,
-                        currentMarker.savedDataPointPositions[sm.name][j], Time.deltaTime * speed);
+                    GameObject comVis = Instantiate(closestMarker.transform.GetChild(0).gameObject, viewBoard, true);
+                    comVis.SetActive(true);
+                    float comVisWidth = CalculateGridWidth(closestMarker.GetComponent<Marker>().colNumber, og.MultipleSize, og.HSpacing);
+                    comVis.transform.localPosition = new Vector3((comVisWidth + og.HSpacing) / 2, 0, 0);
+                    comVis.transform.localEulerAngles = Vector3.zero;
 
-                    if (Vector3.Distance(currentDataPoints[j].localPosition,
-                        currentMarker.savedDataPointPositions[sm.name][j]) > 0.01f)
-                        allMoved = false;
+                    float mainWidth = CalculateGridWidth(dm3D.facetedColumns, og.MultipleSize, og.HSpacing);
+                    visParent.transform.localPosition = new Vector3(- (mainWidth + og.HSpacing) / 2, 0, 0);
+                }
+                else {
+                    if (closestMarker != prevClosestMarker || Input.GetKeyDown("i") ||
+            Input.GetKeyDown("l") || Input.GetKeyDown("k") || Input.GetKeyDown("j")) {
+                        Destroy(viewBoard.GetChild(1).gameObject);
+                        GameObject comVis = Instantiate(closestMarker.transform.GetChild(0).gameObject, viewBoard, true);
+                        comVis.SetActive(true);
+                        float comVisWidth = CalculateGridWidth(closestMarker.GetComponent<Marker>().colNumber, og.MultipleSize, og.HSpacing);
+                        comVis.transform.localPosition = new Vector3((comVisWidth + og.HSpacing) / 2, 0, 0);
+                        comVis.transform.localEulerAngles = Vector3.zero;
+
+                        float mainWidth = CalculateGridWidth(dm3D.facetedColumns, og.MultipleSize, og.HSpacing);
+                        visParent.transform.localPosition = new Vector3(- (mainWidth + og.HSpacing) / 2, 0, 0);
+
+                    }
+                }
+                prevClosestMarker = closestMarker;
+                hasComparison = true;
+            }
+            else {
+                if (viewBoard.childCount > 1) {
+                    Destroy(viewBoard.GetChild(1).gameObject);
+                    visParent.transform.localPosition = Vector3.zero;
                 }
             }
-
-            if (visHolderParent.childCount > 0)
-            {
-                foreach (Transform t in visHolderParent)
-                    Destroy(t.gameObject);
-            }
-
-            if (allMoved)
-            {
-                startLoad = false;
-                Debug.Log("all moved");
-            }
-
         }
+        prevHumanPosition = human.position;
+        prevHumanRotation = human.eulerAngles;
+
+
+        //if (startLoad)
+        //{
+        //    bool allMoved = true;
+
+        //    for (int i = 0; i < visParent.childCount; i++)
+        //    {
+        //        Transform sm = visParent.GetChild(i);
+        //        sm.position = currentMarker.savedSMPositions[i];
+
+        //        List<Transform> currentDataPoints = currentMarker.savedDataPoints[sm.name];
+        //        for (int j = 0; j < currentDataPoints.Count; j++)
+        //        {
+        //            currentDataPoints[j].SetParent(sm);
+        //            currentDataPoints[j].localPosition = Vector3.Lerp(currentDataPoints[j].localPosition,
+        //                currentMarker.savedDataPointPositions[sm.name][j], Time.deltaTime * speed);
+
+        //            if (Vector3.Distance(currentDataPoints[j].localPosition,
+        //                currentMarker.savedDataPointPositions[sm.name][j]) > 0.01f)
+        //                allMoved = false;
+        //        }
+        //    }
+
+        //    if (visHolderParent.childCount > 0)
+        //    {
+        //        foreach (Transform t in visHolderParent)
+        //            Destroy(t.gameObject);
+        //    }
+
+        //    if (allMoved)
+        //    {
+        //        startLoad = false;
+        //        Debug.Log("all moved");
+        //    }
+
+        //}
+    }
+
+    private GameObject CheckMarkerDistance() {
+        GameObject closestMarker = null;
+
+        if (markerParent.childCount > 0) {
+            float minDistance = 2;
+            foreach (Transform t in markerParent)
+            {
+                if (Vector3.Distance(t.position, human.position) < minDistance)
+                {
+                    minDistance = Vector3.Distance(t.position, human.position);
+                    closestMarker = t.gameObject;
+                }
+            }
+        }
+        
+        return closestMarker;
+    }
+
+    private void UpdateViewBoardTransform() {
+
+        viewBoard.position = human.TransformPoint(human.localPosition + Vector3.forward * dm3D.forwardParameter);
+        viewBoard.position = new Vector3(viewBoard.position.x, og.AdjustedHeight, viewBoard.position.z);
+
+        viewBoard.LookAt(human);
+        viewBoard.localEulerAngles = new Vector3(0, viewBoard.localEulerAngles.y + 180, 0);
     }
 
     public void UpdateCurrentSM(List<GameObject> sm)
@@ -118,20 +213,13 @@ public class MagicCarpetManager_PCD : MonoBehaviour
         }
 
         multiples = sm;
-    }
 
-    public void SaveViewFromController()
-    {
-        if (!onMarker)
-        {
-            Debug.Log("Save");
-            SaveView();
-        }
+        UpdateViewBoardTransform();
     }
-
 
     private void SaveView()
     {
+        
         GameObject savePoint = Instantiate(markerPrefab, new Vector3(human.position.x, 0, human.position.z), Quaternion.identity);
         savePoint.transform.SetParent(markerParent);
         savePoint.name = "marker";
@@ -175,39 +263,49 @@ public class MagicCarpetManager_PCD : MonoBehaviour
         marker.savedSMPositions = smPositions;
         marker.savedDataPoints = dataPoints;
         marker.savedDataPointPositions = dataPointPositions;
+
+        GameObject newVis = Instantiate(visParent.gameObject, marker.transform, true);
+        newVis.gameObject.SetActive(false);
     }
 
     public void LoadView(Marker marker)
     {
-        Debug.Log("LOAD");
-        startLoad = true;
+        //startLoad = true;
         onMarker = true;
         currentMarker = marker;
 
-        for (int i = 0; i < visParent.childCount; i++)
-        {
-            Transform sm = visParent.GetChild(i);
+    //    startLoad = true;
+    //    onMarker = true;
+        
 
-            GameObject go = new GameObject();
-            go.transform.SetParent(visHolderParent);
-            go.transform.position = sm.position;
-            go.transform.localScale = sm.localScale;
+    //    for (int i = 0; i < visParent.childCount; i++)
+    //    {
+    //        Transform sm = visParent.GetChild(i);
 
-            int childCount = sm.childCount;
-            for (int j = 0; j < childCount; j++)
-            {
-                sm.GetChild(0).SetParent(go.transform);
-            }
-        }
+    //        GameObject go = new GameObject();
+    //        go.transform.SetParent(visHolderParent);
+    //        go.transform.position = sm.position;
+    //        go.transform.localScale = sm.localScale;
 
-        dm3D.facetedColumns = currentMarker.colNumber;
-        dm3D.facetedRows = currentMarker.rowNumber;
-        multiples = og.UpdateSM(multiples, currentMarker.colNumber, currentMarker.rowNumber);
+    //        int childCount = sm.childCount;
+    //        for (int j = 0; j < childCount; j++)
+    //        {
+    //            sm.GetChild(0).SetParent(go.transform);
+    //        }
+    //    }
+
+    //    dm3D.facetedColumns = currentMarker.colNumber;
+    //    dm3D.facetedRows = currentMarker.rowNumber;
+    //    multiples = og.UpdateSM(multiples, currentMarker.colNumber, currentMarker.rowNumber);
     }
 
     public void OffMarker(Marker marker)
     {
         if (marker == currentMarker)
             onMarker = false;
+    }
+
+    private float CalculateGridWidth(int colNumber, float smSize, float hDelta) {
+        return (colNumber * smSize) + ((colNumber - 1) * hDelta);
     }
 }

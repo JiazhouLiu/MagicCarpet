@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanBodyCollision : MonoBehaviour
+public class HumanBodyCollisionPCD : MonoBehaviour
 {
-    MagicCarpetManager mcm;
+    MagicCarpetManager_PCD mcm;
     private void Start()
     {
-        mcm = GameObject.Find("MagicCarpetManager").GetComponent<MagicCarpetManager>();
+        mcm = GameObject.Find("MagicCarpetManager").GetComponent<MagicCarpetManager_PCD>();
     }
     private void OnTriggerEnter(Collider other)
     {
-        
+
         if (other.gameObject.name == "marker")
             mcm.LoadView(other.gameObject.GetComponent<Marker>());
     }

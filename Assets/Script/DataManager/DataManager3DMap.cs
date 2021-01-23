@@ -19,20 +19,22 @@ public class DataManager3DMap : MonoBehaviour
     [Header("Variables")]
     public int dataPointLimit = 0;
     public float markSize = 0.1f;
+    public float mapSize = 4f;
     public float speed = 1;
     public int facetedRows = 1;
     public int facetedColumns = 1;
+    public float forwardParameter = 10;
 
     private List<GameObject> MarkCollection;
     private List<GameObject> CurrentSM;
     //private List<GameObject> CurrentMarkCollection; // filtering
     private List<Transform> MapLocations;
     private List<Housing> PropertyCollection;
-
     private List<Vector3> MapGroundPositions;
 
 
     private Vector3 previousBodyPosition;
+    private Vector3 previousBodyRotation;
     private string previousClosestRegion = "";
 
     private bool canMove = false;
@@ -53,10 +55,12 @@ public class DataManager3DMap : MonoBehaviour
         MapLocations = new List<Transform>();
         MapGroundPositions = new List<Vector3>();
 
+
         ReadData(DataSource);
 
         //ShowCaseScenario(PropertyCollection);
         previousBodyPosition = humanBody.position;
+        previousBodyRotation = humanBody.eulerAngles;
         ShowMap();
     }
 
@@ -97,9 +101,13 @@ public class DataManager3DMap : MonoBehaviour
 
     private void Update()
     {
-        if (CheckHumanMoving()) {
+        if (CheckHumanMoving()  || Input.GetKeyDown("n") || Input.GetKeyDown("m")) {
+            UpdateVisGridTransform();
             FindNearestPoint();
         }
+
+        if(CheckHumanRotating())
+            UpdateVisGridTransform();
 
         if (canMove)
         {
@@ -125,9 +133,47 @@ public class DataManager3DMap : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown("n"))
+        if (Input.GetKeyDown("i"))
+            UpdateFacetingVariable(facetedRows + 1, facetedColumns);
+        if (Input.GetKeyDown("k"))
+            UpdateFacetingVariable(facetedRows - 1, facetedColumns);
+        if (Input.GetKeyDown("l"))
+            UpdateFacetingVariable(facetedRows, facetedColumns + 1);
+        if (Input.GetKeyDown("j"))
+            UpdateFacetingVariable(facetedRows, facetedColumns - 1);
+    }
+
+    private void UpdateFacetingVariable(int newRow, int newColumn)
+    {
+        if (newRow > 0 && newColumn > 0)
         {
-            FindNearestPoint();
+            facetedColumns = newColumn;
+            facetedRows = newRow;
+
+            //smallMultiplesNumber = facetedRows * facetedColumns;
+            ShowCaseScenario(PropertyCollection);
+            UpdateVisGridTransform();
+            //CurrentSM = og.UpdateSM(CurrentSM, facetedColumns, facetedRows);
+            //mcm.UpdateCurrentSM(CurrentSM);
+
+            //// faceting channel
+            //int minYear = GetLowestYear(PropertyCollection);
+            //int maxYear = GetHighestYear(PropertyCollection) + 1;
+
+            //foreach (GameObject mark in MarkCollection)
+            //{
+            //    Housing h = mark.GetComponent<Housing>();
+
+
+            //    int facetDelta = ((maxYear - minYear) / smallMultiplesNumber) + 1;
+            //    // setup small multiples
+            //    for (int i = 0; i < smallMultiplesNumber; i++)
+            //    {
+            //        if (h.YearBuilt >= minYear + (facetDelta * i) && h.YearBuilt < minYear + (facetDelta * (i + 1)))
+            //            mark.transform.SetParent(CurrentSM[i].transform);
+            //    }
+            //}
+            //canMove = true;
         }
     }
 
@@ -257,7 +303,7 @@ public class DataManager3DMap : MonoBehaviour
         float minLong = GetLowestLong(PropertyCollection);
         float maxLong = GetHighestLong(PropertyCollection);
 
-        float zMultiplier = 4;
+        float zMultiplier = mapSize;
         float xMultiplier = (maxLat - minLat) / (maxLong - minLong) * zMultiplier;
 
         foreach (Housing h in PropertyCollection)
@@ -268,6 +314,8 @@ public class DataManager3DMap : MonoBehaviour
             MapGroundPositions.Add(new Vector3(xPosition, 0, zPosition));
             GameObject mark = Instantiate(groundMarkPrefab, new Vector3(xPosition, 0, zPosition),
             Quaternion.identity, groundMarkParent);
+
+            mark.transform.localScale = Vector3.one * markSize;
 
             Color newCol = Color.black;
             switch (h.RegionName)
@@ -363,6 +411,23 @@ public class DataManager3DMap : MonoBehaviour
             return false;
         previousBodyPosition = currentPosition;
         return true;
+    }
+
+    private bool CheckHumanRotating()
+    {
+        Vector3 currentRotation = humanBody.eulerAngles ;
+        if (currentRotation == previousBodyRotation)
+            return false;
+        previousBodyRotation = currentRotation;
+        return true;
+    }
+
+    private void UpdateVisGridTransform()
+    {
+        visParent.position = humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter);
+        visParent.position = new Vector3(visParent.position.x, og.AdjustedHeight, visParent.position.z);
+        visParent.LookAt(humanBody);
+        visParent.localEulerAngles = new Vector3(0, visParent.localEulerAngles.y + 180, 0);
     }
 
     public int GetHighestBedroom(List<Housing> list)

@@ -1,10 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using VRTK;
 
-public class ObjectGeneratorNoColumn : MonoBehaviour
+public class SMGenerator_PCD : MonoBehaviour
 {
     [Header("Prefabs")]
     public GameObject MultiplePrefab;
@@ -15,14 +13,14 @@ public class ObjectGeneratorNoColumn : MonoBehaviour
     public float VSpacing;
     public float AdjustedHeight;
     public float MultipleSize;
-    public int RowNumber;
-    public int ColumnNumber;
     public float zPosition;
 
     [Header("Configurable Variables")]
-    public int speed;
+    private float speed;
 
     private List<GameObject> multiples;
+    private int RowNumber;
+    private int ColumnNumber;
 
     // Start is called before the first frame update
     void Start()
@@ -30,8 +28,9 @@ public class ObjectGeneratorNoColumn : MonoBehaviour
         // initiate variables
         multiples = new List<GameObject>();
 
-        RowNumber = DataManagerGO.GetComponent<DataManager3D>().facetedRows;
-        ColumnNumber = DataManagerGO.GetComponent<DataManager3D>().facetedColumns;
+        RowNumber = DataManagerGO.GetComponent<DataManagerPCD>().facetedRows;
+        ColumnNumber = DataManagerGO.GetComponent<DataManagerPCD>().facetedColumns;
+        speed = DataManagerGO.GetComponent<DataManagerPCD>().speed;
     }
     private void Awake()
     {
@@ -115,6 +114,7 @@ public class ObjectGeneratorNoColumn : MonoBehaviour
                 multiple.transform.parent = transform;
                 multiple.transform.localPosition = new Vector3(-MultipleSize / 2, 0, -MultipleSize / 2);
                 multiple.transform.localScale = new Vector3(MultipleSize, MultipleSize, MultipleSize);
+                multiple.transform.localEulerAngles = Vector3.zero;
                 multiple.AddComponent<PositionLocalConstraints>();
 
                 multiples.Add(multiple);
@@ -134,7 +134,7 @@ public class ObjectGeneratorNoColumn : MonoBehaviour
                 localCards[index].transform.localPosition = SetMultipleDefaultPosition(index, i, j);
             }
         }
-        transform.localPosition = new Vector3(0, AdjustedHeight, zPosition);
+        transform.parent.localPosition = new Vector3(0, AdjustedHeight, zPosition);
     }
 
     // Set Multiple Position

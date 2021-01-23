@@ -1,10 +1,9 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTK;
 
-public class MagicCarpetManager : MonoBehaviour
+public class MagicCarpetManagerMap : MonoBehaviour
 {
     public GameObject markerPrefab;
     public GameObject DataManagerGO;
@@ -26,13 +25,13 @@ public class MagicCarpetManager : MonoBehaviour
     VRTK_ControllerEvents rightCE;
     VRTK_ControllerEvents leftCE;
     ObjectGeneratorNoColumn og;
-    DataManager3D dm3D;
+    DataManager3DMap dm3D;
 
     private void Awake()
     {
         multiples = new List<GameObject>();
 
-        dm3D = DataManagerGO.GetComponent<DataManager3D>();
+        dm3D = DataManagerGO.GetComponent<DataManager3DMap>();
         og = visParent.GetComponent<ObjectGeneratorNoColumn>();
         rightCE = rightController.GetComponent<VRTK_ControllerEvents>();
         leftCE = leftController.GetComponent<VRTK_ControllerEvents>();
@@ -77,9 +76,9 @@ public class MagicCarpetManager : MonoBehaviour
         }
 
         if (Input.GetKeyDown("n") && dm3D.forwardParameter > 10)
-            dm3D.forwardParameter -= 1;
+            dm3D.forwardParameter -= 2;
         if (Input.GetKeyDown("m") && dm3D.forwardParameter < 50)
-            dm3D.forwardParameter += 1;
+            dm3D.forwardParameter += 2;
 
         if (startLoad)
         {

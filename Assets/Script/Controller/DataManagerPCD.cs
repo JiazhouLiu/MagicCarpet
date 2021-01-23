@@ -4,17 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DataManager3D : MonoBehaviour
+public class DataManagerPCD : MonoBehaviour
 {
     public TextAsset DataSource;
     public GameObject markPrefab;
-    public GameObject groundMarkPrefab;
     public Transform visParent;
-    public Transform hiddenVisParent;
-    public Transform groundMarkParent;
-    public ObjectGeneratorNoColumn og;
-    public MagicCarpetManager mcm;
-    public Transform humanBody;
+    public SMGenerator_PCD og;
+    public MagicCarpetManager_PCD mcm;
 
     [Header("Variables")]
     public int dataPointLimit = 0;
@@ -123,8 +119,6 @@ public class DataManager3D : MonoBehaviour
         if (Input.GetKeyDown("j"))
             UpdateFacetingVariable(facetedRows, facetedColumns - 1);
 
-        if (Input.GetKeyDown("n") || Input.GetKeyDown("m"))
-            UpdateVisGridTransform();
     }
 
     private void UpdateFacetingVariable(int newRow, int newColumn)
@@ -157,6 +151,8 @@ public class DataManager3D : MonoBehaviour
                 }
             }
             canMove = true;
+
+
         }
     }
 
@@ -302,15 +298,6 @@ public class DataManager3D : MonoBehaviour
 
         canMove = true;
     }
-
-    private void UpdateVisGridTransform()
-    {
-        visParent.position = humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter);
-        visParent.position = new Vector3(visParent.position.x, og.AdjustedHeight, visParent.position.z);
-        visParent.LookAt(humanBody);
-        visParent.localEulerAngles = new Vector3(0, visParent.localEulerAngles.y + 180, 0);
-    }
-
 
     public int GetHighestBedroom(List<Housing> list)
     {
