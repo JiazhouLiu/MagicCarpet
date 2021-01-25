@@ -101,13 +101,14 @@ public class DataManager3DMap : MonoBehaviour
 
     private void Update()
     {
+        
         if (CheckHumanMoving()  || Input.GetKeyDown("n") || Input.GetKeyDown("m")) {
-            UpdateVisGridTransform();
+            //UpdateVisGridTransform();
             FindNearestPoint();
         }
+        UpdateVisGridTransform();
+        //if(CheckHumanRotating())
 
-        if(CheckHumanRotating())
-            UpdateVisGridTransform();
 
         if (canMove)
         {
@@ -211,26 +212,26 @@ public class DataManager3DMap : MonoBehaviour
                 h.YPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
                 h.ZPosition = (float)(h.Bathroom - minBath) / (maxBath - minBath);
 
-                Color newCol = Color.black;
-                switch (h.Type)
-                {
-                    case "House":
-                        ColorUtility.TryParseHtmlString("#1b9e77", out newCol);
-                        h.MarkColor = newCol;
-                        break;
-                    case "Townhouse":
-                        ColorUtility.TryParseHtmlString("#d95f02", out newCol);
-                        h.MarkColor = newCol;
-                        break;
-                    case "Unit":
-                        ColorUtility.TryParseHtmlString("#7570b3", out newCol);
-                        h.MarkColor = newCol;
-                        break;
-                    default:
-                        break;
-                }
+                //Color newCol = Color.black;
+                //switch (h.Type)
+                //{
+                //    case "House":
+                //        ColorUtility.TryParseHtmlString("#1b9e77", out newCol);
+                //        h.MarkColor = newCol;
+                //        break;
+                //    case "Townhouse":
+                //        ColorUtility.TryParseHtmlString("#d95f02", out newCol);
+                //        h.MarkColor = newCol;
+                //        break;
+                //    case "Unit":
+                //        ColorUtility.TryParseHtmlString("#7570b3", out newCol);
+                //        h.MarkColor = newCol;
+                //        break;
+                //    default:
+                //        break;
+                //}
 
-                mark.GetComponent<MeshRenderer>().material.color = h.MarkColor;
+                //mark.GetComponent<MeshRenderer>().material.color = h.MarkColor;
 
                 int facetDelta = ((maxYear - minYear) / smallMultiplesNumber) + 1;
                 // setup small multiples
@@ -364,7 +365,7 @@ public class DataManager3DMap : MonoBehaviour
 
     private void FindNearestPoint()
     {
-        float minDistance = 10000;
+        float minDistance = 1;
         Transform closestPoint = null;
         int closestPointIndex = -1;
 
@@ -376,13 +377,16 @@ public class DataManager3DMap : MonoBehaviour
             }
         }
 
-        if (closestPointIndex != -1) {
+        if (closestPointIndex != -1)
+        {
             closestPoint = MarkCollection[closestPointIndex].transform;
         }
 
         string newClosestRegion = "";
         if (closestPoint != null)
             newClosestRegion = closestPoint.GetComponent<Housing>().RegionName;
+        else
+            Debug.Log("Out of Map");
 
         Debug.Log(newClosestRegion);
 
@@ -424,8 +428,10 @@ public class DataManager3DMap : MonoBehaviour
 
     private void UpdateVisGridTransform()
     {
-        visParent.position = humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter);
-        visParent.position = new Vector3(visParent.position.x, og.AdjustedHeight, visParent.position.z);
+        //visParent.position = humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter);
+        visParent.position = Vector3.Lerp(visParent.position, new Vector3(humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter).x, 
+            og.AdjustedHeight, humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter).z), Time.deltaTime * speed);
+            
         visParent.LookAt(humanBody);
         visParent.localEulerAngles = new Vector3(0, visParent.localEulerAngles.y + 180, 0);
     }

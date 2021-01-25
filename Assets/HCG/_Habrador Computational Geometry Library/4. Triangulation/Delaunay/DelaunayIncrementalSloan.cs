@@ -82,7 +82,7 @@ namespace Habrador_Computational_Geometry
             meshDataString += " - Flipped egdes: " + flippedEdges;
             meshDataString += " - Missed points: " + missedPoints;
 
-            Debug.Log(meshDataString);
+            //Debug.Log(meshDataString);
 
 
             return triangulationData;

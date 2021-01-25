@@ -4,8 +4,10 @@ using UnityEngine;
 using Habrador_Computational_Geometry;
 using System.Linq;
 
-public class DelaunayController : MonoBehaviour 
+public class DelaunayController : MonoBehaviour
 {
+    public GameObject linePrefab;
+    public Transform EdgeParent;
     public int seed = 0;
 
     public float halfMapSize = 1f;
@@ -24,14 +26,133 @@ public class DelaunayController : MonoBehaviour
     //Should be sorted clock-wise
     public List<Transform> holeConstraintParents;
 
-
+    public Transform Human;
+    public bool ShowColor = false;
+    public bool ShowEdge = false;
     //The mesh so we can generate when we press a button and display it in DrawGizmos
     Mesh triangulatedMesh;
 
+    private HalfEdgeData2 CurrentTriangles;
+    private Dictionary<string, Vector3> OldMarkerPositions;
+    private Vector3 previousHumanPosition;
+
+    private List<Transform> currentEdges;
+
+    private void Start()
+    {
+        OldMarkerPositions = new Dictionary<string, Vector3>();
+        
+
+        foreach (Transform t in hullConstraintParent)
+        {
+            OldMarkerPositions.Add(t.name, t.position);
+        }
+        GenerateTriangulation();
+    }
+
+    private void Update()
+    {
+        if (CheckMarkerMoving(hullConstraintParent))
+            GenerateTriangulation();
+
+        if (CheckHumanMoving())
+        {
+            List<Transform> InMarkers = CheckHumaninTriangles();
+            if (InMarkers != null)
+            {
+                string test = "";
+                foreach (Transform t in InMarkers)
+                    test += t.name + " ";
+                Debug.Log(test);
+            }
+        }
+    }
+
+    private List<Transform> CheckHumaninTriangles()
+    {
+        List<Transform> ValidMarkers = new List<Transform>();
+
+        foreach (HalfEdgeFace2 face in CurrentTriangles.faces)
+        {
+            Vector3 a = face.edge.v.position.ToVector3();
+            Vector3 b = face.edge.nextEdge.v.position.ToVector3();
+            Vector3 c = face.edge.prevEdge.v.position.ToVector3();
+            if (PointInTriangle(Human.position, a, b, c))
+            {
+                foreach (Transform t in hullConstraintParent)
+                {
+                    if (Vector3.Distance(t.position, a) < 0.1f || 
+                        Vector3.Distance(t.position, b) < 0.1f ||
+                        Vector3.Distance(t.position, c) < 0.1f)
+                        ValidMarkers.Add(t);
+                }
+            }
+        }
+
+        if (ValidMarkers.Count == 3)
+            return ValidMarkers;
+        else
+            return null;
+    }
+
+    private bool CheckHumanMoving()
+    {
+        Vector3 currentPosition = Human.position;
+        if (currentPosition == previousHumanPosition)
+            return false;
+        previousHumanPosition = currentPosition;
+        return true;
+    }
+
+    private bool CheckMarkerMoving(Transform parent)
+    {
+        foreach (KeyValuePair<string, Vector3> marker in OldMarkerPositions.ToList())
+        {
+            Vector3 currentPosition = GameObject.Find(marker.Key).transform.position;
+            if (currentPosition != marker.Value)
+            {
+                OldMarkerPositions[marker.Key] = currentPosition;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void DisplayTriangleEdges()
+    {
+        foreach (HalfEdge2 edge in CurrentTriangles.edges)
+        {
+            Vector3 currentEdgeDirection = edge.v.position.ToVector3();
+            Vector3 nextEdgeDirection = edge.nextEdge.v.position.ToVector3();
+            GameObject newEdge = Instantiate(linePrefab,
+                (currentEdgeDirection + nextEdgeDirection) / 2, Quaternion.identity, EdgeParent);
+            newEdge.transform.localPosition = new Vector3(newEdge.transform.localPosition.x, 0, newEdge.transform.localPosition.z);
+
+            newEdge.transform.localScale = new Vector3(Vector3.Distance(nextEdgeDirection, currentEdgeDirection) / 10,
+                0.1f, 0.005f);
+
+            LineRenderer line = newEdge.GetComponent<LineRenderer>();
+            line.SetPosition(0, currentEdgeDirection);
+            line.SetPosition(1, nextEdgeDirection);
+
+            currentEdges.Add(newEdge.transform);
+        }
+
+    }
 
     public void GenerateTriangulation()
     {
-        
+        if (currentEdges!= null && currentEdges.Count > 0 && EdgeParent.childCount > 0)
+        {
+
+            foreach (Transform t in currentEdges)
+            {
+                DestroyImmediate(t.gameObject);
+            }
+            currentEdges.Clear();
+        }
+        currentEdges = new List<Transform>();
         //Get the random points
         //HashSet<Vector2> randomPoints = TestAlgorithmsHelpMethods.GenerateRandomPoints2D(seed, halfMapSize, numberOfPoints);
 
@@ -128,11 +249,16 @@ public class DelaunayController : MonoBehaviour
 
         timer.Stop();
 
-        Debug.Log($"Generated a delaunay triangulation in {timer.ElapsedMilliseconds / 1000f} seconds");
+        //Debug.Log($"Generated a delaunay triangulation in {timer.ElapsedMilliseconds / 1000f} seconds");
 
 
         //UnNormalize
         HalfEdgeData2 triangleData = normalizer.UnNormalize(triangleData_normalized);
+        //Debug.Log(triangleData.faces.Count);
+
+        // Customise By Joe
+        CurrentTriangles = triangleData;
+
 
         //From half-edge to triangle
         HashSet<Triangle2> triangles_2d = _TransformBetweenDataStructures.HalfEdge2ToTriangle2(triangleData);
@@ -151,27 +277,29 @@ public class DelaunayController : MonoBehaviour
         }
 
         triangulatedMesh = _TransformBetweenDataStructures.Triangle3ToCompressedMesh(triangles_3d);
+
+        if(ShowEdge)
+            DisplayTriangleEdges();
     }
-
-
+    
 
     private void OnDrawGizmos()
     {
-        if (triangulatedMesh != null)
+        if (triangulatedMesh != null && ShowColor)
         {
             TestAlgorithmsHelpMethods.DisplayMeshWithRandomColors(triangulatedMesh, seed);
         }
 
 
-        //Display the obstacles
-        if (constraints != null)
-        {
-            //DebugResults.DisplayConnectedPoints(obstacle, Color.black);
-        }
+        ////Display the obstacles
+        //if (constraints != null)
+        //{
+        //    //DebugResults.DisplayConnectedPoints(obstacle, Color.black);
+        //}
 
 
-        //Display drag constraints
-        DisplayDragConstraints();
+        //////Display drag constraints
+        //DisplayDragConstraints();
     }
 
 
@@ -185,14 +313,32 @@ public class DelaunayController : MonoBehaviour
             TestAlgorithmsHelpMethods.DisplayConnectedPoints(points, Color.white, true);
         }
 
-        if (holeConstraintParents != null)
-        {
-            foreach (Transform holeParent in holeConstraintParents)
-            {
-                List<Vector3> points = TestAlgorithmsHelpMethods.GetPointsFromParent(holeParent);
+        //if (holeConstraintParents != null)
+        //{
+        //    foreach (Transform holeParent in holeConstraintParents)
+        //    {
+        //        List<Vector3> points = TestAlgorithmsHelpMethods.GetPointsFromParent(holeParent);
 
-                TestAlgorithmsHelpMethods.DisplayConnectedPoints(points, Color.white, true);
-            }
-        }
+        //        TestAlgorithmsHelpMethods.DisplayConnectedPoints(points, Color.white, true);
+        //    }
+        //}
+    }
+
+    private bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
+    {
+        Vector3 cp1 = Vector3.Cross(b - a, p1 - a);
+        Vector3 cp2 = Vector3.Cross(b - a, p2 - a);
+
+        if (Vector3.Dot(cp1, cp2) >= 0)
+            return true;
+
+        return false;
+    }
+
+    private bool PointInTriangle(Vector3 p, Vector3 a, Vector3 b, Vector3 c)
+    {
+        if (SameSide(p, a, b, c) && SameSide(p, b, a, c) && SameSide(p, c, a, b))
+            return true;
+        return false;
     }
 }

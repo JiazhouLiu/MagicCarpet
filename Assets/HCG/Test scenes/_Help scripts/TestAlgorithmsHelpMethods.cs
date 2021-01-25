@@ -227,7 +227,7 @@ public static class TestAlgorithmsHelpMethods
 
 
                 //Color the triangle
-                Gizmos.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
+                Gizmos.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 0.5f);
 
                 //float grayScale = Random.Range(0f, 1f);
 

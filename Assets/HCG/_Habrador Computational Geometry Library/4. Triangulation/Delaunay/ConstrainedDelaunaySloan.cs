@@ -38,7 +38,9 @@ namespace Habrador_Computational_Geometry
             
             //triangleData = _Delaunay.FlippingEdges(allPoints);
             triangleData = _Delaunay.PointByPoint(allPoints, triangleData);
+
             
+
             //timer.Stop();
 
             //Delaunay takes 0.003 seconds for the house so is not the bottle neck
@@ -46,18 +48,17 @@ namespace Habrador_Computational_Geometry
 
 
             //Modify the triangulation by adding the constraints to the delaunay triangulation
-            triangleData = AddConstraints(triangleData, hull, shouldRemoveTriangles, timer);
-
-            foreach (List<MyVector2> hole in holes)
-            {
-                triangleData = AddConstraints(triangleData, hole, shouldRemoveTriangles, timer);
-            }
+            //triangleData = AddConstraints(triangleData, hull, shouldRemoveTriangles, timer);
+            //foreach (List<MyVector2> hole in holes)
+            //{
+            //    triangleData = AddConstraints(triangleData, hole, shouldRemoveTriangles, timer);
+            //}
 
 
             //Debug.Log(triangleData.faces.Count);
 
             //Debug.Log($"Whatever time we measured it took {timer.ElapsedMilliseconds / 1000f} seconds");
-
+            
             return triangleData;
         }
 

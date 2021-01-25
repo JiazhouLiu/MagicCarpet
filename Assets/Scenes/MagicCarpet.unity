@@ -1143,7 +1143,7 @@ MonoBehaviour:
   dataPointLimit: 0
   markSize: 0.02
   mapSize: 8
-  speed: 2
+  speed: 1
   facetedRows: 3
   facetedColumns: 12
   forwardParameter: 20
