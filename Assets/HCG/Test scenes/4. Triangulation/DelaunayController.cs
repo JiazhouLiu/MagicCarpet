@@ -1,20 +1,20 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Habrador_Computational_Geometry;
 using System.Linq;
+using UnityEditor;
 
 public class DelaunayController : MonoBehaviour
 {
     public GameObject linePrefab;
     public Transform EdgeParent;
+    public Transform Human;
+    public Transform DashBoard;
+
+    [Header("Delaunay")]
     public int seed = 0;
-
     public float halfMapSize = 1f;
-
     public int numberOfPoints = 20;
-
-
     //Constraints
 
     //One constraints where the vertices are connected to form the entire constraint
@@ -26,27 +26,40 @@ public class DelaunayController : MonoBehaviour
     //Should be sorted clock-wise
     public List<Transform> holeConstraintParents;
 
-    public Transform Human;
+    [Header("Variables")]
     public bool ShowColor = false;
     public bool ShowEdge = false;
+    public float Show3VisDelta = 0.5f;
+    public float SmallestVisSize = 0.2f;
+
     //The mesh so we can generate when we press a button and display it in DrawGizmos
-    Mesh triangulatedMesh;
+    private Mesh triangulatedMesh;
 
     private HalfEdgeData2 CurrentTriangles;
     private Dictionary<string, Vector3> OldMarkerPositions;
     private Vector3 previousHumanPosition;
+    private Quaternion previousHumanRotation;
 
     private List<Transform> currentEdges;
+    private List<Transform> currentVis;
+    private List<Transform> prevVis;
+    private Dictionary<Transform, float> VisScale;
 
     private void Start()
     {
+        currentVis = new List<Transform>();
+        prevVis = new List<Transform>();
         OldMarkerPositions = new Dictionary<string, Vector3>();
-        
+        VisScale = new Dictionary<Transform, float>();
 
         foreach (Transform t in hullConstraintParent)
-        {
             OldMarkerPositions.Add(t.name, t.position);
+
+        if (EdgeParent.childCount > 0) {
+            foreach (Transform t in EdgeParent)
+                Destroy(t.gameObject);
         }
+
         GenerateTriangulation();
     }
 
@@ -56,16 +69,150 @@ public class DelaunayController : MonoBehaviour
             GenerateTriangulation();
 
         if (CheckHumanMoving())
-        {
-            List<Transform> InMarkers = CheckHumaninTriangles();
-            if (InMarkers != null)
+            currentVis = ShowDashboard();
+
+        if (CheckHumanRotating())
+            currentVis = RearrangeDisplayBasedOnAngle(currentVis);
+
+        if (prevVis != currentVis) {
+
+            if (DashBoard.childCount > 0)
             {
-                string test = "";
-                foreach (Transform t in InMarkers)
-                    test += t.name + " ";
-                Debug.Log(test);
+                foreach (Transform t in DashBoard)
+                    Destroy(t.gameObject);
+            }
+
+            if (currentVis != null && currentVis.Count > 0)
+            {
+                float betweenVis = 5;
+                foreach (Transform t in currentVis)
+                {
+                    GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
+                    visOnDashBoard.transform.localScale = Vector3.one * 100 * VisScale[t];
+                    visOnDashBoard.transform.localPosition = Vector3.zero;
+
+                    if (currentVis.Count == 2)
+                    {
+                        if (currentVis.IndexOf(t) == 0)
+                            visOnDashBoard.transform.localPosition = new Vector3(-visOnDashBoard.transform.localScale.x / 2 - betweenVis, 0, 0);
+                        else
+                            visOnDashBoard.transform.localPosition = new Vector3(visOnDashBoard.transform.localScale.x / 2 + betweenVis, 0, 0);
+                    }
+                    else if (currentVis.Count == 3) {
+                        Vector3 middleOneScale = Vector3.one * 100 * VisScale[currentVis[1]];
+                        if (currentVis.IndexOf(t) == 0)
+                            visOnDashBoard.transform.localPosition = new Vector3(-(visOnDashBoard.transform.localScale.x + middleOneScale.x) / 2 - betweenVis, 0, 0);
+                        else if(currentVis.IndexOf(t) == 2)
+                            visOnDashBoard.transform.localPosition = new Vector3((visOnDashBoard.transform.localScale.x + middleOneScale.x) / 2 + betweenVis, 0, 0);
+                    }
+
+                    visOnDashBoard.transform.localPosition *= 10;
+
+                    visOnDashBoard.transform.localEulerAngles = Vector3.zero;
+                    SpriteRenderer sr = visOnDashBoard.GetComponent<SpriteRenderer>();
+                    sr.sortingOrder = 0;
+                }
+                prevVis = currentVis;
+                //string test = "";
+                //foreach (Transform t in currentVis)
+                //{
+                //    test += t.name + "'s scale: " + VisScale[t] + ", ";
+                //}
+
+                //Debug.Log(test);
             }
         }
+
+        
+    }
+
+    private List<Transform> ShowDashboard() {
+        List<Transform> InMarkers = CheckHumaninTriangles();
+        if (InMarkers != null)
+        {
+            List<Transform> showOnDashboard = CheckDistanceToEdge(InMarkers);
+
+            if (showOnDashboard != null)
+            {
+                if(VisScale != null)
+                    VisScale.Clear();
+                VisScale = new Dictionary<Transform, float>();
+
+                if (showOnDashboard.Count > 1)
+                {
+                    Dictionary<Transform, float> VisDistanceToHuman = new Dictionary<Transform, float>();
+
+                    foreach (Transform t in showOnDashboard)
+                        VisDistanceToHuman.Add(t, Vector3.Distance(t.position, Human.position));
+
+                    foreach (Transform t in showOnDashboard)
+                    {
+                        if (showOnDashboard.Count == 3)
+                        {
+                            if (Vector3.Distance(t.position, Human.position) == VisDistanceToHuman.Values.Max())
+                                VisScale.Add(t, SmallestVisSize);
+                            else
+                            {
+                                float leftTwoValuesSum = 3 * VisDistanceToHuman.Values.Max() - VisDistanceToHuman.Values.Sum();
+                                VisScale.Add(t,
+                                    (1 - SmallestVisSize) * (VisDistanceToHuman.Values.Max() - Vector3.Distance(t.position, Human.position)) / leftTwoValuesSum);
+                            }
+                        }
+                        else
+                            VisScale.Add(t, 1 - (Vector3.Distance(t.position, Human.position) / VisDistanceToHuman.Values.Sum()));
+                    }
+                }
+                else
+                    VisScale.Add(showOnDashboard[0], 1);
+
+                showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+                return showOnDashboard;
+            }
+            else
+                return null;
+        }
+        else
+            return null;
+    }
+
+    private List<Transform> RearrangeDisplayBasedOnAngle(List<Transform> markers)
+    {
+        List<Transform> finalList = new List<Transform>();
+        if (markers != null && markers.Count > 0) {
+            Dictionary<Transform, float> markerAnglesToHuman = new Dictionary<Transform, float>();
+
+            foreach (Transform t in markers)
+                markerAnglesToHuman.Add(t, Vector3.SignedAngle(Human.forward, t.position - Human.position, Vector3.up));
+
+            foreach (KeyValuePair<Transform, float> item in markerAnglesToHuman.OrderBy(key => key.Value))
+                finalList.Add(item.Key);
+        }
+        return finalList;
+    }
+
+    // true if in the middle of triangle and show 3 vis, false if near edge and show 2 vis
+    private List<Transform> CheckDistanceToEdge(List<Transform> markers) {
+        Vector3 Human2DPosition = new Vector3(Human.position.x, 0, Human.position.z);
+        float dis1 = DistancePointLine(Human2DPosition, markers[0].position, markers[1].position);
+        float dis2 = DistancePointLine(Human2DPosition, markers[1].position, markers[2].position);
+        float dis3 = DistancePointLine(Human2DPosition, markers[0].position, markers[2].position);
+
+        if (dis1 >= Show3VisDelta && dis2 >= Show3VisDelta && dis3 >= Show3VisDelta)
+            return markers;
+        else if (dis1 >= Show3VisDelta && dis2 >= Show3VisDelta)
+            return new List<Transform>() { markers[0], markers[2] };
+        else if (dis1 >= Show3VisDelta && dis3 >= Show3VisDelta)
+            return new List<Transform>() { markers[1], markers[2] };
+        else if (dis2 >= Show3VisDelta && dis3 >= Show3VisDelta)
+            return new List<Transform>() { markers[0], markers[1] };
+        else if (dis1 >= Show3VisDelta)
+            return new List<Transform>() { markers[2] };
+        else if (dis2 >= Show3VisDelta)
+            return new List<Transform>() { markers[0] };
+        else if (dis3 >= Show3VisDelta)
+            return new List<Transform>() { markers[1] };
+        else
+            return null;
     }
 
     private List<Transform> CheckHumaninTriangles()
@@ -93,6 +240,14 @@ public class DelaunayController : MonoBehaviour
             return ValidMarkers;
         else
             return null;
+    }
+
+    private bool CheckHumanRotating() {
+        Quaternion currentRotation = Human.rotation;
+        if (currentRotation == previousHumanRotation)
+            return false;
+        previousHumanRotation = currentRotation;
+        return true;
     }
 
     private bool CheckHumanMoving()
@@ -147,9 +302,7 @@ public class DelaunayController : MonoBehaviour
         {
 
             foreach (Transform t in currentEdges)
-            {
                 DestroyImmediate(t.gameObject);
-            }
             currentEdges.Clear();
         }
         currentEdges = new List<Transform>();
@@ -280,6 +433,8 @@ public class DelaunayController : MonoBehaviour
 
         if(ShowEdge)
             DisplayTriangleEdges();
+
+        currentVis = ShowDashboard();
     }
     
 
@@ -340,5 +495,25 @@ public class DelaunayController : MonoBehaviour
         if (SameSide(p, a, b, c) && SameSide(p, b, a, c) && SameSide(p, c, a, b))
             return true;
         return false;
+    }
+
+    private float DistancePointLine(Vector3 point, Vector3 lineStart, Vector3 lineEnd)
+    {
+        return Vector3.Magnitude(ProjectPointLine(point, lineStart, lineEnd) - point);
+    }
+
+    private static Vector3 ProjectPointLine(Vector3 point, Vector3 lineStart, Vector3 lineEnd)
+    {
+        Vector3 relativePoint = point - lineStart;
+        Vector3 lineDirection = lineEnd - lineStart;
+        float length = lineDirection.magnitude;
+        Vector3 normalizedLineDirection = lineDirection;
+        if (length > .000001f)
+            normalizedLineDirection /= length;
+
+        float dot = Vector3.Dot(normalizedLineDirection, relativePoint);
+        dot = Mathf.Clamp(dot, 0.0F, length);
+
+        return lineStart + normalizedLineDirection * dot;
     }
 }
