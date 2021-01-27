@@ -294,6 +294,14 @@ public class DataManager3DMap : MonoBehaviour
             }
         }
 
+        if (privatePC.Count == 0)
+        {
+            if (visParent.childCount > 0) {
+                foreach (Transform t in visParent)
+                    Destroy(t.gameObject);
+            }
+        }
+
         canMove = true;
     }
 
