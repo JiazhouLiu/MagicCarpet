@@ -17,7 +17,7 @@ public class DashBoard : MonoBehaviour
         if (dc != null && Camera == null)
             Camera = dc.Human;
         if (Camera != null) {
-            transform.position = Camera.position + Camera.TransformPoint(Vector3.forward * ForwardParameter);
+            transform.position = Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter);
             //transform.position = Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter);
             transform.position = new Vector3(transform.position.x, AdjustedHeight, transform.position.z);
 
