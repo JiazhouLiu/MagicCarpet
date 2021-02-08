@@ -9,6 +9,9 @@ public class DelaunayController : MonoBehaviour
     public GameObject linePrefab;
     public Transform EdgeParent;
     public Transform Human;
+    public Transform HumanWaist;
+    public Transform LeftFoot;
+    public Transform RightFoot;
     public Transform DashBoard;
     public Transform PinnedDashBoard;
 
@@ -40,6 +43,14 @@ public class DelaunayController : MonoBehaviour
     private HalfEdgeData2 CurrentTriangles;
     private Vector3 previousHumanPosition;
     private Vector3 previousHumanRotation;
+
+    // body tracking
+    private Vector3 previousLeftFootPosition;
+    private Vector3 previousLeftFootRotation;
+    private Vector3 previousRightFootPosition;
+    private Vector3 previousRightFootRotation;
+    private Vector3 previousHumanWaistRotation;
+
     private int previousGroundMarkerNumber;
 
     private List<Vis> allVis;
@@ -54,7 +65,12 @@ public class DelaunayController : MonoBehaviour
 
     // one euro filter
     private Vector3 filteredHumanPosition;
+    private Vector3 filteredLeftFootPosition;
+    private Vector3 filteredRightFootPosition;
     private Vector3 filteredHumanRotation;
+    private Vector3 filteredLeftFootRotation;
+    private Vector3 filteredRightFootRotation;
+    private Vector3 filteredWaistRotation;
     private OneEuroFilter<Vector3> vector3Filter;
 
     private void Start()
@@ -85,6 +101,12 @@ public class DelaunayController : MonoBehaviour
         filteredHumanPosition = vector3Filter.Filter(Human.position);
         filteredHumanRotation = vector3Filter.Filter(Human.eulerAngles);
 
+        //filteredLeftFootPosition = vector3Filter.Filter(LeftFoot.position);
+        //filteredLeftFootRotation = vector3Filter.Filter(LeftFoot.eulerAngles);
+        //filteredRightFootPosition = vector3Filter.Filter(RightFoot.position);
+        //filteredRightFootRotation = vector3Filter.Filter(RightFoot.eulerAngles);
+        //filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
+
 
         if (CheckMarkerMoving(hullConstraintParent))
             GenerateTriangulation();
@@ -92,11 +114,20 @@ public class DelaunayController : MonoBehaviour
         if (CheckHumanMoving())
             currentVis = SetUpDashBoardScale(); // returned 1, 2, or 3 vis
 
+        //if(CheckHumanFeetMoving())
+        //    currentVis = SetUpDashBoardScale(); // returned 1, 2, or 3 vis
+
         if (CheckHumanRotating())
         {
             currentVis = RearrangeDisplayBasedOnAngle(currentVis);
             currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
         }
+
+        //if (CheckHumanWaistRotating())
+        //{
+        //    currentVis = RearrangeDisplayBasedOnAngle(currentVis);
+        //    currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
+        //}
 
         if (currentVis != null && currentVis.Count > 0)
         {
@@ -240,30 +271,91 @@ public class DelaunayController : MonoBehaviour
 
     }
 
-    private void PinToGround(Transform t) {
-        GameObject visOnGround = Instantiate(t.gameObject, hullConstraintParent);
-        visOnGround.transform.position = new Vector3(Human.position.x, 0, Human.position.z);
-        visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
-        visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
-        visOnGround.transform.localScale = t.GetComponent<Vis>().GroundScale;
-        visOnGround.GetComponent<Vis>().PinOnDashBoard = false;
-        visOnGround.name = t.name;
 
-        currentPinnedOnDashboard.Remove(t.name);
-        Destroy(t.gameObject);
-    }
-
-    private void GroundToPin(Transform t)
+    // Tracking both feet to determine what to display, can return more than 3 vis
+    private List<Transform> SetUpDashBoardScale(Transform leftFoot, Transform rightFoot)
     {
-        Transform groundOriginal = hullConstraintParent.Find(t.name);
-        if (groundOriginal != null) {
-            Destroy(groundOriginal.gameObject);
-            t.SetParent(PinnedDashBoard);
-            currentPinnedOnDashboard.Add(t.name, t);
-            t.GetComponent<Vis>().PinOnDashBoard = true;
-            t.GetComponent<Vis>().InAirScale = Vector3.one * 0.33f;
+        Dictionary<string, Transform> leftFootInMarkers = CheckFootInTriangles(leftFoot);
+        Dictionary<string, Transform> rightFootInMarkers = CheckFootInTriangles(rightFoot);
+
+        List<Transform> showOnDashboard = new List<Transform>();
+
+        if (leftFootInMarkers.Count > 0) {
+            foreach (Transform t in CheckDistanceToEdge(leftFootInMarkers.Values.ToList()))
+                showOnDashboard.Add(t);
         }
+        if (rightFootInMarkers.Count > 0) {
+            foreach (Transform t in CheckDistanceToEdge(rightFootInMarkers.Values.ToList()))
+                showOnDashboard.Add(t);
+        }
+        if(leftFootInMarkers.Count == 0 && rightFootInMarkers.Count == 0)
+        {
+            // delete old vis
+            foreach (Transform t in currentVisOnDashboard.Values.ToList())
+            {
+                if (hullConstraintParent.Find(t.name) != null)
+                {
+                    hullConstraintParent.Find(t.name).GetComponent<Vis>().OnDashBoard = false;
+                    Destroy(currentVisOnDashboard[t.name].gameObject);
+                    currentVisOnDashboard.Remove(t.name);
+                }
+
+            }
+            return null;
+        }
+
+
+        if (showOnDashboard.Count > 0)
+        {
+            Dictionary<string, Transform> newVisDict = new Dictionary<string, Transform>();
+            foreach (Transform t in showOnDashboard)
+            {
+                newVisDict.Add(t.name, t);
+            }
+
+            CheckSameVisOnDashboard(newVisDict, currentVisOnDashboard);
+
+
+            if (showOnDashboard.Count > 1)
+            {
+                // TODO
+                //if (showOnDashboard.Count == 3)
+                //{
+                //    List<float> calculatedRatio = new List<float>();
+                //    for (int i = 0; i < 3; i++)
+                //    {
+                //        int s = (i - 1 < 0) ? 2 : i - 1;
+                //        int t = (i + 1 > 2) ? 0 : i + 1;
+
+                //        calculatedRatio.Add((1 / CalculateProportionalScale(showOnDashboard[i],
+                //            showOnDashboard[s], showOnDashboard[t])));
+                //    }
+
+                //    for (int i = 0; i < 3; i++)
+                //        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+                //            (calculatedRatio[i] / calculatedRatio.Sum()) * Vector3.one;
+                //}
+                //else
+                //{
+                //    List<float> VisDistanceToHuman = new List<float>();
+                //    foreach (Transform t in showOnDashboard)
+                //        VisDistanceToHuman.Add((1 / Vector3.Distance(t.position, Human.position)));
+
+                //    for (int i = 0; i < 2; i++)
+                //        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+                //            (VisDistanceToHuman[i] / VisDistanceToHuman.Sum()) * Vector3.one;
+                //}
+            }
+            else// show 1 vis
+                showOnDashboard[0].GetComponent<Vis>().InAirScale = Vector3.one;
+
+            showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+            return showOnDashboard;
+        }
+        else
+            return null;
     }
+
 
     // Calculate In Air Scale
     private List<Transform> SetUpDashBoardScale() {
@@ -481,6 +573,37 @@ public class DelaunayController : MonoBehaviour
             return new Dictionary<string, Transform>();
     }
 
+    private Dictionary<string, Transform> CheckFootInTriangles(Transform foot)
+    {
+        Dictionary<string, Transform> ValidMarkers = new Dictionary<string, Transform>();
+
+        foreach (HalfEdgeFace2 face in CurrentTriangles.faces)
+        {
+            Vector3 a = face.edge.v.position.ToVector3();
+            Vector3 b = face.edge.nextEdge.v.position.ToVector3();
+            Vector3 c = face.edge.prevEdge.v.position.ToVector3();
+            if (PointInTriangle(foot.position, a, b, c))
+            {
+                foreach (Transform t in hullConstraintParent)
+                {
+                    if (Vector3.Distance(t.position, a) < 0.1f ||
+                        Vector3.Distance(t.position, b) < 0.1f ||
+                        Vector3.Distance(t.position, c) < 0.1f)
+                    {
+                        if (!ValidMarkers.ContainsKey(t.name))
+                            ValidMarkers.Add(t.name, t);
+                    }
+                }
+            }
+        }
+
+        if (ValidMarkers.Count == 3)
+            return ValidMarkers;
+        else
+            return new Dictionary<string, Transform>();
+    }
+
+    // check if headset is rotating
     private bool CheckHumanRotating() {
         Vector3 currentRotation = filteredHumanRotation;
         if (currentRotation == previousHumanRotation)
@@ -489,6 +612,16 @@ public class DelaunayController : MonoBehaviour
         return true;
     }
 
+    // BODY-TRACKING: check if waist is rotating
+    private bool CheckHumanWaistRotating() {
+        Vector3 currentWaistRotation = filteredWaistRotation;
+        if (currentWaistRotation == previousHumanWaistRotation)
+            return false;
+        previousHumanWaistRotation = currentWaistRotation;
+        return true;
+    }
+
+    // check if headset is moving
     private bool CheckHumanMoving()
     {
         Vector3 currentPosition = filteredHumanPosition;
@@ -499,6 +632,24 @@ public class DelaunayController : MonoBehaviour
         return true;
     }
 
+    // BODY-TRACKING: check if feet is moving
+    private bool CheckHumanFeetMoving() {
+        Vector3 currentLeftPosition = filteredLeftFootPosition;
+        //Vector3 currentPosition = Human.position;
+        if (currentLeftPosition == previousLeftFootPosition)
+            return false;
+        previousLeftFootPosition = currentLeftPosition;
+
+        Vector3 currentRightPosition = filteredRightFootPosition;
+        //Vector3 currentPosition = Human.position;
+        if (currentRightPosition == previousRightFootPosition)
+            return false;
+        previousRightFootPosition = currentRightPosition;
+
+        return true;
+    }
+
+    // Check if ground marker is moved
     private bool CheckMarkerMoving(Transform parent)
     {
         if (parent.childCount != previousGroundMarkerNumber) {
@@ -554,8 +705,39 @@ public class DelaunayController : MonoBehaviour
 
     }
 
+    private void PinToGround(Transform t)
+    {
+        GameObject visOnGround = Instantiate(t.gameObject, hullConstraintParent);
+        visOnGround.transform.position = new Vector3(Human.position.x, 0, Human.position.z);
+        visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
+        visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
+        visOnGround.transform.localScale = t.GetComponent<Vis>().GroundScale;
+        visOnGround.GetComponent<Vis>().PinOnDashBoard = false;
+        visOnGround.name = t.name;
+
+        currentPinnedOnDashboard.Remove(t.name);
+        Destroy(t.gameObject);
+    }
+
+    private void GroundToPin(Transform t)
+    {
+        Transform groundOriginal = hullConstraintParent.Find(t.name);
+        if (groundOriginal != null)
+        {
+            Destroy(groundOriginal.gameObject);
+            t.SetParent(PinnedDashBoard);
+            currentPinnedOnDashboard.Add(t.name, t);
+            t.GetComponent<Vis>().PinOnDashBoard = true;
+            t.GetComponent<Vis>().InAirScale = Vector3.one * 0.33f;
+        }
+    }
+
+    /// <summary>
+    /// Below codes are from the library, minor changes such as edges
+    /// </summary>
     public void GenerateTriangulation()
     {
+        // edges customisation
         if (currentEdges!= null && currentEdges.Count > 0 && EdgeParent.childCount > 0)
         {
 
@@ -737,6 +919,8 @@ public class DelaunayController : MonoBehaviour
         //}
     }
 
+
+    // ultilities functions
     private bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
     {
         Vector3 cp1 = Vector3.Cross(b - a, p1 - a);
@@ -773,21 +957,5 @@ public class DelaunayController : MonoBehaviour
         dot = Mathf.Clamp(dot, 0.0F, length);
 
         return lineStart + normalizedLineDirection * dot;
-    }
-
-    private bool CheckListMatch(List<Transform> l1, List<Transform> l2)
-    {
-        if (l1 == null && l2 == null)
-            return true;
-        if (l1 == null || l2 == null)
-            return false;
-        if (l1.Count != l2.Count)
-            return false;
-        for (int i = 0; i < l1.Count; i++)
-        {
-            if (l1[i] != l2[i])
-                return false;
-        }
-        return true;
     }
 }
