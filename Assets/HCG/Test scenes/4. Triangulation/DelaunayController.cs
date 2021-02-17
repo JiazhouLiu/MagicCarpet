@@ -9,7 +9,7 @@ public class DelaunayController : MonoBehaviour
     public GameObject linePrefab;
     public Transform EdgeParent;
     public Transform Human;
-    public Transform HumanWaist;
+    ////public Transform HumanWaist;
     public Transform LeftFoot;
     public Transform RightFoot;
     public Transform DashBoard;
@@ -36,6 +36,7 @@ public class DelaunayController : MonoBehaviour
     public float Show3VisDelta = 0.5f;
     public float speed = 3;
     public float filterFrequency = 120f;
+    public float betweenVisDelta = 0.05f;
 
     //The mesh so we can generate when we press a button and display it in DrawGizmos
     private Mesh triangulatedMesh;
@@ -49,7 +50,7 @@ public class DelaunayController : MonoBehaviour
     private Vector3 previousLeftFootRotation;
     private Vector3 previousRightFootPosition;
     private Vector3 previousRightFootRotation;
-    private Vector3 previousHumanWaistRotation;
+    ////private Vector3 previousHumanWaistRotation;
 
     private int previousGroundMarkerNumber;
 
@@ -61,7 +62,13 @@ public class DelaunayController : MonoBehaviour
     private Dictionary<string, Transform> currentVisOnDashboard;
     private Dictionary<string, Transform> currentPinnedOnDashboard;
 
+    private List<Transform> currentVisFromLeft;
+    private List<Transform> currentVisFromRight;
+
     private bool canMove = false;
+
+    private bool DemoFlagLeft = true;
+    private bool DemoFlagRight = true;
 
     // one euro filter
     private Vector3 filteredHumanPosition;
@@ -79,6 +86,8 @@ public class DelaunayController : MonoBehaviour
         currentVisOnDashboard = new Dictionary<string, Transform>();
         currentPinnedOnDashboard = new Dictionary<string, Transform>();
         currentVis = new List<Transform>();
+        currentVisFromLeft = new List<Transform>();
+        currentVisFromRight = new List<Transform>();
         previousGroundMarkerNumber = hullConstraintParent.childCount;
         vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
 
@@ -94,6 +103,8 @@ public class DelaunayController : MonoBehaviour
         }
 
         GenerateTriangulation();
+
+
     }
 
     private void Update()
@@ -101,21 +112,44 @@ public class DelaunayController : MonoBehaviour
         filteredHumanPosition = vector3Filter.Filter(Human.position);
         filteredHumanRotation = vector3Filter.Filter(Human.eulerAngles);
 
-        //filteredLeftFootPosition = vector3Filter.Filter(LeftFoot.position);
-        //filteredLeftFootRotation = vector3Filter.Filter(LeftFoot.eulerAngles);
-        //filteredRightFootPosition = vector3Filter.Filter(RightFoot.position);
-        //filteredRightFootRotation = vector3Filter.Filter(RightFoot.eulerAngles);
-        //filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
+        filteredLeftFootPosition = vector3Filter.Filter(LeftFoot.position);
+        filteredLeftFootRotation = vector3Filter.Filter(LeftFoot.eulerAngles);
+        filteredRightFootPosition = vector3Filter.Filter(RightFoot.position);
+        filteredRightFootRotation = vector3Filter.Filter(RightFoot.eulerAngles);
+
+        ////filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
 
         if (CheckMarkerMoving(hullConstraintParent))
             GenerateTriangulation();
 
-        if (CheckHumanMoving())
-            currentVis = SetUpDashBoardScale(); // returned 1, 2, or 3 vis
-
-        //if(CheckHumanFeetMoving())
+        //if (CheckHumanMoving())
         //    currentVis = SetUpDashBoardScale(); // returned 1, 2, or 3 vis
+
+        if (CheckHumanFeetMoving("left") || DemoFlagLeft) {
+            DemoFlagLeft = false;
+            currentVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+            if (CheckMatch(currentVisFromLeft, currentVisFromRight)) {
+                SameTriReconfigureScale(currentVisFromLeft);
+            }
+                
+            currentVis = CombineFeetVisAndAssignPosition(currentVisFromLeft, currentVisFromRight);
+            if (currentVis.Count > 0)
+                currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
+        }
+
+        if (CheckHumanFeetMoving("right") || DemoFlagRight)
+        {
+            DemoFlagRight = false;
+            currentVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+            if (CheckMatch(currentVisFromLeft, currentVisFromRight)) {
+                SameTriReconfigureScale(currentVisFromRight);
+            }
+                
+            currentVis = CombineFeetVisAndAssignPosition(currentVisFromLeft, currentVisFromRight);
+            if (currentVis.Count > 0)
+                currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
+        }
 
         if (CheckHumanRotating())
         {
@@ -123,122 +157,13 @@ public class DelaunayController : MonoBehaviour
             currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
         }
 
-        //if (CheckHumanWaistRotating())
-        //{
-        //    currentVis = RearrangeDisplayBasedOnAngle(currentVis);
-        //    currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
-        //}
+        ////if (CheckHumanWaistRotating())
+        ////{
+        ////    currentVis = RearrangeDisplayBasedOnAngle(currentVis);
+        ////    currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
+        ////}
 
-        if (currentVis != null && currentVis.Count > 0)
-        {
-            float betweenVis = 0.1f;
-            foreach (Transform t in currentVis)
-            {
-                if (currentVis.Count == 1) {
-                    t.GetComponent<Vis>().InAirPosition = Vector3.zero;
-                }
-                else if (currentVis.Count == 2)
-                {
-                    if (currentVis.IndexOf(t) == 0)
-                        t.GetComponent<Vis>().InAirPosition = new Vector3((-t.GetComponent<Vis>().InAirScale.x / 2 - betweenVis) * 10, 0, 0);
-                    else
-                        t.GetComponent<Vis>().InAirPosition = new Vector3((t.GetComponent<Vis>().InAirScale.x / 2 + betweenVis) * 10, 0, 0);
-                }
-                else if (currentVis.Count == 3) {
-                    
-                    Vector3 middleOneScale = currentVis[1].GetComponent<Vis>().InAirScale;
-                    
-                    if (currentVis.IndexOf(t) == 0)
-                        t.GetComponent<Vis>().InAirPosition = new Vector3((-(t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 - betweenVis) * 10, 0, 0);
-                    else if (currentVis.IndexOf(t) == 1)
-                        t.GetComponent<Vis>().InAirPosition = Vector3.zero;
-                    else if (currentVis.IndexOf(t) == 2)
-                        t.GetComponent<Vis>().InAirPosition = new Vector3(((t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 + betweenVis) * 10, 0, 0);
-                }
-
-                currentVisOnDashboard[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
-            }
-        }
-
-        if (currentPinnedOnDashboard != null && currentPinnedOnDashboard.Count > 0)
-        {
-            float betweenVis = 0.1f;
-            foreach (Transform t in currentPinnedOnDashboard.Values)
-            {
-                if (currentPinnedOnDashboard.Count == 1)
-                {
-                    t.GetComponent<Vis>().InAirPosition = Vector3.zero;
-                }
-                else if (currentPinnedOnDashboard.Count == 2)
-                {
-                    if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 0)
-                        t.GetComponent<Vis>().InAirPosition = new Vector3((-t.GetComponent<Vis>().InAirScale.x / 2 - betweenVis) * 10, 0, 0);
-                    else
-                        t.GetComponent<Vis>().InAirPosition = new Vector3((t.GetComponent<Vis>().InAirScale.x / 2 + betweenVis) * 10, 0, 0);
-                }
-                else if (currentPinnedOnDashboard.Count == 3)
-                {
-
-                    Vector3 middleOneScale = currentPinnedOnDashboard.Values.ToList()[1].GetComponent<Vis>().InAirScale;
-
-                    if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 0)
-                        t.GetComponent<Vis>().InAirPosition = new Vector3((-(t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 - betweenVis) * 10, 0, 0);
-                    else if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 1)
-                        t.GetComponent<Vis>().InAirPosition = Vector3.zero;
-                    else if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 2)
-                        t.GetComponent<Vis>().InAirPosition = new Vector3(((t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 + betweenVis) * 10, 0, 0);
-                }
-            }
-        }
-
-        if (Input.GetKeyDown("z")) {
-            if (currentVisOnDashboard.Count > 0) {
-                Transform pinnedVis = currentVisOnDashboard.Values.ToList()[0];
-                GroundToPin(pinnedVis);
-            }
-        }
-        if (Input.GetKeyDown("x"))
-        {
-            if (currentVisOnDashboard.Count > 1)
-            {
-                Transform pinnedVis = currentVisOnDashboard.Values.ToList()[1];
-                GroundToPin(pinnedVis);
-            }
-        }
-        if (Input.GetKeyDown("c"))
-        {
-            if (currentVisOnDashboard.Count > 2)
-            {
-                Transform pinnedVis = currentVisOnDashboard.Values.ToList()[2];
-                GroundToPin(pinnedVis);
-            }
-        }
-
-        if (Input.GetKeyDown("b"))
-        {
-            if (currentPinnedOnDashboard.Count > 0)
-            {
-                Transform pinnedVis = currentPinnedOnDashboard.Values.ToList()[0];
-                PinToGround(pinnedVis);
-            }
-        }
-        if (Input.GetKeyDown("n"))
-        {
-            if (currentPinnedOnDashboard.Count > 1)
-            {
-                Transform pinnedVis = currentPinnedOnDashboard.Values.ToList()[1];
-                PinToGround(pinnedVis);
-            }
-        }
-        if (Input.GetKeyDown("m"))
-        {
-            if (currentPinnedOnDashboard.Count > 2)
-            {
-                Transform pinnedVis = currentPinnedOnDashboard.Values.ToList()[2];
-                PinToGround(pinnedVis);
-            }
-        }
-
+        // transition for positions and scale
         if (currentVisOnDashboard != null && currentVisOnDashboard.Count > 0)
         {
             foreach (Transform vis in currentVisOnDashboard.Values)
@@ -254,43 +179,109 @@ public class DelaunayController : MonoBehaviour
             }
         }
 
-        if (currentPinnedOnDashboard != null && currentPinnedOnDashboard.Count > 0)
-        {
-            foreach (Transform vis in currentPinnedOnDashboard.Values)
-            {
-                if (vis.localPosition != vis.GetComponent<Vis>().InAirPosition)
-                    vis.localPosition = Vector3.Lerp(vis.localPosition, vis.GetComponent<Vis>().InAirPosition, Time.deltaTime * speed);
-            }
+        //// pinned Vis part
+        //if (currentPinnedOnDashboard != null && currentPinnedOnDashboard.Count > 0)
+        //{
+        //    float betweenVis = 0.1f;
+        //    foreach (Transform t in currentPinnedOnDashboard.Values)
+        //    {
+        //        if (currentPinnedOnDashboard.Count == 1)
+        //        {
+        //            t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+        //        }
+        //        else if (currentPinnedOnDashboard.Count == 2)
+        //        {
+        //            if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 0)
+        //                t.GetComponent<Vis>().InAirPosition = new Vector3((-t.GetComponent<Vis>().InAirScale.x / 2 - betweenVis) * 10, 0, 0);
+        //            else
+        //                t.GetComponent<Vis>().InAirPosition = new Vector3((t.GetComponent<Vis>().InAirScale.x / 2 + betweenVis) * 10, 0, 0);
+        //        }
+        //        else if (currentPinnedOnDashboard.Count == 3)
+        //        {
 
-            foreach (Transform vis in currentPinnedOnDashboard.Values)
-            {
-                if (vis.localScale != vis.GetComponent<Vis>().InAirScale)
-                    vis.localScale = Vector3.Lerp(vis.localScale, vis.GetComponent<Vis>().InAirScale, Time.deltaTime * speed);
-            }
-        }
+        //            Vector3 middleOneScale = currentPinnedOnDashboard.Values.ToList()[1].GetComponent<Vis>().InAirScale;
+
+        //            if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 0)
+        //                t.GetComponent<Vis>().InAirPosition = new Vector3((-(t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 - betweenVis) * 10, 0, 0);
+        //            else if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 1)
+        //                t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+        //            else if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 2)
+        //                t.GetComponent<Vis>().InAirPosition = new Vector3(((t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 + betweenVis) * 10, 0, 0);
+        //        }
+        //    }
+        //}
+
+        //if (Input.GetKeyDown("z")) {
+        //    if (currentVisOnDashboard.Count > 0) {
+        //        Transform pinnedVis = currentVisOnDashboard.Values.ToList()[0];
+        //        GroundToPin(pinnedVis);
+        //    }
+        //}
+        //if (Input.GetKeyDown("x"))
+        //{
+        //    if (currentVisOnDashboard.Count > 1)
+        //    {
+        //        Transform pinnedVis = currentVisOnDashboard.Values.ToList()[1];
+        //        GroundToPin(pinnedVis);
+        //    }
+        //}
+        //if (Input.GetKeyDown("c"))
+        //{
+        //    if (currentVisOnDashboard.Count > 2)
+        //    {
+        //        Transform pinnedVis = currentVisOnDashboard.Values.ToList()[2];
+        //        GroundToPin(pinnedVis);
+        //    }
+        //}
+
+        //if (Input.GetKeyDown("b"))
+        //{
+        //    if (currentPinnedOnDashboard.Count > 0)
+        //    {
+        //        Transform pinnedVis = currentPinnedOnDashboard.Values.ToList()[0];
+        //        PinToGround(pinnedVis);
+        //    }
+        //}
+        //if (Input.GetKeyDown("n"))
+        //{
+        //    if (currentPinnedOnDashboard.Count > 1)
+        //    {
+        //        Transform pinnedVis = currentPinnedOnDashboard.Values.ToList()[1];
+        //        PinToGround(pinnedVis);
+        //    }
+        //}
+        //if (Input.GetKeyDown("m"))
+        //{
+        //    if (currentPinnedOnDashboard.Count > 2)
+        //    {
+        //        Transform pinnedVis = currentPinnedOnDashboard.Values.ToList()[2];
+        //        PinToGround(pinnedVis);
+        //    }
+        //}
+
+        //if (currentPinnedOnDashboard != null && currentPinnedOnDashboard.Count > 0)
+        //{
+        //    foreach (Transform vis in currentPinnedOnDashboard.Values)
+        //    {
+        //        if (vis.localPosition != vis.GetComponent<Vis>().InAirPosition)
+        //            vis.localPosition = Vector3.Lerp(vis.localPosition, vis.GetComponent<Vis>().InAirPosition, Time.deltaTime * speed);
+        //    }
+
+        //    foreach (Transform vis in currentPinnedOnDashboard.Values)
+        //    {
+        //        if (vis.localScale != vis.GetComponent<Vis>().InAirScale)
+        //            vis.localScale = Vector3.Lerp(vis.localScale, vis.GetComponent<Vis>().InAirScale, Time.deltaTime * speed);
+        //    }
+        //}
 
     }
 
+    // combine two feet vis from SetUpDashBoardScale and assign position
+    private List<Transform> CombineFeetVisAndAssignPosition(List<Transform> leftVis, List<Transform> rightVis) {
 
-    // Tracking both feet to determine what to display, can return more than 3 vis
-    private List<Transform> SetUpDashBoardScale(Transform leftFoot, Transform rightFoot)
-    {
-        Dictionary<string, Transform> leftFootInMarkers = CheckFootInTriangles(leftFoot);
-        Dictionary<string, Transform> rightFootInMarkers = CheckFootInTriangles(rightFoot);
-
-        List<Transform> showOnDashboard = new List<Transform>();
-
-        if (leftFootInMarkers.Count > 0) {
-            foreach (Transform t in CheckDistanceToEdge(leftFootInMarkers.Values.ToList()))
-                showOnDashboard.Add(t);
-        }
-        if (rightFootInMarkers.Count > 0) {
-            foreach (Transform t in CheckDistanceToEdge(rightFootInMarkers.Values.ToList()))
-                showOnDashboard.Add(t);
-        }
-        if(leftFootInMarkers.Count == 0 && rightFootInMarkers.Count == 0)
+        if (leftVis.Count == 0 && rightVis.Count == 0)
         {
-            // delete old vis
+            // remove old vis
             foreach (Transform t in currentVisOnDashboard.Values.ToList())
             {
                 if (hullConstraintParent.Find(t.name) != null)
@@ -299,11 +290,198 @@ public class DelaunayController : MonoBehaviour
                     Destroy(currentVisOnDashboard[t.name].gameObject);
                     currentVisOnDashboard.Remove(t.name);
                 }
-
             }
-            return null;
+            return new List<Transform>();
         }
+        else if (leftVis.Count == 0)
+        {
+            DashBoard.GetComponent<DashBoard>().ForwardParameter = 4;
+            if (currentVisOnDashboard.Count > 0) {
+                // remove old vis
+                List<string> visNameFromRight = new List<string>();
+                foreach (Transform t in rightVis)
+                    visNameFromRight.Add(t.name);
 
+
+                foreach (string s in currentVisOnDashboard.Keys.ToList())
+                {
+                    if (!visNameFromRight.Contains(s))
+                    {
+                        hullConstraintParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
+                        Destroy(currentVisOnDashboard[s].gameObject);
+                        currentVisOnDashboard.Remove(s);
+                    }
+                }
+            }
+
+            SetUpDashBoardPosition(rightVis, 0);
+
+            return rightVis;
+        }
+        else if (rightVis.Count == 0)
+        {
+            DashBoard.GetComponent<DashBoard>().ForwardParameter = 4;
+            if (currentVisOnDashboard.Count > 0)
+            {
+                // remove old vis
+                List<string> visNameFromLeft = new List<string>();
+                foreach (Transform t in leftVis)
+                    visNameFromLeft.Add(t.name);
+
+
+                foreach (string s in currentVisOnDashboard.Keys.ToList())
+                {
+                    if (!visNameFromLeft.Contains(s))
+                    {
+                        hullConstraintParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
+                        Destroy(currentVisOnDashboard[s].gameObject);
+                        currentVisOnDashboard.Remove(s);
+                    }
+                }
+            }
+
+
+            SetUpDashBoardPosition(leftVis, 0);
+
+            return leftVis;
+        }
+        else {
+            // setup dashboard forward para to make sure 4-6 vis on dashboard
+            DashBoard.GetComponent<DashBoard>().ForwardParameter = 8;
+            // final return list contains ground vis
+            List<Transform> wholeListofVis = new List<Transform>();
+            // list of vis after join
+            List<Transform> jointListofVis = new List<Transform>();
+            List<Transform> restLeftVis = new List<Transform>();
+            List<Transform> restRightVis = new List<Transform>();
+
+            float sumOfMiddleVisScaleX = 0;
+            float sumOfLeftVisScaleX = 0;
+            float sumOfRightVisScaleX = 0;
+
+            foreach (Transform t in leftVis) {
+                if (!rightVis.Contains(t))
+                {
+                    restLeftVis.Add(t);
+                    sumOfLeftVisScaleX += t.GetComponent<Vis>().InAirScale.x + betweenVisDelta;
+                    wholeListofVis.Add(t);
+                }
+                else {
+                    jointListofVis.Add(t);
+                    sumOfMiddleVisScaleX += t.GetComponent<Vis>().InAirScale.x + betweenVisDelta;
+                    wholeListofVis.Add(t);
+                }
+            }
+
+            foreach (Transform t in rightVis)
+            {
+                if (!leftVis.Contains(t)) {
+                    restRightVis.Add(t);
+                    sumOfRightVisScaleX += t.GetComponent<Vis>().InAirScale.x + betweenVisDelta;
+                    wholeListofVis.Add(t);
+                }
+            }
+
+            //if (sumOfMiddleVisScaleX != 0)
+            //    sumOfMiddleVisScaleX -= betweenVisDelta;
+            //if (sumOfLeftVisScaleX != 0)
+            //    sumOfLeftVisScaleX -= betweenVisDelta;
+            //if (sumOfRightVisScaleX != 0)
+            //    sumOfRightVisScaleX -= betweenVisDelta;
+
+            if (restLeftVis.Count == 0 && restRightVis.Count == 0)
+                DashBoard.GetComponent<DashBoard>().ForwardParameter = 4;
+
+            if (currentVisOnDashboard.Count > 0)
+            {
+                // remove old vis
+                List<string> visName = new List<string>();
+                foreach (Transform t in wholeListofVis)
+                    visName.Add(t.name);
+
+
+                foreach (string s in currentVisOnDashboard.Keys.ToList())
+                {
+                    if (!visName.Contains(s))
+                    {
+                        hullConstraintParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
+                        Destroy(currentVisOnDashboard[s].gameObject);
+                        currentVisOnDashboard.Remove(s);
+                    }
+                }
+            }
+
+            // assign positions to joint vis
+            jointListofVis = RearrangeDisplayBasedOnAngle(jointListofVis);
+
+            SetUpDashBoardPosition(jointListofVis, 0);
+
+            // assign positions to left & right vis
+            SetUpDashBoardPosition(restLeftVis, - (((sumOfLeftVisScaleX + sumOfMiddleVisScaleX) / 2 + betweenVisDelta) * 10));
+            SetUpDashBoardPosition(restRightVis, (((sumOfRightVisScaleX + sumOfMiddleVisScaleX) / 2 + betweenVisDelta) * 10));
+
+            return wholeListofVis;
+        }
+    }
+
+    private void SetUpDashBoardPosition(List<Transform> vis, float deltaX) {
+        foreach (Transform t in vis)
+        {
+            if (vis.Count == 1)
+            {
+                t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+            }
+            else if (vis.Count == 2)
+            {
+                if (vis.IndexOf(t) == 0)
+                    t.GetComponent<Vis>().InAirPosition = new Vector3((-t.GetComponent<Vis>().InAirScale.x / 2 - betweenVisDelta) * 10, 0, 0);
+                else
+                    t.GetComponent<Vis>().InAirPosition = new Vector3((t.GetComponent<Vis>().InAirScale.x / 2 + betweenVisDelta) * 10, 0, 0);
+            }
+            else if (vis.Count == 3)
+            {
+
+                Vector3 middleOneScale = vis[1].GetComponent<Vis>().InAirScale;
+
+                if (vis.IndexOf(t) == 0)
+                    t.GetComponent<Vis>().InAirPosition = new Vector3((-(t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 - betweenVisDelta) * 10, 0, 0);
+                else if (vis.IndexOf(t) == 1)
+                    t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+                else if (vis.IndexOf(t) == 2)
+                    t.GetComponent<Vis>().InAirPosition = new Vector3(((t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 + betweenVisDelta) * 10, 0, 0);
+            }
+
+            
+            t.GetComponent<Vis>().InAirPosition = new Vector3(t.GetComponent<Vis>().InAirPosition.x + deltaX, 0, 0);
+            if (currentVisOnDashboard.ContainsKey(t.name))
+                currentVisOnDashboard[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
+        }
+    }
+
+
+    private void SameTriReconfigureScale(List<Transform> vis) {
+        GameObject go = new GameObject();
+        go.transform.position = (LeftFoot.position + RightFoot.position) / 2;
+
+        vis = SetUpDashBoardScale(go.transform);
+
+        GameObject.Destroy(go);
+    }
+
+
+    // Tracking one foot to determine what to display, can return no more than 3 vis
+    private List<Transform> SetUpDashBoardScale(Transform foot)
+    {
+        Dictionary<string, Transform> FootInMarkers = CheckFootInTriangles(foot);
+
+        List<Transform> showOnDashboard = new List<Transform>();
+
+
+        if (FootInMarkers.Count > 0)
+        {
+            foreach (Transform t in CheckDistanceToEdge(foot, FootInMarkers.Values.ToList()))
+                showOnDashboard.Add(t);
+        }
 
         if (showOnDashboard.Count > 0)
         {
@@ -315,36 +493,34 @@ public class DelaunayController : MonoBehaviour
 
             CheckSameVisOnDashboard(newVisDict, currentVisOnDashboard);
 
-
             if (showOnDashboard.Count > 1)
             {
-                // TODO
-                //if (showOnDashboard.Count == 3)
-                //{
-                //    List<float> calculatedRatio = new List<float>();
-                //    for (int i = 0; i < 3; i++)
-                //    {
-                //        int s = (i - 1 < 0) ? 2 : i - 1;
-                //        int t = (i + 1 > 2) ? 0 : i + 1;
+                if (showOnDashboard.Count == 3)
+                {
+                    List<float> calculatedRatio = new List<float>();
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int s = (i - 1 < 0) ? 2 : i - 1;
+                        int t = (i + 1 > 2) ? 0 : i + 1;
 
-                //        calculatedRatio.Add((1 / CalculateProportionalScale(showOnDashboard[i],
-                //            showOnDashboard[s], showOnDashboard[t])));
-                //    }
+                        calculatedRatio.Add((1 / CalculateProportionalScale(foot, showOnDashboard[i],
+                            showOnDashboard[s], showOnDashboard[t])));
+                    }
 
-                //    for (int i = 0; i < 3; i++)
-                //        showOnDashboard[i].GetComponent<Vis>().InAirScale =
-                //            (calculatedRatio[i] / calculatedRatio.Sum()) * Vector3.one;
-                //}
-                //else
-                //{
-                //    List<float> VisDistanceToHuman = new List<float>();
-                //    foreach (Transform t in showOnDashboard)
-                //        VisDistanceToHuman.Add((1 / Vector3.Distance(t.position, Human.position)));
+                    for (int i = 0; i < 3; i++)
+                        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+                            (calculatedRatio[i] / calculatedRatio.Sum()) * Vector3.one;
+                }
+                else // show 2 vis
+                {
+                    List<float> VisDistanceToFoot = new List<float>();
+                    foreach (Transform t in showOnDashboard)
+                        VisDistanceToFoot.Add((1 / Vector3.Distance(t.position, foot.position)));
 
-                //    for (int i = 0; i < 2; i++)
-                //        showOnDashboard[i].GetComponent<Vis>().InAirScale =
-                //            (VisDistanceToHuman[i] / VisDistanceToHuman.Sum()) * Vector3.one;
-                //}
+                    for (int i = 0; i < 2; i++)
+                        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+                            (VisDistanceToFoot[i] / VisDistanceToFoot.Sum()) * Vector3.one;
+                }
             }
             else// show 1 vis
                 showOnDashboard[0].GetComponent<Vis>().InAirScale = Vector3.one;
@@ -353,9 +529,8 @@ public class DelaunayController : MonoBehaviour
             return showOnDashboard;
         }
         else
-            return null;
+            return new List<Transform>();
     }
-
 
     // Calculate In Air Scale
     private List<Transform> SetUpDashBoardScale() {
@@ -471,20 +646,29 @@ public class DelaunayController : MonoBehaviour
                 }
             }
 
-            // delete old vis
-            foreach (Transform t in currentVisOnDashboard.Values.ToList())
-            {
-                if (!newVis.Keys.Contains(t.name))
-                {
-                    if (hullConstraintParent.Find(t.name) != null)
-                    {
-                        hullConstraintParent.Find(t.name).GetComponent<Vis>().OnDashBoard = false;
-                        Destroy(currentVisOnDashboard[t.name].gameObject);
-                        currentVisOnDashboard.Remove(t.name);
-                    }
-                }
-            }
+            //// delete old vis
+            //foreach (Transform t in currentVisOnDashboard.Values.ToList())
+            //{
+            //    if (!newVis.Keys.Contains(t.name))
+            //    {
+            //        if (hullConstraintParent.Find(t.name) != null)
+            //        {
+            //            hullConstraintParent.Find(t.name).GetComponent<Vis>().OnDashBoard = false;
+            //            Destroy(currentVisOnDashboard[t.name].gameObject);
+            //            currentVisOnDashboard.Remove(t.name);
+            //        }
+            //    }
+            //}
         }
+    }
+
+    private float CalculateProportionalScale(Transform foot, Transform targetVis, Transform prevVis, Transform nextVis)
+    {
+        float footToTarget = Vector3.Distance(foot.position, targetVis.position);
+        float leftEdgeLength = Vector3.Distance(targetVis.position, prevVis.position);
+        float rightEdgeLength = Vector3.Distance(targetVis.position, nextVis.position);
+
+        return 2 * footToTarget / (leftEdgeLength + rightEdgeLength);
     }
 
     private float CalculateProportionalScale(Transform targetVis, Transform prevVis, Transform nextVis) {
@@ -495,6 +679,7 @@ public class DelaunayController : MonoBehaviour
         return 2 * humanToTarget / (leftEdgeLength + rightEdgeLength);
     }
 
+    // TODO: change human to waist
     private List<Transform> RearrangeDisplayBasedOnAngle(List<Transform> markers)
     {
         List<Transform> finalList = new List<Transform>();
@@ -512,8 +697,10 @@ public class DelaunayController : MonoBehaviour
 
     private Dictionary<string, Transform> RearrangeVisOnDashBoard(List<Transform> newOrderedList, Dictionary<string, Transform> oldDict) {
         Dictionary<string, Transform> orderedDict = new Dictionary<string, Transform>();
+
         foreach (Transform t in newOrderedList) {
-            orderedDict.Add(t.name, oldDict[t.name]);
+            if(oldDict.ContainsKey(t.name))
+                orderedDict.Add(t.name, oldDict[t.name]);
         }
 
         return orderedDict;
@@ -522,6 +709,31 @@ public class DelaunayController : MonoBehaviour
     // true if in the middle of triangle and show 3 vis, false if near edge and show 2 vis
     private List<Transform> CheckDistanceToEdge(List<Transform> markers) {
         Vector3 Human2DPosition = new Vector3(Human.position.x, 0, Human.position.z);
+        float dis1 = DistancePointLine(Human2DPosition, markers[0].position, markers[1].position);
+        float dis2 = DistancePointLine(Human2DPosition, markers[1].position, markers[2].position);
+        float dis3 = DistancePointLine(Human2DPosition, markers[0].position, markers[2].position);
+
+        if (dis1 >= Show3VisDelta && dis2 >= Show3VisDelta && dis3 >= Show3VisDelta)
+            return markers;
+        else if (dis1 >= Show3VisDelta && dis2 >= Show3VisDelta)
+            return new List<Transform>() { markers[0], markers[2] };
+        else if (dis1 >= Show3VisDelta && dis3 >= Show3VisDelta)
+            return new List<Transform>() { markers[1], markers[2] };
+        else if (dis2 >= Show3VisDelta && dis3 >= Show3VisDelta)
+            return new List<Transform>() { markers[0], markers[1] };
+        else if (dis1 >= Show3VisDelta)
+            return new List<Transform>() { markers[2] };
+        else if (dis2 >= Show3VisDelta)
+            return new List<Transform>() { markers[0] };
+        else if (dis3 >= Show3VisDelta)
+            return new List<Transform>() { markers[1] };
+        else
+            return null;
+    }
+
+    private List<Transform> CheckDistanceToEdge(Transform foot, List<Transform> markers)
+    {
+        Vector3 Human2DPosition = new Vector3(foot.position.x, 0, foot.position.z);
         float dis1 = DistancePointLine(Human2DPosition, markers[0].position, markers[1].position);
         float dis2 = DistancePointLine(Human2DPosition, markers[1].position, markers[2].position);
         float dis3 = DistancePointLine(Human2DPosition, markers[0].position, markers[2].position);
@@ -612,14 +824,14 @@ public class DelaunayController : MonoBehaviour
         return true;
     }
 
-    // BODY-TRACKING: check if waist is rotating
-    private bool CheckHumanWaistRotating() {
-        Vector3 currentWaistRotation = filteredWaistRotation;
-        if (currentWaistRotation == previousHumanWaistRotation)
-            return false;
-        previousHumanWaistRotation = currentWaistRotation;
-        return true;
-    }
+    ////// BODY-TRACKING: check if waist is rotating
+    ////private bool CheckHumanWaistRotating() {
+    ////    Vector3 currentWaistRotation = filteredWaistRotation;
+    ////    if (currentWaistRotation == previousHumanWaistRotation)
+    ////        return false;
+    ////    previousHumanWaistRotation = currentWaistRotation;
+    ////    return true;
+    ////}
 
     // check if headset is moving
     private bool CheckHumanMoving()
@@ -632,19 +844,21 @@ public class DelaunayController : MonoBehaviour
         return true;
     }
 
-    // BODY-TRACKING: check if feet is moving
-    private bool CheckHumanFeetMoving() {
-        Vector3 currentLeftPosition = filteredLeftFootPosition;
-        //Vector3 currentPosition = Human.position;
-        if (currentLeftPosition == previousLeftFootPosition)
-            return false;
-        previousLeftFootPosition = currentLeftPosition;
+    // BODY-TRACKING: check if any foot is moving
+    private bool CheckHumanFeetMoving(string foot) {
+        if (foot == "left") {
+            Vector3 currentLeftPosition = filteredLeftFootPosition;
+            if (currentLeftPosition == previousLeftFootPosition)
+                return false;
+            previousLeftFootPosition = currentLeftPosition;
+        }
 
-        Vector3 currentRightPosition = filteredRightFootPosition;
-        //Vector3 currentPosition = Human.position;
-        if (currentRightPosition == previousRightFootPosition)
-            return false;
-        previousRightFootPosition = currentRightPosition;
+        if (foot == "right") {
+            Vector3 currentRightPosition = filteredRightFootPosition;
+            if (currentRightPosition == previousRightFootPosition)
+                return false;
+            previousRightFootPosition = currentRightPosition;
+        }
 
         return true;
     }
@@ -957,5 +1171,43 @@ public class DelaunayController : MonoBehaviour
         dot = Mathf.Clamp(dot, 0.0F, length);
 
         return lineStart + normalizedLineDirection * dot;
+    }
+
+    private bool CheckMatch(List<Transform> LeftVis, List<Transform> RightVis)
+    {
+        if (LeftVis.Count != RightVis.Count)
+            return false;
+        List<string> restLeftVisNames = new List<string>();
+        List<string> restRightVisNames = new List<string>();
+
+        List<string> LeftVisNames = new List<string>();
+        List<string> RightVisNames = new List<string>();
+
+        foreach (Transform t in LeftVis)
+        {
+            LeftVisNames.Add(t.name);
+        }
+
+        foreach (Transform t in RightVis)
+        {
+            RightVisNames.Add(t.name);
+        }
+
+        foreach (string s in LeftVisNames)
+        {
+            if (!RightVisNames.Contains(s))
+                restLeftVisNames.Add(s);
+        }
+
+        foreach (string s in RightVisNames)
+        {
+            if (!LeftVisNames.Contains(s))
+                restRightVisNames.Add(s);
+        }
+
+        if (restLeftVisNames.Count == 0 && restRightVisNames.Count == 0)
+            return true;
+        else
+            return false;
     }
 }
