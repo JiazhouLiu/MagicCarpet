@@ -7,6 +7,7 @@ using UnityEditor;
 public class DelaunayController : MonoBehaviour
 {
     public GameObject linePrefab;
+    public GameObject colorFillPrefab;
     public Transform EdgeParent;
     public Transform Human;
     ////public Transform HumanWaist;
@@ -796,12 +797,14 @@ public class DelaunayController : MonoBehaviour
             Vector3 c = face.edge.prevEdge.v.position.ToVector3();
             if (PointInTriangle(foot.position, a, b, c))
             {
+                
                 foreach (Transform t in hullConstraintParent)
                 {
-                    if (Vector3.Distance(t.position, a) < 0.1f ||
-                        Vector3.Distance(t.position, b) < 0.1f ||
-                        Vector3.Distance(t.position, c) < 0.1f)
+                    if (Vector3.Distance(t.position, a) < 0.11f ||
+                        Vector3.Distance(t.position, b) < 0.11f ||
+                        Vector3.Distance(t.position, c) < 0.11f)
                     {
+                        
                         if (!ValidMarkers.ContainsKey(t.name))
                             ValidMarkers.Add(t.name, t);
                     }
@@ -1085,30 +1088,105 @@ public class DelaunayController : MonoBehaviour
 
         triangulatedMesh = _TransformBetweenDataStructures.Triangle3ToCompressedMesh(triangles_3d);
 
-        if(ShowEdge)
-            DisplayTriangleEdges();
+        if (Application.isPlaying) {
+            if (ShowEdge)
+                DisplayTriangleEdges();
 
+            if (triangulatedMesh != null && ShowColor)
+            {
+                DisplayMeshWithRandomColors(triangulatedMesh, seed);
+            }
+        }
         //currentVis = SetUpDashBoardScale();
     }
-    
 
-    private void OnDrawGizmos()
+
+    //private void OnDrawGizmos()
+    //{
+    //    if (triangulatedMesh != null && ShowColor)
+    //    {
+    //        TestAlgorithmsHelpMethods.DisplayMeshWithRandomColors(triangulatedMesh, seed);
+    //    }
+
+
+    //    ////Display the obstacles
+    //    //if (constraints != null)
+    //    //{
+    //    //    //DebugResults.DisplayConnectedPoints(obstacle, Color.black);
+    //    //}
+
+
+    //    //////Display drag constraints
+    //    //DisplayDragConstraints();
+    //}
+
+    //Random color
+    //Seed is determining the random color
+    public void DisplayMeshWithRandomColors(Mesh mesh, int seed)
     {
-        if (triangulatedMesh != null && ShowColor)
+        DisplayMesh(mesh, true, seed, Color.black);
+    }
+
+    //Display some mesh where each triangle could have a random color
+    private void DisplayMesh(Mesh mesh, bool useRandomColor, int seed, Color meshColor)
+    {
+        if (mesh == null)
         {
-            TestAlgorithmsHelpMethods.DisplayMeshWithRandomColors(triangulatedMesh, seed);
+            Debug.Log("Cant display the mesh because there's no mesh!");
+
+            return;
         }
 
+        //Display the entire mesh with a single color
+        if (!useRandomColor)
+        {
+            Gizmos.color = meshColor;
 
-        ////Display the obstacles
-        //if (constraints != null)
-        //{
-        //    //DebugResults.DisplayConnectedPoints(obstacle, Color.black);
-        //}
+            mesh.RecalculateNormals();
+
+            Gizmos.DrawMesh(mesh);
+        }
+        //Display the individual triangles with a random color
+        else
+        {
+            int[] meshTriangles = mesh.triangles;
+
+            Vector3[] meshVertices = mesh.vertices;
+
+            Random.InitState(seed);
+
+            for (int i = 0; i < meshTriangles.Length; i += 3)
+            {
+                //Make a single mesh triangle
+                Vector3 p1 = meshVertices[meshTriangles[i + 0]];
+                Vector3 p2 = meshVertices[meshTriangles[i + 1]];
+                Vector3 p3 = meshVertices[meshTriangles[i + 2]];
+
+                Mesh triangleMesh = new Mesh();
+
+                triangleMesh.vertices = new Vector3[] { p1, p2, p3 };
+
+                triangleMesh.triangles = new int[] { 0, 1, 2 };
+
+                triangleMesh.RecalculateNormals();
 
 
-        //////Display drag constraints
-        //DisplayDragConstraints();
+                ////Color the triangle
+                Color newColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 0.2f);
+                //Gizmos.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 0.5f);
+
+                ////float grayScale = Random.Range(0f, 1f);
+
+                ////Gizmos.color = new Color(grayScale, grayScale, grayScale, 1f);
+
+
+                ////Display it
+                GameObject go = Instantiate(colorFillPrefab, EdgeParent);
+                go.GetComponent<MeshFilter>().mesh = triangleMesh;
+                go.GetComponent<MeshRenderer>().material.color = newColor;
+                //Gizmos.DrawMesh(triangleMesh);
+            }
+        }
     }
 
 
