@@ -118,10 +118,10 @@ public class DataManager3DMap : MonoBehaviour
                 Housing h = mark.GetComponent<Housing>();
 
                 mark.transform.localPosition = Vector3.Lerp(mark.transform.localPosition,
-                                        new Vector3(h.XPosition, h.YPosition, h.ZPosition), Time.deltaTime * speed);
+                                        new Vector3(h.GroundXPosition, h.GroundYPosition, h.GroundZPosition), Time.deltaTime * speed);
 
                 if (Vector3.Distance(mark.transform.localPosition,
-                        new Vector3(h.XPosition, h.YPosition, h.ZPosition)) > 0.01f)
+                        new Vector3(h.GroundXPosition, h.GroundYPosition, h.GroundZPosition)) > 0.01f)
                 {
                     allMoved = false;
                 }
@@ -208,9 +208,9 @@ public class DataManager3DMap : MonoBehaviour
             if (h.Show)
             {
                 // setup position channel
-                h.XPosition = (float)(h.Bedroom - minBed) / (maxBed - minBed);
-                h.YPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
-                h.ZPosition = (float)(h.Bathroom - minBath) / (maxBath - minBath);
+                h.GroundXPosition = (float)(h.Bedroom - minBed) / (maxBed - minBed);
+                h.GroundYPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
+                h.GroundZPosition = (float)(h.Bathroom - minBath) / (maxBath - minBath);
 
                 //Color newCol = Color.black;
                 //switch (h.Type)
@@ -246,9 +246,9 @@ public class DataManager3DMap : MonoBehaviour
             else
             {
                 // setup position channel
-                h.XPosition = MapGroundPositions[i].x;
-                h.YPosition = MapGroundPositions[i].y;
-                h.ZPosition = MapGroundPositions[i].z;
+                h.GroundXPosition = MapGroundPositions[i].x;
+                h.GroundYPosition = MapGroundPositions[i].y;
+                h.GroundZPosition = MapGroundPositions[i].z;
 
                 Color newCol = Color.black;
                 switch (h.RegionName)

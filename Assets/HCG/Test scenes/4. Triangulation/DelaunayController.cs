@@ -212,12 +212,15 @@ public class DelaunayController : MonoBehaviour
         //    }
         //}
 
-        //if (Input.GetKeyDown("z")) {
-        //    if (currentVisOnDashboard.Count > 0) {
-        //        Transform pinnedVis = currentVisOnDashboard.Values.ToList()[0];
-        //        GroundToPin(pinnedVis);
-        //    }
-        //}
+        if (Input.GetKeyDown("z"))
+        {
+            if (currentVisOnDashboard.Count > 0)
+            {
+                Transform pinnedVis = currentVisOnDashboard.Values.ToList()[0];
+                GroundToPin(pinnedVis);
+                currentVis.Remove(pinnedVis);
+            }
+        }
         //if (Input.GetKeyDown("x"))
         //{
         //    if (currentVisOnDashboard.Count > 1)
@@ -332,7 +335,7 @@ public class DelaunayController : MonoBehaviour
 
                 foreach (string s in currentVisOnDashboard.Keys.ToList())
                 {
-                    if (!visNameFromLeft.Contains(s))
+                    if (!visNameFromLeft.Contains(s) && hullConstraintParent.Find(s) != null)
                     {
                         hullConstraintParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
                         Destroy(currentVisOnDashboard[s].gameObject);

@@ -19,7 +19,7 @@ public class DashBoard : MonoBehaviour
             Camera = dc.Human;
         if (Camera != null) {
             // configure dashboard position (TODO: fix slope bug [head up and vis comes closer])
-            transform.position = Vector3.Lerp(transform.position, Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter), Time.deltaTime) ;
+            transform.position = Vector3.Lerp(transform.position, Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter), Time.deltaTime * dc.speed) ;
             //transform.position = Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter);
             transform.position = new Vector3(transform.position.x, AdjustedHeight, transform.position.z);
 

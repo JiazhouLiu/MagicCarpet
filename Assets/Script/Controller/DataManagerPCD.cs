@@ -90,10 +90,10 @@ public class DataManagerPCD : MonoBehaviour
                 Housing h = mark.GetComponent<Housing>();
 
                 mark.transform.localPosition = Vector3.Lerp(mark.transform.localPosition,
-                                        new Vector3(h.XPosition, h.YPosition, h.ZPosition), Time.deltaTime * speed);
+                                        new Vector3(h.GroundXPosition, h.GroundYPosition, h.GroundZPosition), Time.deltaTime * speed);
 
                 if (Vector3.Distance(mark.transform.localPosition,
-                        new Vector3(h.XPosition, h.YPosition, h.ZPosition)) > 0.01f)
+                        new Vector3(h.GroundXPosition, h.GroundYPosition, h.GroundZPosition)) > 0.01f)
                     allMoved = false;
 
             }
@@ -212,9 +212,9 @@ public class DataManagerPCD : MonoBehaviour
 
             mark.SetActive(true);
             // setup position channel
-            h.XPosition = (float)(h.Bedroom - minBed) / (maxBed - minBed);
-            h.YPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
-            h.ZPosition = (float)(h.Bathroom - minBath) / (maxBath - minBath);
+            h.GroundXPosition = (float)(h.Bedroom - minBed) / (maxBed - minBed);
+            h.GroundYPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
+            h.GroundZPosition = (float)(h.Bathroom - minBath) / (maxBath - minBath);
 
             int facetDelta = ((maxYear - minYear) / smallMultiplesNumber) + 1;
             // setup small multiples
@@ -283,9 +283,9 @@ public class DataManagerPCD : MonoBehaviour
 
             mark.SetActive(true);
             // setup position channel
-            h.XPosition = (float)(h.Car - minCar) / (maxCar - minCar);
-            h.YPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
-            h.ZPosition = (float)(h.Landsize - minLandSize) / (maxLandSize - minLandSize);
+            h.GroundXPosition = (float)(h.Car - minCar) / (maxCar - minCar);
+            h.GroundYPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
+            h.GroundZPosition = (float)(h.Landsize - minLandSize) / (maxLandSize - minLandSize);
 
             int facetDelta = ((maxYear - minYear) / smallMultiplesNumber) + 1;
             // setup small multiples

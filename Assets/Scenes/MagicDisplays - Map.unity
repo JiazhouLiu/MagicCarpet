@@ -282,7 +282,7 @@ MonoBehaviour:
   Show3VisDelta: 0.5
   speed: 3
   filterFrequency: 120
-  betweenVisDelta: 0.05
+  betweenVisDelta: 0.08
 --- !u!4 &126790191
 Transform:
   m_ObjectHideFlags: 0

@@ -21,7 +21,11 @@ public class Housing : MonoBehaviour
     public float ShowLatitude;
     public float ShowLongtitude;
     public string ShowRegionName;
+    public Vector3 ShowGroundPosition;
+    public Vector3 ShowAirPosition;
     public bool Show = true;
+    public bool ShowAir = false;
+    public bool ShowGround = false;
 
     public int ID { get; set; }
     public string Suburb { get; set; }
@@ -41,11 +45,44 @@ public class Housing : MonoBehaviour
     public string RegionName { get; set; }
 
     public Color MarkColor { get; set; }
-    public float XPosition { get; set; }
-    public float YPosition { get; set; }
-    public float ZPosition { get; set; }
+    public float InAirXPosition { get; set; }
+    public float InAirYPosition { get; set; }
+    public float InAirZPosition { get; set; }
+
+    public float GroundXPosition { get; set; }
+    public float GroundYPosition { get; set; }
+    public float GroundZPosition { get; set; }
+
+    public bool Air { get; set; }
+    public bool Ground { get; set; }
 
     public Housing() { }
+
+    private void Update()
+    {
+
+        ShowID = ID;
+        ShowSuburb = Suburb;
+        ShowType = Type;
+        ShowPrice = Price;
+        ShowResult = Result;
+        ShowSeller = Seller;
+        ShowDate = Date.ToString();
+        ShowBedroom = Bedroom;
+        ShowBathroom = Bathroom;
+        ShowCar = Car;
+        ShowLandsize = Landsize;
+        ShowYearBuilt = YearBuilt;
+        ShowCouncilArea = CouncilArea;
+        ShowLatitude = Latitude;
+        ShowLongtitude = Longtitude;
+        ShowRegionName = RegionName;
+        ShowGroundPosition = new Vector3(GroundXPosition, GroundYPosition, GroundZPosition);
+        ShowAirPosition = new Vector3(InAirXPosition, InAirYPosition, InAirZPosition);
+
+        ShowAir = Air;
+        ShowGround = Ground;
+    }
 
     public Housing(int id, string suburb, string type, int price, string result, string seller, DateTime date,
         int bed, int bath, int car, int landsize, int yearbuilt, string councilArea, float lat, float longt, string region)
@@ -68,9 +105,15 @@ public class Housing : MonoBehaviour
         RegionName = region;
 
         MarkColor = Color.white;
-        XPosition = 0;
-        YPosition = 0;
-        ZPosition = 0;
+        InAirXPosition = 0;
+        InAirYPosition = 0;
+        InAirZPosition = 0;
+        GroundXPosition = 0;
+        GroundYPosition = 0;
+        GroundZPosition = 0;
+
+        Air = false;
+        Ground = false;
     }
 
     public void CopyEntity(Housing h)
@@ -92,25 +135,13 @@ public class Housing : MonoBehaviour
         Longtitude = h.Longtitude;
         RegionName = h.RegionName;
         MarkColor = h.MarkColor;
-        XPosition = h.XPosition;
-        YPosition = h.YPosition;
-        ZPosition = h.ZPosition;
-
-        ShowID = ID;
-        ShowSuburb = Suburb;
-        ShowType = Type;
-        ShowPrice = Price;
-        ShowResult = Result;
-        ShowSeller = Seller;
-        ShowDate = Date.ToString();
-        ShowBedroom = Bedroom;
-        ShowBathroom = Bathroom;
-        ShowCar = Car;
-        ShowLandsize = Landsize;
-        ShowYearBuilt = YearBuilt;
-        ShowCouncilArea = CouncilArea;
-        ShowLatitude = Latitude;
-        ShowLongtitude = Longtitude;
-        ShowRegionName = RegionName;
+        InAirXPosition = h.InAirXPosition;
+        InAirYPosition = h.InAirYPosition;
+        InAirZPosition = h.InAirZPosition;
+        GroundXPosition = h.GroundXPosition;
+        GroundYPosition = h.GroundYPosition;
+        GroundZPosition = h.GroundZPosition;
+        Air = h.Air;
+        Ground = h.Ground;
     }
 }
