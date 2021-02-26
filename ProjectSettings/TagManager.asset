@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - View
+  - projectile
+  - FxTemporaire
+  - TeleportIgnore
+  - ExcludeTeleport
+  - Cockpit
   layers:
   - Default
   - TransparentFX

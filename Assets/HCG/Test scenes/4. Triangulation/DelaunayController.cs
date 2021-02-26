@@ -59,9 +59,9 @@ public class DelaunayController : MonoBehaviour
 
     private List<Transform> currentEdges;
 
-    private List<Transform> currentVis;
-    private Dictionary<string, Transform> currentVisOnDashboard;
-    private Dictionary<string, Transform> currentPinnedOnDashboard;
+    public List<Transform> currentVis;
+    public Dictionary<string, Transform> currentVisOnDashboard;
+    public Dictionary<string, Transform> currentPinnedOnDashboard;
 
     private List<Transform> currentVisFromLeft;
     private List<Transform> currentVisFromRight;
@@ -130,6 +130,14 @@ public class DelaunayController : MonoBehaviour
         if (CheckHumanFeetMoving("left") || DemoFlagLeft) {
             DemoFlagLeft = false;
             currentVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+            //currentVisFromRight.ForEach(print);
+
+            foreach (Transform t in currentVisFromRight.ToList())
+            {
+                if (t == null)
+                    currentVisFromRight.Remove(t);
+            }
+
             if (CheckMatch(currentVisFromLeft, currentVisFromRight)) {
                 SameTriReconfigureScale(currentVisFromLeft);
             }
@@ -408,6 +416,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visName.Contains(s))
                     {
+                        print(s);
                         hullConstraintParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
@@ -613,17 +622,7 @@ public class DelaunayController : MonoBehaviour
         if (oldVis.Count == 0) {
             foreach (Transform t in newVis.Values.ToList())
             {
-                t.GetComponent<Vis>().OnDashBoard = true;
-                GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
-                visOnDashBoard.transform.position = t.position;
-                visOnDashBoard.transform.localEulerAngles = Vector3.zero;
-                visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
-                visOnDashBoard.name = t.name;
-
-                SpriteRenderer sr = visOnDashBoard.GetComponent<SpriteRenderer>();
-                sr.sortingOrder = 0;
-
-                currentVisOnDashboard.Add(t.name, visOnDashBoard.transform);
+                CreateVisOnDashboard(t);
             }
         }
         else {
@@ -636,17 +635,7 @@ public class DelaunayController : MonoBehaviour
                 }
                 else
                 {
-                    t.GetComponent<Vis>().OnDashBoard = true;
-                    GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
-                    visOnDashBoard.transform.position = t.position;
-                    visOnDashBoard.transform.localEulerAngles = Vector3.zero;
-                    visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
-                    visOnDashBoard.name = t.name;
-
-                    //SpriteRenderer sr = visOnDashBoard.GetComponent<SpriteRenderer>();
-                    //sr.sortingOrder = 0;
-
-                    currentVisOnDashboard.Add(t.name, visOnDashBoard.transform);
+                    CreateVisOnDashboard(t);
                 }
             }
 
@@ -666,6 +655,22 @@ public class DelaunayController : MonoBehaviour
         }
     }
 
+    private void CreateVisOnDashboard(Transform t)
+    {
+        t.GetComponent<Vis>().OnDashBoard = true;
+        GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
+        visOnDashBoard.transform.position = t.position;
+        visOnDashBoard.transform.localEulerAngles = Vector3.zero;
+        visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
+        visOnDashBoard.name = t.name;
+
+        SpriteRenderer sr = visOnDashBoard.GetComponent<SpriteRenderer>();
+        sr.sortingOrder = 0;
+
+        BoxCollider box = visOnDashBoard.AddComponent<BoxCollider>();
+
+        currentVisOnDashboard.Add(t.name, visOnDashBoard.transform);
+    }
     private float CalculateProportionalScale(Transform foot, Transform targetVis, Transform prevVis, Transform nextVis)
     {
         float footToTarget = Vector3.Distance(foot.position, targetVis.position);
