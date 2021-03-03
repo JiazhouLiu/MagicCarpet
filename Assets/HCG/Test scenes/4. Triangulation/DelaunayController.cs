@@ -580,7 +580,8 @@ public class DelaunayController : MonoBehaviour
             Dictionary<string, Transform> newVisDict = new Dictionary<string, Transform>();
             foreach (Transform t in showOnDashboard)
             {
-                newVisDict.Add(t.name, t);
+                if(t != null)
+                    newVisDict.Add(t.name, t);
             }
 
             CheckSameVisOnDashboard(newVisDict, currentVisOnDashboard); // check if vis is already on dashboard

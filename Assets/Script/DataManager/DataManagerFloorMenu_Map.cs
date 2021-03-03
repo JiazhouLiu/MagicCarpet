@@ -278,7 +278,7 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
             mark.transform.localScale = Vector3.one * markSize;
 
             Color newCol = Color.black;
-            switch (h.RegionName)
+            switch (h.RegionName.Trim())
             {
                 case "Eastern Metropolitan":
                     ColorUtility.TryParseHtmlString("#e41a1c", out newCol);
