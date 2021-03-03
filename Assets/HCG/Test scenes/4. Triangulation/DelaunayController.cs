@@ -180,7 +180,6 @@ public class DelaunayController : MonoBehaviour
             Color newColor = MapMeshParent.Find(vis.name).GetChild(0).GetComponent<MeshRenderer>().material.color;
             newColor.a = 100f / 255f;
             MapMeshParent.Find(vis.name).GetChild(0).GetComponent<MeshRenderer>().material.color = newColor;
-            ;
         }
 
         ////if (CheckHumanWaistRotating())

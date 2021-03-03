@@ -6,7 +6,7 @@ using VRTK;
 public class MagicCarpetManager_FloorMenu : MonoBehaviour
 {
     public GameObject markerPrefab;
-    public GameObject DataManagerGO;
+    public DataManagerFloorMenu_Map DMFM;
     public Transform visParent;
     public Transform visHolderParent;
     public Transform markerParent;
@@ -26,13 +26,11 @@ public class MagicCarpetManager_FloorMenu : MonoBehaviour
     VRTK_ControllerEvents rightCE;
     VRTK_ControllerEvents leftCE;
     ObjectGeneratorNoColumn og;
-    DataManager3DMap dm3D;
 
     private void Awake()
     {
         multiples = new List<GameObject>();
 
-        dm3D = DataManagerGO.GetComponent<DataManager3DMap>();
         og = visParent.GetComponent<ObjectGeneratorNoColumn>();
         rightCE = rightController.GetComponent<VRTK_ControllerEvents>();
         leftCE = leftController.GetComponent<VRTK_ControllerEvents>();
@@ -76,11 +74,6 @@ public class MagicCarpetManager_FloorMenu : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown("n") && dm3D.forwardParameter > 10)
-            dm3D.forwardParameter -= 2;
-        if (Input.GetKeyDown("m") && dm3D.forwardParameter < 50)
-            dm3D.forwardParameter += 2;
-
         if (startLoad)
         {
             bool allMoved = true;
@@ -95,7 +88,7 @@ public class MagicCarpetManager_FloorMenu : MonoBehaviour
                 {
                     currentDataPoints[j].SetParent(sm);
                     currentDataPoints[j].localPosition = Vector3.Lerp(currentDataPoints[j].localPosition,
-                        currentMarker.savedDataPointPositions[sm.name][j], Time.deltaTime * dm3D.speed);
+                        currentMarker.savedDataPointPositions[sm.name][j], Time.deltaTime * DMFM.speed);
 
                     if (Vector3.Distance(currentDataPoints[j].localPosition,
                         currentMarker.savedDataPointPositions[sm.name][j]) > 0.01f)
@@ -179,8 +172,8 @@ public class MagicCarpetManager_FloorMenu : MonoBehaviour
             dataPoints.Add(visParent.GetChild(i).name, dataPointsList);
             dataPointPositions.Add(visParent.GetChild(i).name, dataPointPositionsList);
         }
-        marker.colNumber = dm3D.facetedColumns;
-        marker.rowNumber = dm3D.facetedRows;
+        marker.colNumber = DMFM.facetedColumns;
+        marker.rowNumber = DMFM.facetedRows;
         marker.savedSMs = sm;
         marker.savedSMPositions = smPositions;
         marker.savedDataPoints = dataPoints;
@@ -210,8 +203,8 @@ public class MagicCarpetManager_FloorMenu : MonoBehaviour
             }
         }
 
-        dm3D.facetedColumns = currentMarker.colNumber;
-        dm3D.facetedRows = currentMarker.rowNumber;
+        DMFM.facetedColumns = currentMarker.colNumber;
+        DMFM.facetedRows = currentMarker.rowNumber;
         multiples = og.UpdateSM(multiples, currentMarker.colNumber, currentMarker.rowNumber);
     }
 

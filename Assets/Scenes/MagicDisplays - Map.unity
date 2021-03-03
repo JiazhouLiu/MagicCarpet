@@ -277,9 +277,9 @@ MonoBehaviour:
   numberOfPoints: 20
   constraints: []
   GroundVisParent: {fileID: 789476394}
-  Delaunay: 0
-  ShowColor: 1
-  ShowEdge: 1
+  Delaunay: 1
+  ShowColor: 0
+  ShowEdge: 0
   Show3VisDelta: 0.3
   speed: 3
   filterFrequency: 120

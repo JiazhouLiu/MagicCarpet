@@ -11,10 +11,8 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
     public GameObject markPrefab;
     public GameObject groundMarkPrefab;
     public Transform visParent;
-    public Transform hiddenVisParent;
     public Transform groundMarkParent;
     public Transform floorMenuParent;
-    public MagicCarpetManager_FloorMenu mcm;
     public Transform LeftFoot;
     public Transform RightFoot;
 
@@ -25,11 +23,11 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
     public float speed = 1;
     public int facetedRows = 1;
     public int facetedColumns = 1;
-    public float forwardParameter = 10;
+    public float forwardParameter = 10; // distance from dashboard to user
+    public float feetDistanceDelta = 0.3f;
 
     private List<GameObject> MarkCollection;
     private List<GameObject> CurrentSM;
-    //private List<GameObject> CurrentMarkCollection; // filtering
     private List<Transform> MapLocations;
     private List<Housing> PropertyCollection;
     private List<Vector3> MapInAirPositions;
@@ -46,13 +44,9 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
     private Vector3 previousLeftFootRotation;
     private Vector3 previousRightFootPosition;
     private Vector3 previousRightFootRotation;
-    private string previousClosestRegion = "";
 
     private bool canMove = false;
-    private bool showCase = true;
     private bool DemoFlag = true;
-
-    private int smallMultiplesNumber;
 
     private readonly char lineSeperater = '\n'; // It defines line seperate character
     private readonly char fieldSeperator = ','; // It defines field seperate chracter
@@ -60,12 +54,16 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
     private float CurrentMinSelectedValue = 100000;
     private float CurrentMaxSelectedValue = -100000;
 
+    private bool FootControlSwitchOn = false;
+
+    //testing
+    private bool switchTester = false;
+
     // Start is called before the first frame update
     void Start()
     {
         MarkCollection = new List<GameObject>();
         CurrentSM = new List<GameObject>();
-        //CurrentMarkCollection = new List<GameObject>();
         PropertyCollection = new List<Housing>();
         MapLocations = new List<Transform>();
         FloorButtonCollection = new List<Transform>();
@@ -74,11 +72,8 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
 
         ReadData(DataSource);
 
-        //ShowCaseScenario(PropertyCollection);
-
         ShowButton();
         ShowMap();
-        
     }
 
     private void ReadData(TextAsset ta)
@@ -130,8 +125,6 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
             canMove = true;
         }
 
-        
-
         if (canMove)
         {
             foreach (GameObject mark in MarkCollection)
@@ -168,9 +161,7 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
 
                     if (Vector3.Distance(mark.transform.localPosition,
                             new Vector3(h.InAirXPosition, h.InAirYPosition, h.InAirZPosition)) > 0.01f)
-                    {
                         allMoved = false;
-                    }
                 }
 
 
@@ -180,19 +171,76 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
 
                     if (Vector3.Distance(mark.transform.localPosition,
                             new Vector3(h.GroundXPosition, h.GroundYPosition, h.GroundZPosition)) > 0.01f)
-                    {
                         allMoved = false;
-                    }
                 }
 
-                if ((h.Air && h.Ground) || (!h.Air && !h.Ground)) {
+                if ((h.Air && h.Ground) || (!h.Air && !h.Ground))
                     Debug.Log("error");
-                }
             }
 
             if (allMoved)
-            {
                 canMove = false;
+        }
+
+        if (Input.GetKeyDown("z")) {
+            floorMenuParent.localScale -= Vector3.one * 0.05f;
+            foreach (GameObject mark in MarkCollection)
+            {
+                Housing h = mark.GetComponent<Housing>();
+                RefreshButtonGroundPosition(h);
+            }
+        }
+
+
+        if (Input.GetKeyDown("x")) {
+            floorMenuParent.localScale += Vector3.one * 0.05f;
+            foreach (GameObject mark in MarkCollection)
+            {
+                Housing h = mark.GetComponent<Housing>();
+                RefreshButtonGroundPosition(h);
+            }
+        }
+
+        if (Input.GetKeyDown("k"))
+        {
+            if (switchTester)
+                switchTester = false;
+            else
+                switchTester = true;
+                
+            OnKickSwitch(switchTester);
+        }
+
+    }
+
+    public void OnKickSwitch(bool switchOn) {
+        FootControlSwitchOn = switchOn;
+        if (switchOn)
+        {
+            foreach (Transform t in FloorButtonCollection)
+                t.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, 50f / 225f);
+        }
+        else {
+            foreach (Transform t in FloorButtonCollection)
+                t.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 50f / 225f);
+        }
+    }
+
+    private string DetectFootGesture() {
+
+        return "";
+    }
+
+    private void RefreshButtonGroundPosition(Housing h) {
+        foreach (Transform button in FloorButtonCollection)
+        {
+            float minValue = button.GetComponent<FloorMenu>().MinValue;
+            float maxValue = button.GetComponent<FloorMenu>().MaxValue;
+            if (h.YearBuilt <= maxValue && h.YearBuilt >= minValue)
+            {
+                h.GroundXPosition = button.position.x;
+                h.GroundYPosition = button.position.y;
+                h.GroundZPosition = button.position.z;
             }
         }
     }
@@ -217,15 +265,8 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
             h.InAirYPosition = yPosition;
             h.InAirZPosition = 3;
 
-            foreach (Transform button in FloorButtonCollection) {
-                float minValue = button.GetComponent<FloorMenu>().MinValue;
-                float maxValue = button.GetComponent<FloorMenu>().MaxValue;
-                if (h.YearBuilt < maxValue && h.YearBuilt > minValue) {
-                    h.GroundXPosition = button.position.x;
-                    h.GroundYPosition = button.position.y;
-                    h.GroundZPosition = button.position.z;
-                }
-            }
+            RefreshButtonGroundPosition(h);
+
             h.Ground = true;
             h.Air = false;
 
@@ -310,6 +351,7 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
         CurrentMinSelectedValue = 100000;
         CurrentMaxSelectedValue = -100000;
 
+
         foreach (Transform button in FloorButtonCollection)
         {
             if (Vector3.Distance(button.position, LeftFoot.position) <= 0.15f)
@@ -318,12 +360,19 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
             if (Vector3.Distance(button.position, RightFoot.position) <= 0.15f)
                 rightFootOnButton = button;
         }
+        // reset mesh color
+        foreach (Transform floorMenu in floorMenuParent)
+            floorMenu.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 50f / 255f);
+
         if (leftFootOnButton != null)
         {
             if (leftFootOnButton.GetComponent<FloorMenu>().MinValue < CurrentMinSelectedValue)
                 CurrentMinSelectedValue = leftFootOnButton.GetComponent<FloorMenu>().MinValue;
             if (leftFootOnButton.GetComponent<FloorMenu>().MaxValue > CurrentMaxSelectedValue)
                 CurrentMaxSelectedValue = leftFootOnButton.GetComponent<FloorMenu>().MaxValue;
+
+
+            leftFootOnButton.GetComponent<MeshRenderer>().material.color = new Color(0,1,0,50f/255f);
         }
 
         if (rightFootOnButton != null)
@@ -332,186 +381,19 @@ public class DataManagerFloorMenu_Map : MonoBehaviour
                 CurrentMinSelectedValue = rightFootOnButton.GetComponent<FloorMenu>().MinValue;
             if (rightFootOnButton.GetComponent<FloorMenu>().MaxValue > CurrentMaxSelectedValue)
                 CurrentMaxSelectedValue = rightFootOnButton.GetComponent<FloorMenu>().MaxValue;
+
+            rightFootOnButton.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, 50f / 255f);
+        }
+
+        if (rightFootOnButton != null && leftFootOnButton != null) {
+            int rightIndex = rightFootOnButton.GetSiblingIndex();
+            int leftIndex = leftFootOnButton.GetSiblingIndex();
+
+            for (int i = Mathf.Min(leftIndex, rightIndex); i <= Mathf.Max(leftIndex, rightIndex); i++) {
+                floorMenuParent.GetChild(i).GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, 50f / 255f);
+            }
         }
     }
-
-    //private void UpdateFacetingVariable(int newRow, int newColumn)
-    //{
-    //    if (newRow > 0 && newColumn > 0)
-    //    {
-    //        facetedColumns = newColumn;
-    //        facetedRows = newRow;
-
-    //        //ShowCaseScenario(PropertyCollection);
-    //        UpdateVisGridTransform();
-    //    }
-    //}
-
-    //private void ShowCaseScenario(List<Housing> privatePC)
-    //{
-    //    showCase = true;
-
-    //    if (facetedRows > 0 && facetedColumns > 0)
-    //        smallMultiplesNumber = facetedRows * facetedColumns;
-    //    else
-    //        smallMultiplesNumber = 1;
-    //    CurrentSM = og.UpdateSM(CurrentSM, facetedColumns, facetedRows);
-    //    mcm.UpdateCurrentSM(CurrentSM);
-
-    //    // position channel
-    //    int minBed = GetLowestBedroom(privatePC);
-    //    int maxBed = GetHighestBedroom(privatePC);
-    //    int minBath = GetLowestBathroom(privatePC);
-    //    int maxBath = GetHighestBathroom(privatePC);
-    //    int minPrice = GetLowestPrice(privatePC);
-    //    int maxPrice = GetHighestPrice(privatePC);
-
-    //    // faceting channel
-    //    int minYear = GetLowestYear(privatePC);
-    //    int maxYear = GetHighestYear(privatePC) + 1;
-
-    //    for (int i = 0; i < MarkCollection.Count; i++) {
-    //        GameObject mark = MarkCollection[i];
-    //        Housing h = mark.GetComponent<Housing>();
-
-    //        if (h.Show)
-    //        {
-    //            // setup position channel
-    //            h.XPosition = (float)(h.Bedroom - minBed) / (maxBed - minBed);
-    //            h.YPosition = (float)(h.Price - minPrice) / (maxPrice - minPrice);
-    //            h.ZPosition = (float)(h.Bathroom - minBath) / (maxBath - minBath);
-
-    //            int facetDelta = ((maxYear - minYear) / smallMultiplesNumber) + 1;
-    //            // setup small multiples
-    //            for (int j = 0; j < smallMultiplesNumber; j++)
-    //            {
-    //                if (h.YearBuilt >= minYear + (facetDelta * j) && h.YearBuilt < minYear + (facetDelta * (j + 1)))
-    //                {
-    //                    mark.transform.SetParent(CurrentSM[j].transform);
-    //                }
-    //            }
-    //        }
-    //        else
-    //        {
-    //            // setup position channel
-    //            h.XPosition = MapInAirPositions[i].x;
-    //            h.YPosition = MapInAirPositions[i].y;
-    //            h.ZPosition = MapInAirPositions[i].z;
-
-    //            Color newCol = Color.black;
-    //            switch (h.RegionName)
-    //            {
-    //                case "Eastern Metropolitan":
-    //                    ColorUtility.TryParseHtmlString("#e41a1c", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "Eastern Victoria":
-    //                    ColorUtility.TryParseHtmlString("#377eb8", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "Northern Metropolitan":
-    //                    ColorUtility.TryParseHtmlString("#4daf4a", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "Northern Victoria":
-    //                    ColorUtility.TryParseHtmlString("#984ea3", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "South-Eastern Metropolitan":
-    //                    ColorUtility.TryParseHtmlString("#ff7f00", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "Southern Metropolitan":
-    //                    ColorUtility.TryParseHtmlString("#ffff33", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "Western Metropolitan":
-    //                    ColorUtility.TryParseHtmlString("#a65628", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                case "Western Victoria":
-    //                    ColorUtility.TryParseHtmlString("#f781bf", out newCol);
-    //                    h.MarkColor = newCol;
-    //                    break;
-    //                default:
-    //                    break;
-    //            }
-    //            mark.GetComponent<MeshRenderer>().material.color = h.MarkColor;
-
-    //            mark.transform.SetParent(groundMarkParent);
-    //        }
-    //    }
-
-    //    if (privatePC.Count == 0)
-    //    {
-    //        if (visParent.childCount > 0) {
-    //            foreach (Transform t in visParent)
-    //                Destroy(t.gameObject);
-    //        }
-    //    }
-
-    //    canMove = true;
-    //}
-
-
-
-    //private void FindNearestPoint()
-    //{
-    //    float minDistance = 1;
-    //    Transform closestPoint = null;
-    //    int closestPointIndex = -1;
-
-    //    for (int i = 0; i < MapInAirPositions.Count; i++) {
-    //        if (Vector3.Distance(MapInAirPositions[i], mcm.human.transform.position) < minDistance)
-    //        {
-    //            minDistance = Vector3.Distance(MapInAirPositions[i], mcm.human.transform.position);
-    //            closestPointIndex = i;
-    //        }
-    //    }
-
-    //    if (closestPointIndex != -1)
-    //    {
-    //        closestPoint = MarkCollection[closestPointIndex].transform;
-    //    }
-
-    //    string newClosestRegion = "";
-    //    if (closestPoint != null)
-    //        newClosestRegion = closestPoint.GetComponent<Housing>().RegionName;
-    //    else
-    //        Debug.Log("Out of Map");
-
-    //    Debug.Log(newClosestRegion);
-
-    //    if (newClosestRegion != previousClosestRegion) {
-    //        List<Housing> newPC = new List<Housing>();
-
-    //        foreach (GameObject go in MarkCollection)
-    //        {
-    //            if (go.GetComponent<Housing>().RegionName == newClosestRegion)
-    //            {
-    //                go.GetComponent<Housing>().Show = true;
-    //                newPC.Add(go.GetComponent<Housing>());
-    //            }
-    //            else
-    //                go.GetComponent<Housing>().Show = false;
-    //        }
-
-    //        previousClosestRegion = newClosestRegion;
-    //        ShowCaseScenario(newPC);
-    //    }
-    //}
-
-
-
-    //private void UpdateVisGridTransform()
-    //{
-    //    //visParent.position = humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter);
-    //    visParent.position = Vector3.Lerp(visParent.position, new Vector3(humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter).x, 
-    //        og.AdjustedHeight, humanBody.TransformPoint(humanBody.localPosition + Vector3.forward * forwardParameter).z), Time.deltaTime * speed);
-
-    //    visParent.LookAt(humanBody);
-    //    visParent.localEulerAngles = new Vector3(0, visParent.localEulerAngles.y + 180, 0);
-    //}
 
     // BODY-TRACKING: check if any foot is moving
     private bool CheckHumanFeetMoving(string foot)
