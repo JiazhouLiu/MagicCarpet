@@ -8,8 +8,10 @@ public class DashBoard : MonoBehaviour
     public float AdjustedHeight;
     public float ForwardParameter;
     public bool curved;
+    public bool lerp;
     public float upAngle;
     public float size;
+    
 
     public Transform Camera;
 
@@ -27,7 +29,8 @@ public class DashBoard : MonoBehaviour
             Vector3 forward = Camera.transform.forward;
             Camera.transform.eulerAngles = oldAngle;
             // configure dashboard position (TODO: fix slope bug [head up and vis comes closer])
-            transform.position = Vector3.Lerp(transform.position, Camera.TransformPoint(Vector3.zero) + forward * ForwardParameter, Time.deltaTime * 3);
+            if (lerp) transform.position = Vector3.Lerp(transform.position, Camera.TransformPoint(Vector3.zero) + forward * ForwardParameter, Time.deltaTime * 3);
+            else transform.position = Camera.TransformPoint(Vector3.zero) + forward * ForwardParameter;
             //transform.position = Camera.TransformPoint(Vector3.zero) + forward * ForwardParameter;
             //transform.position = Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter);
             transform.position = new Vector3(transform.position.x, Camera.transform.position.y + AdjustedHeight, transform.position.z);

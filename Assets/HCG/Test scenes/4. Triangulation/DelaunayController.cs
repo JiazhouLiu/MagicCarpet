@@ -416,7 +416,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visName.Contains(s))
                     {
-                        print(s);
+                        //print(s);
                         hullConstraintParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
