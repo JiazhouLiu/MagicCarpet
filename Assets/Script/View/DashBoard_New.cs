@@ -164,7 +164,7 @@ public class DashBoard_New : MonoBehaviour
     // update multiple position
     private void UpdateVisPosition(Transform vis)
     {
-        if (transform.childCount > 2)
+        if (transform.childCount > 3)
         {
             if (circle.positionCount > transform.childCount)
             {
@@ -174,13 +174,24 @@ public class DashBoard_New : MonoBehaviour
                 //vis.RotateAround(WaistTransform.position, Vector3.up, WaistTransform.localEulerAngles.y);
             }
         }
+        else if (transform.childCount == 3)
+        {
+            Vector3 nextPos = Vector3.zero;
+            if (vis.GetSiblingIndex() == 0)
+                nextPos = new Vector3((ForwardParameter * Mathf.Cos(30 * Mathf.Deg2Rad) / size), 0, ForwardParameter * Mathf.Sin(30 * Mathf.Deg2Rad) / size);
+            else if(vis.GetSiblingIndex() == 1)
+                nextPos = new Vector3(0, 0, ForwardParameter / size);
+            else
+                nextPos = new Vector3((-ForwardParameter * Mathf.Cos(30 * Mathf.Deg2Rad) / size), 0, ForwardParameter * Mathf.Sin(30 * Mathf.Deg2Rad) / size);
+            vis.localPosition = Vector3.Lerp(vis.localPosition, nextPos, Time.deltaTime * animationSpeed);
+        }
         else if (transform.childCount == 2)
         {
             Vector3 nextPos = Vector3.zero;
             if (vis.GetSiblingIndex() == 0) 
-                nextPos = new Vector3((ForwardParameter * Mathf.Cos(60 * Mathf.Deg2Rad)), 0, ForwardParameter * Mathf.Sin(60 * Mathf.Deg2Rad));
+                nextPos = new Vector3((ForwardParameter * Mathf.Cos(60 * Mathf.Deg2Rad) / size), 0, ForwardParameter * Mathf.Sin(60 * Mathf.Deg2Rad) / size);
             else
-                nextPos = new Vector3((-ForwardParameter * Mathf.Cos(60 * Mathf.Deg2Rad)), 0, ForwardParameter* Mathf.Sin(60 * Mathf.Deg2Rad));
+                nextPos = new Vector3((-ForwardParameter * Mathf.Cos(60 * Mathf.Deg2Rad) / size), 0, ForwardParameter* Mathf.Sin(60 * Mathf.Deg2Rad) / size);
             vis.localPosition = Vector3.Lerp(vis.localPosition, nextPos, Time.deltaTime * animationSpeed);
         }
         else if (transform.childCount == 1) {
