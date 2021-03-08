@@ -15,6 +15,7 @@ public class VisController : MonoBehaviour
 
     public Transform HeadDashboard;
     public Transform WaistDashboard;
+    public Transform GroundVisParent;
 
     [Header("Delaunay")]
     public int seed = 0;
@@ -27,7 +28,7 @@ public class VisController : MonoBehaviour
 
     //Constraints by using children to a parent, which we have to drag
     //Should be sorted counter-clock-wise
-    public Transform GroundVisParent;
+    //public Transform GroundVisParent;
     //Should be sorted clock-wise
     //public List<Transform> holeConstraintParents;
 
@@ -86,9 +87,8 @@ public class VisController : MonoBehaviour
     private Vector3 filteredWaistRotation;
     private OneEuroFilter<Vector3> vector3Filter;
 
-    private void Start()
+    private void Awake()
     {
-        CameraTransform = Camera.main.transform;
         allVis = new List<Vis>();
         currentVisOnDashboard = new Dictionary<string, Transform>();
         currentPinnedOnDashboard = new Dictionary<string, Transform>();
@@ -113,15 +113,20 @@ public class VisController : MonoBehaviour
                 Destroy(t.gameObject);
         }
 
-        GenerateTriangulation();
-
-
+        if(GroundVisParent.childCount > 2)
+            GenerateTriangulation();
     }
 
     private void Update()
     {
-        filteredHumanPosition = vector3Filter.Filter(CameraTransform.position);
-        filteredHumanRotation = vector3Filter.Filter(CameraTransform.eulerAngles);
+        if (Camera.main != null && CameraTransform == null)
+            CameraTransform = Camera.main.transform;
+
+        if (CameraTransform != null) {
+            filteredHumanPosition = vector3Filter.Filter(CameraTransform.position);
+            filteredHumanRotation = vector3Filter.Filter(CameraTransform.eulerAngles);
+        }
+        
 
         filteredLeftFootPosition = vector3Filter.Filter(LeftFoot.position);
         filteredLeftFootRotation = vector3Filter.Filter(LeftFoot.eulerAngles);
@@ -131,39 +136,43 @@ public class VisController : MonoBehaviour
         ////filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
 
-        if (CheckMarkerMoving(GroundVisParent))
+        if (CheckMarkerMoving(GroundVisParent) && GroundVisParent.childCount > 2) {
             GenerateTriangulation();
+
+            if (CheckHumanFeetMoving("left") || DemoFlagLeft)
+            {
+                DemoFlagLeft = false;
+                currentVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+                if (CheckMatch(currentVisFromLeft, currentVisFromRight))
+                {
+                    SameTriReconfigureScale(currentVisFromLeft);
+                }
+
+                currentVis = CombineFeetVisAndAssignPosition(currentVisFromLeft, currentVisFromRight);
+                if (currentVis.Count > 0)
+                    currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
+            }
+
+            if (CheckHumanFeetMoving("right") || DemoFlagRight)
+            {
+                DemoFlagRight = false;
+                currentVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+                if (CheckMatch(currentVisFromLeft, currentVisFromRight))
+                {
+                    SameTriReconfigureScale(currentVisFromRight);
+                }
+
+                currentVis = CombineFeetVisAndAssignPosition(currentVisFromLeft, currentVisFromRight);
+                if (currentVis.Count > 0)
+                    currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
+            }
+        }
+             
 
         //if (CheckHumanMoving())
         //    currentVis = SetUpDashBoardScale(); // returned 1, 2, or 3 vis
 
-        if (CheckHumanFeetMoving("left") || DemoFlagLeft)
-        {
-            DemoFlagLeft = false;
-            currentVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
-            if (CheckMatch(currentVisFromLeft, currentVisFromRight))
-            {
-                SameTriReconfigureScale(currentVisFromLeft);
-            }
-
-            currentVis = CombineFeetVisAndAssignPosition(currentVisFromLeft, currentVisFromRight);
-            if (currentVis.Count > 0)
-                currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
-        }
-
-        if (CheckHumanFeetMoving("right") || DemoFlagRight)
-        {
-            DemoFlagRight = false;
-            currentVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
-            if (CheckMatch(currentVisFromLeft, currentVisFromRight))
-            {
-                SameTriReconfigureScale(currentVisFromRight);
-            }
-
-            currentVis = CombineFeetVisAndAssignPosition(currentVisFromLeft, currentVisFromRight);
-            if (currentVis.Count > 0)
-                currentVisOnDashboard = RearrangeVisOnDashBoard(currentVis, currentVisOnDashboard);
-        }
+       
 
         if (CheckHumanRotating())
         {

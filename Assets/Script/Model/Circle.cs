@@ -2,30 +2,81 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum DisplayDashboard // your custom enumeration
+{
+    HeadDisplay,
+    WaistDisplay
+};
+
 [RequireComponent(typeof(LineRenderer))]
 public class Circle : MonoBehaviour
 {
     public int vertexCount = 100;
     public float lineWidth = 0.2f;
-    
+    public DisplayDashboard display = new DisplayDashboard();
+
     private float radius;
 
     private LineRenderer lineRenderer;
-    private ViewController VC;
+
+    private int prevVertexCount;
     // Start is called before the first frame update
     private void Awake()
     {
-        VC = GameObject.Find("SmallMultiples").GetComponent<ViewController>();
-        radius = VC.Radius;
 
+        if (GameObject.Find("SmallMultiples") != null)
+            radius = GameObject.Find("SmallMultiples").GetComponent<ViewController>().Radius;
+        else {
+            if (display == DisplayDashboard.HeadDisplay)
+            {
+                radius = GameObject.Find("DashBoard - Head Level").GetComponent<DashBoard_New>().ForwardParameter;
+                if (GameObject.Find("DashBoard - Head Level").transform.childCount > 1)
+                {
+                    vertexCount = GameObject.Find("DashBoard - Head Level").transform.childCount * 2 - 2;
+                }
+            }
+            else {
+                radius = GameObject.Find("DashBoard - Waist Level").GetComponent<DashBoard_New>().ForwardParameter;
+                if (GameObject.Find("DashBoard - Waist Level").transform.childCount > 1)
+                {
+                    vertexCount = GameObject.Find("DashBoard - Waist Level").transform.childCount * 2 - 2;
+                }
+            }
+        }
+
+        prevVertexCount = vertexCount;
         lineRenderer = GetComponent<LineRenderer>();
         SetupCircle();
     }
 
     private void Update()
     {
-        radius = VC.Radius;
-        SetupCircle();
+        if (GameObject.Find("SmallMultiples") != null)
+            radius = GameObject.Find("SmallMultiples").GetComponent<ViewController>().Radius;
+        else
+        {
+            if (display == DisplayDashboard.HeadDisplay)
+            {
+                radius = GameObject.Find("DashBoard - Head Level").GetComponent<DashBoard_New>().ForwardParameter;
+                if (GameObject.Find("DashBoard - Head Level").transform.childCount > 1)
+                {
+                    vertexCount = GameObject.Find("DashBoard - Head Level").transform.childCount * 2 - 2;
+                }
+            }
+            else
+            {
+                radius = GameObject.Find("DashBoard - Waist Level").GetComponent<DashBoard_New>().ForwardParameter;
+                if (GameObject.Find("DashBoard - Waist Level").transform.childCount > 1)
+                {
+                    vertexCount = GameObject.Find("DashBoard - Waist Level").transform.childCount * 2 - 2;
+                }
+            }
+        }
+        if (prevVertexCount != vertexCount) {
+            SetupCircle();
+            prevVertexCount = vertexCount;
+        }
+            
     }
 
     private void SetupCircle() {

@@ -266,6 +266,7 @@ MonoBehaviour:
   colorFillPrefab: {fileID: 7378102030593583176, guid: 5a340d2c85f0f494881269d41924f7f2,
     type: 3}
   EdgeParent: {fileID: 1229654871}
+  MapMeshParent: {fileID: 0}
   Human: {fileID: 1287295232}
   LeftFoot: {fileID: 1768383984}
   RightFoot: {fileID: 195106548}
@@ -275,8 +276,8 @@ MonoBehaviour:
   halfMapSize: 1
   numberOfPoints: 20
   constraints: []
-  hullConstraintParent: {fileID: 789476394}
-  holeConstraintParents: []
+  GroundVisParent: {fileID: 0}
+  Delaunay: 1
   ShowColor: 1
   ShowEdge: 1
   Show3VisDelta: 0.5
@@ -464,14 +465,14 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1119078416}
   - {fileID: 1187801928}
-  - {fileID: 1280529814}
-  - {fileID: 1632964975}
   - {fileID: 1204939931}
-  - {fileID: 2083860546}
-  - {fileID: 1644181880}
+  - {fileID: 1280529814}
   - {fileID: 1453329717}
+  - {fileID: 1632964975}
+  - {fileID: 1644181880}
+  - {fileID: 2083860546}
+  - {fileID: 1119078416}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
