@@ -1089,7 +1089,7 @@ public class DelaunayController : MonoBehaviour
         visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
         visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
         visOnGround.transform.localScale = t.GetComponent<Vis>().GroundScale;
-        visOnGround.GetComponent<Vis>().PinOnDashBoard = false;
+        visOnGround.GetComponent<Vis>().showOnWaistDashBoard = false;
         visOnGround.name = t.name;
 
         currentPinnedOnDashboard.Remove(t.name);
@@ -1104,7 +1104,7 @@ public class DelaunayController : MonoBehaviour
             Destroy(groundOriginal.gameObject);
             t.SetParent(PinnedDashBoard);
             currentPinnedOnDashboard.Add(t.name, t);
-            t.GetComponent<Vis>().PinOnDashBoard = true;
+            t.GetComponent<Vis>().showOnWaistDashBoard = true;
             t.GetComponent<Vis>().HeadDashboardScale = Vector3.one * 0.33f;
         }
     }

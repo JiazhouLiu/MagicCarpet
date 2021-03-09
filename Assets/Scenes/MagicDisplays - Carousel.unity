@@ -499,12 +499,6 @@ MonoBehaviour:
   controllerAttachPoint: {fileID: 156618184}
   controllerEvents: {fileID: 226439762}
   interactTouch: {fileID: 226439758}
---- !u!4 &477235037 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5497229081443829691, guid: 56af40b9ce01df345b295050108afc34,
-    type: 3}
-  m_PrefabInstance: {fileID: 1945763246}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &671195970
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,7 +637,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 477235037}
+    m_TransformParent: {fileID: 1945763252}
     m_Modifications:
     - target: {fileID: 1558849707420706162, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
@@ -668,12 +662,12 @@ PrefabInstance:
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.6800001
       objectReference: {fileID: 0}
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
@@ -2190,12 +2184,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1929076748}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.05, z: 0.3}
   m_Children:
   - {fileID: 1899046900}
-  m_Father: {fileID: 1945763248}
-  m_RootOrder: 5
+  m_Father: {fileID: 1945763247}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1945763246
 PrefabInstance:
@@ -2331,6 +2325,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56af40b9ce01df345b295050108afc34, type: 3}
+--- !u!4 &1945763247 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5497485846537936197, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1945763248 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5500296448778711401, guid: 56af40b9ce01df345b295050108afc34,
@@ -2373,6 +2373,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eeda6d41317f444b900e374895f14e95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1945763252 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5497320498897309939, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2083860545
 PrefabInstance:
   m_ObjectHideFlags: 0

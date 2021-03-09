@@ -26,7 +26,6 @@ public class VisController : MonoBehaviour
     private Quaternion originalRot;
 
     private Transform CameraTransform;
-    private List<Transform> selectedVis;
 
     private bool isThrowing = false;
     private bool isTouchingDisplaySurface = false;

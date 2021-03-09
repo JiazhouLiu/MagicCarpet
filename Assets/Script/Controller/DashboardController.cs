@@ -190,21 +190,21 @@ public class DashboardController : MonoBehaviour
     //        currentVisFromRightFootPhysical.Remove(GroundVisParent.Find(collider.name));
     //}
 
-    private void PinToGround(Transform t)
+    public void PinToGround(Transform t)
     {
         GameObject visOnGround = Instantiate(t.gameObject, GroundVisParent);
         visOnGround.transform.position = new Vector3(HumanWaist.position.x, 0, HumanWaist.position.z);
         visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
         visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
         visOnGround.transform.localScale = t.GetComponent<Vis>().GroundScale;
-        visOnGround.GetComponent<Vis>().PinOnDashBoard = false;
+        visOnGround.GetComponent<Vis>().showOnWaistDashBoard = false;
         visOnGround.name = t.name;
 
         currentVisOnWaistDashboard.Remove(t.name);
         Destroy(t.gameObject);
     }
 
-    private void GroundToPin(Transform t)
+    public void GroundToPin(Transform t)
     {
         Transform groundOriginal = GroundVisParent.Find(t.name);
         if (groundOriginal != null)
@@ -212,7 +212,7 @@ public class DashboardController : MonoBehaviour
             Destroy(groundOriginal.gameObject);
             t.SetParent(WaistDashboard);
             currentVisOnWaistDashboard.Add(t.name, t);
-            t.GetComponent<Vis>().PinOnDashBoard = true;
+            t.GetComponent<Vis>().showOnWaistDashBoard = true;
             t.GetComponent<Vis>().HeadDashboardScale = Vector3.one * 0.33f;
         }
     }

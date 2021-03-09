@@ -12,9 +12,6 @@ public class Vis : MonoBehaviour
     public Vector3 showHeadDashboardScale;
     public bool showOnHeadDashBoard;
     public bool showOnWaistDashBoard;
-    public bool showPinOnDashBoard;
-    public bool showTriggeredByLeft;
-    public bool showTriggeredByRight;
 
     public string VisName { get; set; }
     public Vector3 GroundPosition { get; set; }
@@ -23,9 +20,6 @@ public class Vis : MonoBehaviour
     public Vector3 HeadDashboardScale { get; set; }
     public bool OnHeadDashBoard { get; set; }
     public bool OnWaistDashBoard { get; set; }
-    public bool PinOnDashBoard { get; set; }
-    public bool TriggeredByLeft { get; set; }
-    public bool TriggeredByRight { get; set; }
 
     public Vis() { }
 
@@ -58,9 +52,6 @@ public class Vis : MonoBehaviour
         HeadDashboardScale = v.HeadDashboardScale;
         OnHeadDashBoard = v.OnHeadDashBoard;
         OnWaistDashBoard = v.OnWaistDashBoard;
-        PinOnDashBoard = v.PinOnDashBoard;
-        TriggeredByLeft = v.TriggeredByLeft;
-        TriggeredByRight = v.TriggeredByRight;
 
         showName = VisName;
         showGroundPosition = GroundPosition;
@@ -69,9 +60,6 @@ public class Vis : MonoBehaviour
         showHeadDashboardScale = HeadDashboardScale;
         showOnHeadDashBoard = OnHeadDashBoard;
         showOnWaistDashBoard = OnWaistDashBoard;
-        showPinOnDashBoard = PinOnDashBoard;
-        showTriggeredByLeft = TriggeredByLeft;
-        showTriggeredByRight = TriggeredByRight;
     }
 
     public void Update()
@@ -83,8 +71,5 @@ public class Vis : MonoBehaviour
         showHeadDashboardScale = HeadDashboardScale;
         showOnHeadDashBoard = OnHeadDashBoard;
         showOnWaistDashBoard = OnWaistDashBoard;
-        showPinOnDashBoard = PinOnDashBoard;
-        showTriggeredByLeft = TriggeredByLeft;
-        showTriggeredByRight = TriggeredByRight;
     }
 }
