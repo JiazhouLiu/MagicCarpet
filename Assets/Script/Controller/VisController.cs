@@ -46,8 +46,8 @@ public class VisController : MonoBehaviour
     {
         if (interactableObject.IsGrabbed())
         {
-            transform.SetParent(interactableObject.GetGrabbingObject().transform);
-            transform.localScale = Vector3.one;
+            //transform.SetParent(interactableObject.GetGrabbingObject().transform);
+            transform.localScale = Vector3.one * 0.5f;
 
             // Check if the vis is being pulled from the waist Dashboard
             if (ShowingOnWaistDashboard)
@@ -78,7 +78,7 @@ public class VisController : MonoBehaviour
                 isThrowing = false;
                 ColliderActiveState = false;
                 transform.DOScale(0, 1f).OnComplete(() => DC.ReturnToPocket(this));
-
+                Debug.Log("deleting");
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Destroyed", ID);
             }
             else
@@ -101,11 +101,12 @@ public class VisController : MonoBehaviour
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Grab end", ID);
 
         // Check to see if the chart was thrown
-        float speed = currentRigidbody.velocity.sqrMagnitude;
-
-        if (speed > 10f)
+        float speed = GetComponent<Rigidbody>().velocity.sqrMagnitude;
+        Debug.Log(speed);
+        if (speed > 5f)
         {
-            currentRigidbody.useGravity = true;
+            Debug.Log("speed too fast");
+            GetComponent<Rigidbody>().useGravity = true;
             isThrowing = true;
             deletionTimer = 0;
 
@@ -113,16 +114,17 @@ public class VisController : MonoBehaviour
         }
         else
         {
-            currentRigidbody.velocity = Vector3.zero;
-            currentRigidbody.angularVelocity = Vector3.zero;
+            //Debug.Log("speed too slow");
+            //GetComponent<Rigidbody>().velocity = Vector3.zero;
+            //GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
-            // If it wasn't thrown, check to see if it is being placed on the display screen
-            if (isTouchingDisplaySurface)
-            {
-                AttachToDisplayScreen();
-            }
-            else
-                AnimateTowards(originalPos, originalRot, 0.4f);      
+            //// If it wasn't thrown, check to see if it is being placed on the display screen
+            //if (isTouchingDisplaySurface)
+            //{
+            //    AttachToDisplayScreen();
+            //}
+            //else
+            //    AnimateTowards(originalPos, originalRot, 0.4f);      
         }
     }
 
@@ -137,12 +139,14 @@ public class VisController : MonoBehaviour
     {
         if (other.CompareTag("DisplaySurface"))
         {
+            Debug.Log("enter display surface");
             isTouchingDisplaySurface = true;
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
 
             // If the chart was thrown at the screen, attach it to the screen
             if (isThrowing)
             {
+                Debug.Log("throw to display surface");
                 isThrowing = false;
                 currentRigidbody.useGravity = false;
                 currentRigidbody.velocity = Vector3.zero;
@@ -165,6 +169,8 @@ public class VisController : MonoBehaviour
     {
         Vector3 pos;
         Quaternion rot;
+
+        Debug.Log("Attach to screen method");
 
         touchingDisplaySurface.CalculatePositionOnScreen(this, out pos, out rot);
 
