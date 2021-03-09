@@ -6,7 +6,7 @@ using UnityEngine;
 public class Interacter : MonoBehaviour
 {
     [SerializeField]
-    private DelaunayController DC;
+    private VisController VC;
 
     [SerializeField]
     private Transform Hand;
@@ -39,11 +39,11 @@ public class Interacter : MonoBehaviour
 
     public void Grip()
     {
-        foreach (Transform t in DC.currentVisOnDashboard.Values)
+        foreach (Transform t in VC.currentVisOnDashboard.Values)
         {
             GrabVis(t);
         }
-        foreach (Transform t in DC.currentPinnedOnDashboard.Values)
+        foreach (Transform t in VC.currentPinnedOnDashboard.Values)
         {
             GrabPin(t);
         }
@@ -55,12 +55,12 @@ public class Interacter : MonoBehaviour
         print(Vector3.Distance(t.position, Hand.position));
         if (Vector3.Distance(t.position, Hand.position) <= Distance)
         {
-            DC.currentVis.Remove(t);
+            VC.currentVis.Remove(t);
 
             t.parent = Hand;
-            DC.currentVisOnDashboard.Remove(t.name);
+            VC.currentVisOnDashboard.Remove(t.name);
             t.GetComponent<Vis>().OnDashBoard = false;
-            Transform groundOriginal = DC.hullConstraintParent.Find(t.name);
+            Transform groundOriginal = VC.GroundVisParent.Find(t.name);
             if (groundOriginal != null)
             {
                 Destroy(groundOriginal.gameObject);
@@ -87,11 +87,11 @@ public class Interacter : MonoBehaviour
             obj.transform.localScale = Vector3.Lerp(obj.transform.localScale, postCardSize, Time.deltaTime * speed);
             
             if(obj.parent.name == "DashBoard") {
-                DC.currentVis.Remove(obj);
-                DC.currentVisOnDashboard.Remove(obj.name);
+                VC.currentVis.Remove(obj);
+                VC.currentVisOnDashboard.Remove(obj.name);
                 obj.GetComponent<Vis>().OnDashBoard = false;
 
-                Transform groundOriginal = DC.hullConstraintParent.Find(obj.name);
+                Transform groundOriginal = VC.GroundVisParent.Find(obj.name);
                 if (groundOriginal != null)
                 {
                     Destroy(groundOriginal.gameObject);
@@ -100,7 +100,7 @@ public class Interacter : MonoBehaviour
             }
             else if(obj.parent.name == "PinnedDashBoard")
             {
-                DC.currentPinnedOnDashboard.Remove(obj.name);
+                VC.currentPinnedOnDashboard.Remove(obj.name);
                 obj.GetComponent<Vis>().PinOnDashBoard = false;
             }
             
@@ -114,7 +114,7 @@ public class Interacter : MonoBehaviour
         print(Vector3.Distance(t.position, Hand.position));
         if (Vector3.Distance(t.position, Hand.position) <= Distance)
         {
-            DC.currentPinnedOnDashboard.Remove(t.name);
+            VC.currentPinnedOnDashboard.Remove(t.name);
             t.GetComponent<Vis>().PinOnDashBoard = false;
             t.parent = Hand;
         }
@@ -126,7 +126,7 @@ public class Interacter : MonoBehaviour
             Transform t = grabbed;
             if (Hand.position.y > PostCards.position.y)
             {
-                GameObject visOnGround = Instantiate(t.gameObject, DC.hullConstraintParent);
+                GameObject visOnGround = Instantiate(t.gameObject, VC.GroundVisParent);
                 visOnGround.transform.position = new Vector3(Hand.position.x, 0, Hand.position.z);
                 visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
                 visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
@@ -139,8 +139,8 @@ public class Interacter : MonoBehaviour
             else
             {
                 print(Hand.position);
-                t.SetParent(DC.PinnedDashBoard);
-                DC.currentPinnedOnDashboard.Add(t.name, t);
+                t.SetParent(VC.WaistDashboard);
+                VC.currentPinnedOnDashboard.Add(t.name, t);
                 t.GetComponent<Vis>().PinOnDashBoard = true;
             }
             grabbed = null;

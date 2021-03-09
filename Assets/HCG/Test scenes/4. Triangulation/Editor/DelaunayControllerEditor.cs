@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(DelaunayController))]
+[CustomEditor(typeof(VisController))]
 public class DelaunayControllerEditor : Editor
 {
-    private DelaunayController triangulatePoints;
+    private VisController triangulatePoints;
 
 
 
     private void OnEnable()
     {
-        triangulatePoints = target as DelaunayController;
+        triangulatePoints = target as VisController;
 
         //Hide the main GOs move/rot/scale handle
         Tools.hidden = true;

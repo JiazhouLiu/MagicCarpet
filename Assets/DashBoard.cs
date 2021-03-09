@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DashBoard : MonoBehaviour
 {
-    public DelaunayController dc;
+    public VisController dc;
     public float AdjustedHeight;
     public float ForwardParameter;
     public bool curved;
@@ -16,7 +16,7 @@ public class DashBoard : MonoBehaviour
     {
         // sync Camera/Human Game Object
         if (dc != null && Camera == null)
-            Camera = dc.Human;
+            //Camera = dc.Human;
         if (Camera != null) {
             // configure dashboard position (TODO: fix slope bug [head up and vis comes closer])
             transform.position = Vector3.Lerp(transform.position, Camera.TransformPoint(Camera.localPosition + Vector3.forward * ForwardParameter), Time.deltaTime * dc.speed) ;

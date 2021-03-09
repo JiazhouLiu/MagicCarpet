@@ -62,9 +62,9 @@ public class VisController : MonoBehaviour
 
     private List<Transform> currentEdges;
 
-    private List<Transform> currentVis;
-    private Dictionary<string, Transform> currentVisOnDashboard;
-    private Dictionary<string, Transform> currentPinnedOnDashboard;
+    public List<Transform> currentVis;
+    public Dictionary<string, Transform> currentVisOnDashboard;
+    public Dictionary<string, Transform> currentPinnedOnDashboard;
 
     private List<Transform> currentVisFromLeft;
     private List<Transform> currentVisFromRight;

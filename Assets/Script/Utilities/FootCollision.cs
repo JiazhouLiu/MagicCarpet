@@ -5,7 +5,7 @@ using UnityEngine;
 public class FootCollision : MonoBehaviour
 {
 
-    public DelaunayController dc;
+    public VisController dc;
 
     private void OnTriggerStay(Collider other)
     {
