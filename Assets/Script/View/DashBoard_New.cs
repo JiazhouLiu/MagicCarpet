@@ -1,19 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class DashBoard_New : MonoBehaviour
 {
-    public VisController vc;
-    //public float AdjustedHeight;
+    public DashboardController DC;
+    public Transform GroundVisParent;
     public float ForwardParameter;
     public bool curved;
     public bool lerp;
-    //public float upAngle;
     public float size;
-    public float visSizeDelta; // adjust image size to normal
     public float HSpacing;
     public float animationSpeed;
+    public float headDashboardSizeMagnifier;
 
     [Header("Circle")]
     public LineRenderer circle;
@@ -21,20 +21,13 @@ public class DashBoard_New : MonoBehaviour
     private Transform CameraTransform;
     private Transform WaistTransform;
 
-    private float displayCircleFullArc = 0;
-    private float displayCircleRadius = 0;
-    private float visDistanceInCircle = 0;
-    private float smallestAngle = 180;
-
-    //private int prevChildCount = 0;
-
     private List<Vector3> circlePointPositions;
     private List<Vector3> visPositions;
 
     private void Awake()
     {
         // sync Camera/Human Game Object
-        WaistTransform = vc.HumanWaist;
+        WaistTransform = DC.HumanWaist;
 
         circlePointPositions = new List<Vector3>();
         visPositions = new List<Vector3>();
@@ -49,22 +42,20 @@ public class DashBoard_New : MonoBehaviour
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
-        foreach (Transform t in transform)
-            t.localScale = Vector3.one * 0.1f;
+        
 
         if (name.Contains("Waist"))
         { // script for waist-level dashboard
             // configure curved display (vis)
+            foreach (Transform t in transform)
+                t.localScale = Vector3.Lerp(t.localScale, Vector3.one, Time.deltaTime * animationSpeed);
+
             if (curved)
             {
                 // configure dashboard position
                 if (lerp) transform.position = Vector3.Lerp(transform.position, WaistTransform.position, 
                     Time.deltaTime * animationSpeed);
                 else transform.position = WaistTransform.position;
-
-                //transform.position = new Vector3(transform.position.x, CameraTransform.transform.position.y + AdjustedHeight, transform.position.z);
-
-                
 
                 foreach (Transform t in transform)
                 {
@@ -74,21 +65,14 @@ public class DashBoard_New : MonoBehaviour
                     t.localEulerAngles = new Vector3(-t.localEulerAngles.x, t.localEulerAngles.y + 180, 0);
                 }
 
-
                 // configure dashboard rotation (body-fixed)
                 transform.localEulerAngles = WaistTransform.localEulerAngles;
-
             }
             else {
                 Vector3 forward = WaistTransform.forward;
 
                 // configure dashboard position
-                //if (lerp) transform.position = Vector3.Lerp(transform.position, 
-                //    WaistTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter, Time.deltaTime * animationSpeed);
-                //else
-                    transform.position = WaistTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
-
-                //transform.position = new Vector3(transform.position.x, CameraTransform.transform.position.y + AdjustedHeight, transform.position.z);
+                transform.position = WaistTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
 
                 // configure dashboard rotation
                 transform.LookAt(WaistTransform);
@@ -99,7 +83,7 @@ public class DashBoard_New : MonoBehaviour
                 foreach (Transform t in transform)
                 {
                     float n = ((transform.childCount - 1) / 2f);
-                    t.transform.localPosition = new Vector3((n - i) * (visSizeDelta + HSpacing * size), 0, 0);
+                    t.transform.localPosition = new Vector3((n - i) * (size + HSpacing * size), 0, 0);
                     t.localEulerAngles = new Vector3(0, 0, 0);
                     i++;
                 }
@@ -115,8 +99,6 @@ public class DashBoard_New : MonoBehaviour
                 if (lerp) transform.position = Vector3.Lerp(transform.position, CameraTransform.position,
                     Time.deltaTime * animationSpeed);
                 else transform.position = CameraTransform.position;
-
-                //transform.position = new Vector3(transform.position.x, CameraTransform.transform.position.y + AdjustedHeight, transform.position.z);
 
                 // configure dashboard rotation (body-fixed)
                 transform.localEulerAngles = WaistTransform.localEulerAngles;
@@ -137,12 +119,7 @@ public class DashBoard_New : MonoBehaviour
                 CameraTransform.eulerAngles = oldAngle;
 
                 // configure dashboard position 
-                //if (lerp) transform.position = Vector3.Lerp(transform.position, 
-                //    CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter, Time.deltaTime * animationSpeed);
-                //else
-                    transform.position = CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
-
-                //transform.position = new Vector3(transform.position.x, CameraTransform.transform.position.y + AdjustedHeight, transform.position.z);
+                transform.position = CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
 
                 // configure dashboard rotation
                 transform.LookAt(CameraTransform);
@@ -153,15 +130,22 @@ public class DashBoard_New : MonoBehaviour
                 foreach (Transform t in transform)
                 {
                     float n = ((transform.childCount - 1) / 2f);
-                    t.transform.localPosition = new Vector3((n - i) * (visSizeDelta + HSpacing * size), 0,0);
+                    t.transform.localPosition = new Vector3((n - i) * (size + HSpacing * size), 0,0);
                     t.localEulerAngles = new Vector3(0, 0, 0);
                     i++;
                 }
             }
+
+            // configure vis scale based on position
+            if (transform.childCount > 0)
+                UpdateVisScale();
         } 
     }
 
-    // update multiple position
+    /// <summary>
+    /// update vis position
+    /// </summary>
+    /// <param name="vis"> single vis attached to this transform</param>
     private void UpdateVisPosition(Transform vis)
     {
         if (transform.childCount > 3)
@@ -198,5 +182,68 @@ public class DashBoard_New : MonoBehaviour
             vis.localPosition = Vector3.Lerp(vis.localPosition, new Vector3(0,0,ForwardParameter / size), Time.deltaTime * animationSpeed);
         }
         
+    }
+
+    /// <summary>
+    /// update vis scale based on waist position
+    /// </summary>
+    /// <param name="vis">single vis attached to this transform</param>
+    private void UpdateVisScale() {
+        if (transform.childCount > 1)
+        {
+            Dictionary<string, float> calculatedRatio = new Dictionary<string, float>();
+            List<Transform> selectedGroundChildren = new List<Transform>();
+
+            List<string> dashBoardChildrenNames = new List<string>();
+            foreach (Transform t in transform)
+                dashBoardChildrenNames.Add(t.name);
+
+            foreach (Transform groundVis in GroundVisParent)
+            {
+                if (dashBoardChildrenNames.Contains(groundVis.name)) {
+                    //Debug.Log(groundVis.name);
+                    selectedGroundChildren.Add(groundVis);
+                }
+                    
+            }
+
+            if (selectedGroundChildren.Count != transform.childCount)
+                Debug.Log("ERRORRRR");
+
+            for (int i = 0; i < selectedGroundChildren.Count; i++)
+                calculatedRatio.Add(selectedGroundChildren[i].name, 1 / CalculateProportionalScale(WaistTransform, selectedGroundChildren[i], selectedGroundChildren));
+
+            // update VIS model scale
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).GetComponent<Vis>().HeadDashboardScale =
+                    (calculatedRatio[transform.GetChild(i).name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
+                selectedGroundChildren[i].GetComponent<Vis>().HeadDashboardScale =
+                    (calculatedRatio[selectedGroundChildren[i].name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
+            }
+        }
+        else
+        {// show 1 vis
+            // update VIS model scale
+            transform.GetChild(0).GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
+            GroundVisParent.Find(transform.GetChild(0).name).GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
+        }
+
+        foreach (Transform vis in transform)
+            vis.localScale = Vector3.Lerp(vis.localScale, 
+                vis.GetComponent<Vis>().HeadDashboardScale, Time.deltaTime * animationSpeed);
+    }
+
+    private float CalculateProportionalScale(Transform waist, Transform targetVis, List<Transform> visList)
+    {
+        List<Transform> copyList = visList.ToList();
+        copyList.Remove(targetVis);
+        float edgeLengthSum = 0;
+
+        float waistToTarget = Vector3.Distance(waist.position, targetVis.position);
+        foreach (Transform t in copyList)
+            edgeLengthSum += Vector3.Distance(targetVis.position, t.position);
+
+        return copyList.Count * waistToTarget / edgeLengthSum;
     }
 }

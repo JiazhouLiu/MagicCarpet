@@ -1,24 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTK;
 
 public class Vis : MonoBehaviour
 {
     public string showName;
     public Vector3 showGroundPosition;
-    public Vector3 showInAirPosition;
+    public Vector3 showHeadDashboardPosition;
     public Vector3 showGroundScale;
-    public Vector3 showInAirScale;
-    public bool showOnDashBoard;
+    public Vector3 showHeadDashboardScale;
+    public bool showOnHeadDashBoard;
+    public bool showOnWaistDashBoard;
     public bool showPinOnDashBoard;
+    public bool showTriggeredByLeft;
+    public bool showTriggeredByRight;
 
     public string VisName { get; set; }
     public Vector3 GroundPosition { get; set; }
-    public Vector3 InAirPosition { get; set; }
+    public Vector3 HeadDashboardPosition { get; set; }
     public Vector3 GroundScale { get; set; }
-    public Vector3 InAirScale { get; set; }
-    public bool OnDashBoard { get; set; }
+    public Vector3 HeadDashboardScale { get; set; }
+    public bool OnHeadDashBoard { get; set; }
+    public bool OnWaistDashBoard { get; set; }
     public bool PinOnDashBoard { get; set; }
+    public bool TriggeredByLeft { get; set; }
+    public bool TriggeredByRight { get; set; }
 
     public Vis() { }
 
@@ -28,42 +35,56 @@ public class Vis : MonoBehaviour
         GroundScale = scale;
     }
 
+    public Vis(string name)
+    {
+        VisName = name;
+    }
+
     public Vis(string name, Vector3 GPosition, Vector3 APosition, Vector3 GScale, Vector3 AScale)
     {
         VisName = name;
         GroundPosition = GPosition;
-        InAirPosition = APosition;
+        HeadDashboardPosition = APosition;
         GroundScale = GScale;
-        InAirScale = AScale;
+        HeadDashboardScale = AScale;
     }
 
     public void CopyEntity(Vis v)
     {
         VisName = v.VisName;
         GroundPosition = v.GroundPosition;
-        InAirPosition = v.InAirPosition;
+        HeadDashboardPosition = v.HeadDashboardPosition;
         GroundScale = v.GroundScale;
-        InAirScale = v.InAirScale;
-        OnDashBoard = v.OnDashBoard;
+        HeadDashboardScale = v.HeadDashboardScale;
+        OnHeadDashBoard = v.OnHeadDashBoard;
+        OnWaistDashBoard = v.OnWaistDashBoard;
         PinOnDashBoard = v.PinOnDashBoard;
+        TriggeredByLeft = v.TriggeredByLeft;
+        TriggeredByRight = v.TriggeredByRight;
 
         showName = VisName;
         showGroundPosition = GroundPosition;
-        showInAirPosition = InAirPosition;
+        showHeadDashboardPosition = HeadDashboardPosition;
         showGroundScale = GroundScale;
-        showInAirScale = InAirScale;
-        showOnDashBoard = OnDashBoard;
+        showHeadDashboardScale = HeadDashboardScale;
+        showOnHeadDashBoard = OnHeadDashBoard;
+        showOnWaistDashBoard = OnWaistDashBoard;
         showPinOnDashBoard = PinOnDashBoard;
+        showTriggeredByLeft = TriggeredByLeft;
+        showTriggeredByRight = TriggeredByRight;
     }
 
     public void Update()
     {
         showName = VisName;
         showGroundPosition = GroundPosition;
-        showInAirPosition = InAirPosition;
+        showHeadDashboardPosition = HeadDashboardPosition;
         showGroundScale = GroundScale;
-        showInAirScale = InAirScale;
-        showOnDashBoard = OnDashBoard;
+        showHeadDashboardScale = HeadDashboardScale;
+        showOnHeadDashBoard = OnHeadDashBoard;
+        showOnWaistDashBoard = OnWaistDashBoard;
         showPinOnDashBoard = PinOnDashBoard;
+        showTriggeredByLeft = TriggeredByLeft;
+        showTriggeredByRight = TriggeredByRight;
     }
 }

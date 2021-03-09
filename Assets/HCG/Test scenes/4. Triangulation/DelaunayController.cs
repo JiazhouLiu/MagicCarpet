@@ -193,14 +193,14 @@ public class DelaunayController : MonoBehaviour
         {
             foreach (Transform vis in currentVisOnDashboard.Values)
             {
-                if (vis.localPosition != vis.GetComponent<Vis>().InAirPosition)
-                    vis.localPosition = Vector3.Lerp(vis.localPosition, vis.GetComponent<Vis>().InAirPosition, Time.deltaTime * speed);
+                if (vis.localPosition != vis.GetComponent<Vis>().HeadDashboardPosition)
+                    vis.localPosition = Vector3.Lerp(vis.localPosition, vis.GetComponent<Vis>().HeadDashboardPosition, Time.deltaTime * speed);
             }
 
             foreach (Transform vis in currentVisOnDashboard.Values)
             {
-                if (vis.localScale != vis.GetComponent<Vis>().InAirScale)
-                    vis.localScale = Vector3.Lerp(vis.localScale, vis.GetComponent<Vis>().InAirScale, Time.deltaTime * speed);
+                if (vis.localScale != vis.GetComponent<Vis>().HeadDashboardScale)
+                    vis.localScale = Vector3.Lerp(vis.localScale, vis.GetComponent<Vis>().HeadDashboardScale, Time.deltaTime * speed);
             }
         }
 
@@ -212,26 +212,26 @@ public class DelaunayController : MonoBehaviour
         //    {
         //        if (currentPinnedOnDashboard.Count == 1)
         //        {
-        //            t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+        //            t.GetComponent<Vis>().HeadDashboardPosition = Vector3.zero;
         //        }
         //        else if (currentPinnedOnDashboard.Count == 2)
         //        {
         //            if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 0)
-        //                t.GetComponent<Vis>().InAirPosition = new Vector3((-t.GetComponent<Vis>().InAirScale.x / 2 - betweenVis) * 10, 0, 0);
+        //                t.GetComponent<Vis>().HeadDashboardPosition = new Vector3((-t.GetComponent<Vis>().HeadDashboardScale.x / 2 - betweenVis) * 10, 0, 0);
         //            else
-        //                t.GetComponent<Vis>().InAirPosition = new Vector3((t.GetComponent<Vis>().InAirScale.x / 2 + betweenVis) * 10, 0, 0);
+        //                t.GetComponent<Vis>().HeadDashboardPosition = new Vector3((t.GetComponent<Vis>().HeadDashboardScale.x / 2 + betweenVis) * 10, 0, 0);
         //        }
         //        else if (currentPinnedOnDashboard.Count == 3)
         //        {
 
-        //            Vector3 middleOneScale = currentPinnedOnDashboard.Values.ToList()[1].GetComponent<Vis>().InAirScale;
+        //            Vector3 middleOneScale = currentPinnedOnDashboard.Values.ToList()[1].GetComponent<Vis>().HeadDashboardScale;
 
         //            if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 0)
-        //                t.GetComponent<Vis>().InAirPosition = new Vector3((-(t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 - betweenVis) * 10, 0, 0);
+        //                t.GetComponent<Vis>().HeadDashboardPosition = new Vector3((-(t.GetComponent<Vis>().HeadDashboardScale.x + middleOneScale.x) / 2 - betweenVis) * 10, 0, 0);
         //            else if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 1)
-        //                t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+        //                t.GetComponent<Vis>().HeadDashboardPosition = Vector3.zero;
         //            else if (currentPinnedOnDashboard.Values.ToList().IndexOf(t) == 2)
-        //                t.GetComponent<Vis>().InAirPosition = new Vector3(((t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 + betweenVis) * 10, 0, 0);
+        //                t.GetComponent<Vis>().HeadDashboardPosition = new Vector3(((t.GetComponent<Vis>().HeadDashboardScale.x + middleOneScale.x) / 2 + betweenVis) * 10, 0, 0);
         //        }
         //    }
         //}
@@ -291,14 +291,14 @@ public class DelaunayController : MonoBehaviour
         //{
         //    foreach (Transform vis in currentPinnedOnDashboard.Values)
         //    {
-        //        if (vis.localPosition != vis.GetComponent<Vis>().InAirPosition)
-        //            vis.localPosition = Vector3.Lerp(vis.localPosition, vis.GetComponent<Vis>().InAirPosition, Time.deltaTime * speed);
+        //        if (vis.localPosition != vis.GetComponent<Vis>().HeadDashboardPosition)
+        //            vis.localPosition = Vector3.Lerp(vis.localPosition, vis.GetComponent<Vis>().HeadDashboardPosition, Time.deltaTime * speed);
         //    }
 
         //    foreach (Transform vis in currentPinnedOnDashboard.Values)
         //    {
-        //        if (vis.localScale != vis.GetComponent<Vis>().InAirScale)
-        //            vis.localScale = Vector3.Lerp(vis.localScale, vis.GetComponent<Vis>().InAirScale, Time.deltaTime * speed);
+        //        if (vis.localScale != vis.GetComponent<Vis>().HeadDashboardScale)
+        //            vis.localScale = Vector3.Lerp(vis.localScale, vis.GetComponent<Vis>().HeadDashboardScale, Time.deltaTime * speed);
         //    }
         //}
         //string left = "";
@@ -343,7 +343,7 @@ public class DelaunayController : MonoBehaviour
             {
                 if (GroundVisParent.Find(t.name) != null)
                 {
-                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnDashBoard = false;
+                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnHeadDashBoard = false;
                     Destroy(currentVisOnDashboard[t.name].gameObject);
                     currentVisOnDashboard.Remove(t.name);
                 }
@@ -364,7 +364,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visNameFromRight.Contains(s))
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
                     }
@@ -390,7 +390,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visNameFromLeft.Contains(s) && GroundVisParent.Find(s) != null)
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
                     }
@@ -420,12 +420,12 @@ public class DelaunayController : MonoBehaviour
                 if (!rightVis.Contains(t))
                 {
                     restLeftVis.Add(t);
-                    sumOfLeftVisScaleX += t.GetComponent<Vis>().InAirScale.x + betweenVisDelta;
+                    sumOfLeftVisScaleX += t.GetComponent<Vis>().HeadDashboardScale.x + betweenVisDelta;
                     wholeListofVis.Add(t);
                 }
                 else {
                     jointListofVis.Add(t);
-                    sumOfMiddleVisScaleX += t.GetComponent<Vis>().InAirScale.x + betweenVisDelta;
+                    sumOfMiddleVisScaleX += t.GetComponent<Vis>().HeadDashboardScale.x + betweenVisDelta;
                     wholeListofVis.Add(t);
                 }
             }
@@ -434,7 +434,7 @@ public class DelaunayController : MonoBehaviour
             {
                 if (!leftVis.Contains(t)) {
                     restRightVis.Add(t);
-                    sumOfRightVisScaleX += t.GetComponent<Vis>().InAirScale.x + betweenVisDelta;
+                    sumOfRightVisScaleX += t.GetComponent<Vis>().HeadDashboardScale.x + betweenVisDelta;
                     wholeListofVis.Add(t);
                 }
             }
@@ -461,7 +461,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visName.Contains(s))
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
                     }
@@ -486,30 +486,30 @@ public class DelaunayController : MonoBehaviour
         {
             if (vis.Count == 1)
             {
-                t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+                t.GetComponent<Vis>().HeadDashboardPosition = Vector3.zero;
             }
             else if (vis.Count == 2)
             {
                 if (vis.IndexOf(t) == 0)
-                    t.GetComponent<Vis>().InAirPosition = new Vector3((-t.GetComponent<Vis>().InAirScale.x / 2 - betweenVisDelta) * 10, 0, 0);
+                    t.GetComponent<Vis>().HeadDashboardPosition = new Vector3((-t.GetComponent<Vis>().HeadDashboardScale.x / 2 - betweenVisDelta) * 10, 0, 0);
                 else
-                    t.GetComponent<Vis>().InAirPosition = new Vector3((t.GetComponent<Vis>().InAirScale.x / 2 + betweenVisDelta) * 10, 0, 0);
+                    t.GetComponent<Vis>().HeadDashboardPosition = new Vector3((t.GetComponent<Vis>().HeadDashboardScale.x / 2 + betweenVisDelta) * 10, 0, 0);
             }
             else if (vis.Count == 3)
             {
 
-                Vector3 middleOneScale = vis[1].GetComponent<Vis>().InAirScale;
+                Vector3 middleOneScale = vis[1].GetComponent<Vis>().HeadDashboardScale;
 
                 if (vis.IndexOf(t) == 0)
-                    t.GetComponent<Vis>().InAirPosition = new Vector3((-(t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 - betweenVisDelta) * 10, 0, 0);
+                    t.GetComponent<Vis>().HeadDashboardPosition = new Vector3((-(t.GetComponent<Vis>().HeadDashboardScale.x + middleOneScale.x) / 2 - betweenVisDelta) * 10, 0, 0);
                 else if (vis.IndexOf(t) == 1)
-                    t.GetComponent<Vis>().InAirPosition = Vector3.zero;
+                    t.GetComponent<Vis>().HeadDashboardPosition = Vector3.zero;
                 else if (vis.IndexOf(t) == 2)
-                    t.GetComponent<Vis>().InAirPosition = new Vector3(((t.GetComponent<Vis>().InAirScale.x + middleOneScale.x) / 2 + betweenVisDelta) * 10, 0, 0);
+                    t.GetComponent<Vis>().HeadDashboardPosition = new Vector3(((t.GetComponent<Vis>().HeadDashboardScale.x + middleOneScale.x) / 2 + betweenVisDelta) * 10, 0, 0);
             }
 
             
-            t.GetComponent<Vis>().InAirPosition = new Vector3(t.GetComponent<Vis>().InAirPosition.x + deltaX, 0, 0);
+            t.GetComponent<Vis>().HeadDashboardPosition = new Vector3(t.GetComponent<Vis>().HeadDashboardPosition.x + deltaX, 0, 0);
             if (currentVisOnDashboard.ContainsKey(t.name))
                 currentVisOnDashboard[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
         }
@@ -601,7 +601,7 @@ public class DelaunayController : MonoBehaviour
                     }
 
                     for (int i = 0; i < 3; i++)
-                        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+                        showOnDashboard[i].GetComponent<Vis>().HeadDashboardScale =
                             (calculatedRatio[i] / calculatedRatio.Sum()) * Vector3.one;
                 }
                 else // show 2 vis
@@ -611,12 +611,12 @@ public class DelaunayController : MonoBehaviour
                         VisDistanceToFoot.Add((1 / Vector3.Distance(t.position, foot.position)));
 
                     for (int i = 0; i < 2; i++)
-                        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+                        showOnDashboard[i].GetComponent<Vis>().HeadDashboardScale =
                             (VisDistanceToFoot[i] / VisDistanceToFoot.Sum()) * Vector3.one;
                 }
             }
             else// show 1 vis
-                showOnDashboard[0].GetComponent<Vis>().InAirScale = Vector3.one;
+                showOnDashboard[0].GetComponent<Vis>().HeadDashboardScale = Vector3.one;
 
             showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
             return showOnDashboard;
@@ -659,7 +659,7 @@ public class DelaunayController : MonoBehaviour
     //                    }
 
     //                    for (int i = 0; i < 3; i++)
-    //                        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+    //                        showOnDashboard[i].GetComponent<Vis>().HeadDashboardScale =
     //                            (calculatedRatio[i] / calculatedRatio.Sum()) * Vector3.one;
     //                }
     //                else
@@ -669,12 +669,12 @@ public class DelaunayController : MonoBehaviour
     //                        VisDistanceToHuman.Add((1 / Vector3.Distance(t.position, Human.position)));
 
     //                    for (int i = 0; i < 2; i++)
-    //                        showOnDashboard[i].GetComponent<Vis>().InAirScale =
+    //                        showOnDashboard[i].GetComponent<Vis>().HeadDashboardScale =
     //                            (VisDistanceToHuman[i] / VisDistanceToHuman.Sum()) * Vector3.one;
     //                }
     //            }
     //            else// show 1 vis
-    //                showOnDashboard[0].GetComponent<Vis>().InAirScale = Vector3.one;
+    //                showOnDashboard[0].GetComponent<Vis>().HeadDashboardScale = Vector3.one;
 
     //            showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
     //            return showOnDashboard;
@@ -687,7 +687,7 @@ public class DelaunayController : MonoBehaviour
     //        foreach (Transform t in currentVisOnDashboard.Values.ToList())
     //        {
     //            if (GroundVisParent.Find(t.name) != null) {
-    //                GroundVisParent.Find(t.name).GetComponent<Vis>().OnDashBoard = false;
+    //                GroundVisParent.Find(t.name).GetComponent<Vis>().OnHeadDashBoard = false;
     //                Destroy(currentVisOnDashboard[t.name].gameObject);
     //                currentVisOnDashboard.Remove(t.name);
     //            }
@@ -770,7 +770,7 @@ public class DelaunayController : MonoBehaviour
         if (oldVis.Count == 0) {
             foreach (Transform t in newVis.Values.ToList())
             {
-                t.GetComponent<Vis>().OnDashBoard = true;
+                t.GetComponent<Vis>().OnHeadDashBoard = true;
                 GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
                 visOnDashBoard.transform.position = t.position;
                 visOnDashBoard.transform.localEulerAngles = Vector3.zero;
@@ -793,7 +793,7 @@ public class DelaunayController : MonoBehaviour
                 }
                 else
                 {
-                    t.GetComponent<Vis>().OnDashBoard = true;
+                    t.GetComponent<Vis>().OnHeadDashBoard = true;
                     GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
                     visOnDashBoard.transform.position = t.position;
                     visOnDashBoard.transform.localEulerAngles = Vector3.zero;
@@ -814,7 +814,7 @@ public class DelaunayController : MonoBehaviour
             //    {
             //        if (GroundVisParent.Find(t.name) != null)
             //        {
-            //            GroundVisParent.Find(t.name).GetComponent<Vis>().OnDashBoard = false;
+            //            GroundVisParent.Find(t.name).GetComponent<Vis>().OnHeadDashBoard = false;
             //            Destroy(currentVisOnDashboard[t.name].gameObject);
             //            currentVisOnDashboard.Remove(t.name);
             //        }
@@ -1105,7 +1105,7 @@ public class DelaunayController : MonoBehaviour
             t.SetParent(PinnedDashBoard);
             currentPinnedOnDashboard.Add(t.name, t);
             t.GetComponent<Vis>().PinOnDashBoard = true;
-            t.GetComponent<Vis>().InAirScale = Vector3.one * 0.33f;
+            t.GetComponent<Vis>().HeadDashboardScale = Vector3.one * 0.33f;
         }
     }
 
