@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class DashBoard_New : MonoBehaviour
+public class DashBoard_PhysicalTouch : MonoBehaviour
 {
-    public DashboardController DC;
+    public DashboardController_PhysicalTouch DC;
     public Transform GroundVisParent;
     public float ForwardParameter;
     public bool curved;

@@ -11,6 +11,8 @@ public enum DisplayDashboard // your custom enumeration
 [RequireComponent(typeof(LineRenderer))]
 public class Circle : MonoBehaviour
 {
+    public Transform HeadDashboard;
+    public Transform WaistDashboard;
     public int vertexCount = 100;
     public float lineWidth = 0.2f;
     public DisplayDashboard display = new DisplayDashboard();
@@ -29,17 +31,25 @@ public class Circle : MonoBehaviour
         else {
             if (display == DisplayDashboard.HeadDisplay)
             {
-                radius = GameObject.Find("DashBoard - Head Level").GetComponent<DashBoard_New>().ForwardParameter;
-                if (GameObject.Find("DashBoard - Head Level").transform.childCount > 1)
+                if (HeadDashboard.GetComponent<DashBoard_New>() != null)
+                    radius = HeadDashboard.GetComponent<DashBoard_New>().ForwardParameter;
+                else
+                    radius = HeadDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
+
+                if (HeadDashboard.childCount > 1)
                 {
-                    vertexCount = GameObject.Find("DashBoard - Head Level").transform.childCount * 2 - 2;
+                    vertexCount = HeadDashboard.childCount * 2 - 2;
                 }
             }
             else {
-                radius = GameObject.Find("DashBoard - Waist Level").GetComponent<DashBoard_New>().ForwardParameter;
-                if (GameObject.Find("DashBoard - Waist Level").transform.childCount > 1)
+                if (WaistDashboard.GetComponent<DashBoard_New>() != null)
+                    radius = WaistDashboard.GetComponent<DashBoard_New>().ForwardParameter;
+                else
+                    radius = WaistDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
+
+                if (WaistDashboard.childCount > 1)
                 {
-                    vertexCount = GameObject.Find("DashBoard - Waist Level").transform.childCount * 2 - 2;
+                    vertexCount = WaistDashboard.childCount * 2 - 2;
                 }
             }
         }
@@ -57,18 +67,26 @@ public class Circle : MonoBehaviour
         {
             if (display == DisplayDashboard.HeadDisplay)
             {
-                radius = GameObject.Find("DashBoard - Head Level").GetComponent<DashBoard_New>().ForwardParameter;
-                if (GameObject.Find("DashBoard - Head Level").transform.childCount > 1)
+                if (HeadDashboard.GetComponent<DashBoard_New>() != null)
+                    radius = HeadDashboard.GetComponent<DashBoard_New>().ForwardParameter;
+                else
+                    radius = HeadDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
+
+                if (HeadDashboard.childCount > 1)
                 {
-                    vertexCount = GameObject.Find("DashBoard - Head Level").transform.childCount * 2 - 2;
+                    vertexCount = HeadDashboard.childCount * 2 - 2;
                 }
             }
             else
             {
-                radius = GameObject.Find("DashBoard - Waist Level").GetComponent<DashBoard_New>().ForwardParameter;
-                if (GameObject.Find("DashBoard - Waist Level").transform.childCount > 1)
+                if (WaistDashboard.GetComponent<DashBoard_New>() != null)
+                    radius = WaistDashboard.GetComponent<DashBoard_New>().ForwardParameter;
+                else
+                    radius = WaistDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
+
+                if (WaistDashboard.childCount > 1)
                 {
-                    vertexCount = GameObject.Find("DashBoard - Waist Level").transform.childCount * 2 - 2;
+                    vertexCount = WaistDashboard.transform.childCount * 2 - 2;
                 }
             }
         }

@@ -470,13 +470,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DC: {fileID: 126790192}
   GroundVisParent: {fileID: 789476394}
-  ForwardParameter: 2
+  ForwardParameter: 3
   curved: 1
   lerp: 1
   size: 0.8
   HSpacing: 0.1
   animationSpeed: 3
-  headDashboardSizeMagnifier: 5
+  headDashboardSizeMagnifier: 3
   circle: {fileID: 863267461}
 --- !u!4 &197005175
 Transform:
@@ -541,6 +541,12 @@ MonoBehaviour:
   controllerAttachPoint: {fileID: 0}
   controllerEvents: {fileID: 226439762}
   interactTouch: {fileID: 226439758}
+--- !u!4 &518401872 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5497229081443829691, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &570697285 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9021928950873538981, guid: d53d4948583868b4aa66bc05c1c76ae0,
@@ -769,7 +775,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1945763252}
+    m_TransformParent: {fileID: 518401872}
     m_Modifications:
     - target: {fileID: 1558849707420706162, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
@@ -786,6 +792,16 @@ PrefabInstance:
       propertyPath: lineWidth
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1558849707420706164, guid: 6f093bd2cd77709429a95f915b5158c1,
+        type: 3}
+      propertyPath: HeadDashboard
+      value: 
+      objectReference: {fileID: 197005175}
+    - target: {fileID: 1558849707420706164, guid: 6f093bd2cd77709429a95f915b5158c1,
+        type: 3}
+      propertyPath: WaistDashboard
+      value: 
+      objectReference: {fileID: 943662730}
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -794,12 +810,12 @@ PrefabInstance:
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6800001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.08
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
@@ -2369,8 +2385,8 @@ Transform:
   m_LocalScale: {x: 0.3, y: 0.05, z: 0.3}
   m_Children:
   - {fileID: 1899046900}
-  m_Father: {fileID: 1945763247}
-  m_RootOrder: 3
+  m_Father: {fileID: 1945763248}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1929076753
 MonoBehaviour:
@@ -2528,12 +2544,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56af40b9ce01df345b295050108afc34, type: 3}
---- !u!4 &1945763247 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5497485846537936197, guid: 56af40b9ce01df345b295050108afc34,
-    type: 3}
-  m_PrefabInstance: {fileID: 1945763246}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1945763248 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5500296448778711401, guid: 56af40b9ce01df345b295050108afc34,
@@ -2576,12 +2586,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eeda6d41317f444b900e374895f14e95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1945763252 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5497320498897309939, guid: 56af40b9ce01df345b295050108afc34,
-    type: 3}
-  m_PrefabInstance: {fileID: 1945763246}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2083860545
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2731,6 +2735,16 @@ PrefabInstance:
       propertyPath: lineWidth
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1558849707420706164, guid: 6f093bd2cd77709429a95f915b5158c1,
+        type: 3}
+      propertyPath: HeadDashboard
+      value: 
+      objectReference: {fileID: 197005175}
+    - target: {fileID: 1558849707420706164, guid: 6f093bd2cd77709429a95f915b5158c1,
+        type: 3}
+      propertyPath: WaistDashboard
+      value: 
+      objectReference: {fileID: 943662730}
     - target: {fileID: 1558849707420706165, guid: 6f093bd2cd77709429a95f915b5158c1,
         type: 3}
       propertyPath: m_LocalPosition.x

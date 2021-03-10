@@ -62,10 +62,7 @@ public class VisController : MonoBehaviour
                 visualisation.OnHeadDashBoard = false;
 
                 //remove vis from ground parent
-                if (DC.GroundVisParent.Find(name)) {
-                    Destroy(DC.GroundVisParent.Find(name));
-                    DC.RemoveFromHeadDashboard(this);
-                }
+                DC.RemoveFromHeadDashboard(this);
 
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Created", ID);
                 //VRTK_ControllerHaptics.TriggerHapticPulse(VRTK_ControllerReference.GetControllerReference(interactableObject.GetGrabbingObject()), 0.4f);
@@ -114,17 +111,18 @@ public class VisController : MonoBehaviour
         }
         else
         {
-            //Debug.Log("speed too slow");
-            //GetComponent<Rigidbody>().velocity = Vector3.zero;
-            //GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            Debug.Log("speed too slow");
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
-            //// If it wasn't thrown, check to see if it is being placed on the display screen
-            //if (isTouchingDisplaySurface)
-            //{
-            //    AttachToDisplayScreen();
-            //}
-            //else
-            //    AnimateTowards(originalPos, originalRot, 0.4f);      
+            // If it wasn't thrown, check to see if it is being placed on the display screen
+            if (isTouchingDisplaySurface)
+            {
+                AttachToDisplayScreen();
+            }
+            else
+                DC.ReturnToPocket(this);
+                //AnimateTowards(originalPos, originalRot, 0.4f);
         }
     }
 
@@ -178,6 +176,9 @@ public class VisController : MonoBehaviour
 
         isTouchingDisplaySurface = false;
         touchingDisplaySurface = null;
+
+        transform.SetParent(DC.GroundVisParent);
+        transform.localScale = Vector3.one;
 
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
     }

@@ -4,7 +4,7 @@ using Habrador_Computational_Geometry;
 using System.Linq;
 using VRTK;
 
-public class DashboardController : MonoBehaviour
+public class DashboardController_PhysicalTouch : MonoBehaviour
 {
     public GameObject linePrefab;
     public GameObject colorFillPrefab;
@@ -64,8 +64,8 @@ public class DashboardController : MonoBehaviour
     private List<Transform> selectedVisFromLeft;
     private List<Transform> selectedVisFromRight;
 
-    //private List<Transform> currentVisFromLeftFootPhysical;
-    //private List<Transform> currentVisFromRightFootPhysical;
+    private List<Transform> currentVisFromLeftFootPhysical;
+    private List<Transform> currentVisFromRightFootPhysical;
 
     private bool DemoFlagLeft = true;
     private bool DemoFlagRight = true;
@@ -91,8 +91,8 @@ public class DashboardController : MonoBehaviour
         selectedVis = new List<Transform>();
         selectedVisFromLeft = new List<Transform>();
         selectedVisFromRight = new List<Transform>();
-        //currentVisFromLeftFootPhysical = new List<Transform>();
-        //currentVisFromRightFootPhysical = new List<Transform>();
+        currentVisFromLeftFootPhysical = new List<Transform>();
+        currentVisFromRightFootPhysical = new List<Transform>();
         vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
         CurrentTriangles = new HalfEdgeData2();
 
@@ -135,10 +135,9 @@ public class DashboardController : MonoBehaviour
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
         // detect ground marker change
-        if (CheckMarkerMoving(GroundVisParent))
+        if (CheckMarkerMoving(GroundVisParent) && GroundVisParent.childCount > 2)
         {
-            if(GroundVisParent.childCount > 0)
-                GenerateTriangulation();
+            GenerateTriangulation();
         }
 
         if (CheckHumanFeetMoving("left") || DemoFlagLeft)
@@ -180,27 +179,27 @@ public class DashboardController : MonoBehaviour
         }
     }
 
-    //public void RegisterLeftFootPhysical(Transform collider)
-    //{
-    //    currentVisFromLeftFootPhysical.Add(GroundVisParent.Find(collider.name));
-    //}
+    public void RegisterLeftFootPhysical(Transform collider)
+    {
+        currentVisFromLeftFootPhysical.Add(GroundVisParent.Find(collider.name));
+    }
 
-    //public void RegisterRightFootPhysical(Transform collider)
-    //{
-    //    currentVisFromRightFootPhysical.Add(GroundVisParent.Find(collider.name));
-    //}
+    public void RegisterRightFootPhysical(Transform collider)
+    {
+        currentVisFromRightFootPhysical.Add(GroundVisParent.Find(collider.name));
+    }
 
-    //public void RemoveLeftFootPhysical(Transform collider)
-    //{
-    //    if (currentVisFromLeftFootPhysical.Contains(GroundVisParent.Find(collider.name)))
-    //        currentVisFromLeftFootPhysical.Remove(GroundVisParent.Find(collider.name));
-    //}
+    public void RemoveLeftFootPhysical(Transform collider)
+    {
+        if (currentVisFromLeftFootPhysical.Contains(GroundVisParent.Find(collider.name)))
+            currentVisFromLeftFootPhysical.Remove(GroundVisParent.Find(collider.name));
+    }
 
-    //public void RemoveRightFootPhysical(Transform collider)
-    //{
-    //    if (currentVisFromRightFootPhysical.Contains(GroundVisParent.Find(collider.name)))
-    //        currentVisFromRightFootPhysical.Remove(GroundVisParent.Find(collider.name));
-    //}
+    public void RemoveRightFootPhysical(Transform collider)
+    {
+        if (currentVisFromRightFootPhysical.Contains(GroundVisParent.Find(collider.name)))
+            currentVisFromRightFootPhysical.Remove(GroundVisParent.Find(collider.name));
+    }
 
     public void PinToGround(Transform t)
     {
@@ -234,24 +233,8 @@ public class DashboardController : MonoBehaviour
     }
 
     public void RemoveFromHeadDashboard(VisController vis) {
-        Transform removedGroundVis = null;
-        if (GroundVisParent.Find(vis.name))
-        {
-            removedGroundVis = GroundVisParent.Find(vis.name);
-
-            if (selectedVisFromLeft.Contains(removedGroundVis))
-                selectedVisFromLeft.Remove(removedGroundVis);
-            if (selectedVisFromRight.Contains(removedGroundVis))
-                selectedVisFromRight.Remove(removedGroundVis);
-
-            Destroy(removedGroundVis.gameObject);
-        }
-        
-
         if (currentVisOnHeadDashboard.ContainsKey(vis.name))
             currentVisOnHeadDashboard.Remove(vis.name);
-        
-
     }
 
     #region VIS management
@@ -363,43 +346,43 @@ public class DashboardController : MonoBehaviour
 
         List<Transform> showOnDashboard = new List<Transform>();
 
-        //// get foot physically stand vis
-        //if (foot.name == "LeftFoot")
-        //{
-        //    if (currentVisFromLeftFootPhysical.Count > 0)
-        //    {
-        //        foreach (Transform t in currentVisFromLeftFootPhysical)
-        //            showOnDashboard.Add(t);
-        //    }
-        //}
-        //else
-        //{
-        //    if (currentVisFromRightFootPhysical.Count > 0)
-        //    {
-        //        foreach (Transform t in currentVisFromRightFootPhysical)
-        //            showOnDashboard.Add(t);
-        //    }
-        //}
-
-        if (Delaunay)
+        // get foot physically stand vis
+        if (foot.name == "LeftFoot")
         {
-            // get foot in triangles
-            if (FootInMarkers.Count > 0)
+            if (currentVisFromLeftFootPhysical.Count > 0)
             {
-                List<Transform> CheckDistance = CheckDistanceToEdge(foot, FootInMarkers.Values.ToList());
-                if (CheckDistance != null)
-                {
-                    foreach (Transform t in CheckDistance)
-                        showOnDashboard.Add(t);
-                }
+                foreach (Transform t in currentVisFromLeftFootPhysical)
+                    showOnDashboard.Add(t);
             }
         }
         else
         {
-            List<Transform> nearest3Vis = GetNearestVis(foot);
-            foreach (Transform t in nearest3Vis)
-                showOnDashboard.Add(t);
+            if (currentVisFromRightFootPhysical.Count > 0)
+            {
+                foreach (Transform t in currentVisFromRightFootPhysical)
+                    showOnDashboard.Add(t);
+            }
         }
+
+        //if (Delaunay)
+        //{
+        //    // get foot in triangles
+        //    if (FootInMarkers.Count > 0)
+        //    {
+        //        List<Transform> CheckDistance = CheckDistanceToEdge(foot, FootInMarkers.Values.ToList());
+        //        if (CheckDistance != null)
+        //        {
+        //            foreach (Transform t in CheckDistance)
+        //                showOnDashboard.Add(t);
+        //        }
+        //    }
+        //}
+        //else
+        //{
+        //    List<Transform> nearest3Vis = GetNearestVis(foot);
+        //    foreach (Transform t in nearest3Vis)
+        //        showOnDashboard.Add(t);
+        //}
 
         // if some vis to show
         if (showOnDashboard.Count > 0)
