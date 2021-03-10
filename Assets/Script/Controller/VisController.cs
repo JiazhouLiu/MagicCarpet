@@ -34,6 +34,8 @@ public class VisController : MonoBehaviour
 
     private float deletionTimer = 0;
 
+    private Transform previousParent;
+
 
     private void Awake()
     {
@@ -48,6 +50,7 @@ public class VisController : MonoBehaviour
         {
             //transform.SetParent(interactableObject.GetGrabbingObject().transform);
             transform.localScale = Vector3.one * 0.5f;
+            transform.localEulerAngles = Vector3.zero;
 
             // Check if the vis is being pulled from the waist Dashboard
             if (ShowingOnWaistDashboard)
@@ -62,7 +65,7 @@ public class VisController : MonoBehaviour
                 visualisation.OnHeadDashBoard = false;
 
                 //remove vis from ground parent
-                DC.RemoveFromHeadDashboard(this);
+                DC.RemoveFromHeadDashboard(this, previousParent);
 
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Created", ID);
                 //VRTK_ControllerHaptics.TriggerHapticPulse(VRTK_ControllerReference.GetControllerReference(interactableObject.GetGrabbingObject()), 0.4f);
@@ -74,8 +77,11 @@ public class VisController : MonoBehaviour
             {
                 isThrowing = false;
                 ColliderActiveState = false;
-                transform.DOScale(0, 1f).OnComplete(() => DC.ReturnToPocket(this));
-                Debug.Log("deleting");
+                DC.ReturnToPocket(this);
+                GetComponent<Rigidbody>().useGravity = false;
+                GetComponent<Rigidbody>().isKinematic = true;
+                //transform.DOScale(0, 1f).OnComplete(() => DC.ReturnToPocket(this));
+                //Debug.Log("deleting");
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Destroyed", ID);
             }
             else
@@ -83,6 +89,11 @@ public class VisController : MonoBehaviour
                 deletionTimer += Time.deltaTime;
             }
         }
+        else {
+            GetComponent<Rigidbody>().useGravity = false;
+            GetComponent<Rigidbody>().isKinematic = true;
+        }
+
     }
 
     private void VisGrabbed(object sender, InteractableObjectEventArgs e)
@@ -90,6 +101,8 @@ public class VisController : MonoBehaviour
         originalWorldPos = transform.position;
         originalPos = transform.localPosition;
         originalRot = transform.localRotation;
+        previousParent = transform.parent;
+        //Debug.Log(previousParent.name);
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Grab start", ID);
     }
 
@@ -99,19 +112,18 @@ public class VisController : MonoBehaviour
 
         // Check to see if the chart was thrown
         float speed = GetComponent<Rigidbody>().velocity.sqrMagnitude;
-        Debug.Log(speed);
-        if (speed > 5f)
+        //Debug.Log(speed);
+        if (speed > 10f)
         {
-            Debug.Log("speed too fast");
             GetComponent<Rigidbody>().useGravity = true;
+            GetComponent<Rigidbody>().isKinematic = false;
             isThrowing = true;
             deletionTimer = 0;
-
+            //GetComponent<Rigidbody>().AddForce(GetComponent<Rigidbody>().velocity, ForceMode.Acceleration);
             //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Thrown", ID);
         }
         else
         {
-            Debug.Log("speed too slow");
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
@@ -137,16 +149,17 @@ public class VisController : MonoBehaviour
     {
         if (other.CompareTag("DisplaySurface"))
         {
-            Debug.Log("enter display surface");
+            //Debug.Log("enter display surface");
             isTouchingDisplaySurface = true;
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
 
             // If the chart was thrown at the screen, attach it to the screen
             if (isThrowing)
             {
-                Debug.Log("throw to display surface");
+                //Debug.Log("throw to display surface");
                 isThrowing = false;
                 currentRigidbody.useGravity = false;
+                currentRigidbody.isKinematic = true;
                 currentRigidbody.velocity = Vector3.zero;
                 currentRigidbody.angularVelocity = Vector3.zero;
                 AttachToDisplayScreen();
@@ -168,11 +181,13 @@ public class VisController : MonoBehaviour
         Vector3 pos;
         Quaternion rot;
 
-        Debug.Log("Attach to screen method");
+        //Debug.Log("Attach to screen method");
 
         touchingDisplaySurface.CalculatePositionOnScreen(this, out pos, out rot);
 
-        AnimateTowards(pos, rot, 0.2f);
+        //transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * speed);
+        //transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, rot.eulerAngles, Time.deltaTime * speed);
+        AnimateTowards(pos, rot, 0f);
 
         isTouchingDisplaySurface = false;
         touchingDisplaySurface = null;

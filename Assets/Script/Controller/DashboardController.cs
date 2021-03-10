@@ -146,6 +146,8 @@ public class DashboardController : MonoBehaviour
             DemoFlagLeft = false;
             if (CurrentTriangles.faces.Count > 0)
                 selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+            else
+                selectedVisFromLeft = new List<Transform>();
 
             selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
             if (selectedVis.Count > 0)
@@ -157,6 +159,8 @@ public class DashboardController : MonoBehaviour
             DemoFlagRight = false;
             if (CurrentTriangles.faces.Count > 0)
                 selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+            else
+                selectedVisFromRight = new List<Transform>();
 
             selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
             if (selectedVis.Count > 0)
@@ -167,6 +171,12 @@ public class DashboardController : MonoBehaviour
         {
             selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
             currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+
+            HeadDashboard.DetachChildren();
+            for (int i = 0; i < currentVisOnHeadDashboard.Count; i++) {
+                currentVisOnHeadDashboard.Values.ToList()[currentVisOnHeadDashboard.Count - i - 1].SetParent(HeadDashboard);
+            }
+                
         }
 
         if (Input.GetKeyDown("z")) {
@@ -233,7 +243,7 @@ public class DashboardController : MonoBehaviour
         vis.transform.SetParent(WaistDashboard);
     }
 
-    public void RemoveFromHeadDashboard(VisController vis) {
+    public void RemoveFromHeadDashboard(VisController vis, Transform previousParent) {
         Transform removedGroundVis = null;
         if (GroundVisParent.Find(vis.name))
         {
@@ -243,14 +253,20 @@ public class DashboardController : MonoBehaviour
                 selectedVisFromLeft.Remove(removedGroundVis);
             if (selectedVisFromRight.Contains(removedGroundVis))
                 selectedVisFromRight.Remove(removedGroundVis);
-
-            Destroy(removedGroundVis.gameObject);
         }
-        
+
+        if (previousParent.name.Contains("Head")) 
+        { // pick from head, remove ground one
+
+                Destroy(removedGroundVis.gameObject);
+        } else if (previousParent.name.Contains("Ground"))
+        { // pick from ground, remove head one
+            if (HeadDashboard.Find(vis.name))
+                Destroy(HeadDashboard.Find(vis.name).gameObject);
+        }
 
         if (currentVisOnHeadDashboard.ContainsKey(vis.name))
             currentVisOnHeadDashboard.Remove(vis.name);
-        
 
     }
 

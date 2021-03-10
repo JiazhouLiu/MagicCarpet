@@ -364,6 +364,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
             }
         }
 
+        Debug.Log(showOnDashboard.Count);
         //if (Delaunay)
         //{
         //    // get foot in triangles
@@ -535,8 +536,12 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
         {
             Dictionary<Transform, float> markerAnglesToHuman = new Dictionary<Transform, float>();
 
-            foreach (Transform t in markers)
-                markerAnglesToHuman.Add(t, Vector3.SignedAngle(HumanWaist.forward, t.position - HumanWaist.position, Vector3.up));
+            Debug.Log(HumanWaist == null);
+            foreach (Transform t in markers) {
+                if(t != null)
+                    markerAnglesToHuman.Add(t, Vector3.SignedAngle(HumanWaist.forward, t.position - HumanWaist.position, Vector3.up));
+            }
+                
 
             foreach (KeyValuePair<Transform, float> item in markerAnglesToHuman.OrderBy(key => key.Value))
                 finalList.Add(item.Key);

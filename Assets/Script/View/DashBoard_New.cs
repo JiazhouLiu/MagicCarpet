@@ -92,8 +92,7 @@ public class DashBoard_New : MonoBehaviour
 
         if (name.Contains("Head") && CameraTransform != null)
         {// script for head-level dashboard
-            foreach (Transform t in transform)
-                t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
+            
             // configure curved display (vis)
             if (curved)
             {
@@ -141,6 +140,11 @@ public class DashBoard_New : MonoBehaviour
             // configure vis scale based on position
             if (transform.childCount > 0)
                 UpdateVisScale();
+            else {
+                foreach (Transform t in transform)
+                    t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
+            }
+
         } 
     }
 

@@ -9,17 +9,23 @@ public class FootCollision : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (name == "LeftFoot")
-            DC.RemoveLeftFootPhysical(other.transform);
-        else
-            DC.RemoveRightFootPhysical(other.transform);
+        if (other.name.Contains("Metropolitan")) {
+            if (name == "LeftFoot")
+                DC.RemoveLeftFootPhysical(other.transform);
+            else
+                DC.RemoveRightFootPhysical(other.transform);
+        }
+        
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (name == "LeftFoot")
-            DC.RegisterLeftFootPhysical(other.transform);
-        else
-            DC.RegisterRightFootPhysical(other.transform);
+        if (other.name.Contains("Metropolitan"))
+        {
+            if (name == "LeftFoot")
+                DC.RegisterLeftFootPhysical(other.transform);
+            else
+                DC.RegisterRightFootPhysical(other.transform);
+        }
     }
 }
