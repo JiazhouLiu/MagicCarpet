@@ -115,11 +115,12 @@ public class VisController : MonoBehaviour
         //Debug.Log(speed);
         if (speed > 10f)
         {
+            //GetComponent<Rigidbody>().AddForce(GetComponent<Rigidbody>().velocity * 10, ForceMode.Acceleration);
             GetComponent<Rigidbody>().useGravity = true;
             GetComponent<Rigidbody>().isKinematic = false;
             isThrowing = true;
             deletionTimer = 0;
-            //GetComponent<Rigidbody>().AddForce(GetComponent<Rigidbody>().velocity, ForceMode.Acceleration);
+            
             //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Thrown", ID);
         }
         else

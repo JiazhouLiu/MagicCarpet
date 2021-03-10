@@ -143,8 +143,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &126790189
 GameObject:
@@ -232,8 +232,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &195106544
 GameObject:
@@ -472,8 +472,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &668950095 stripped
 GameObject:
@@ -496,8 +496,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &671195970
 GameObject:
@@ -550,8 +550,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &789476393
 GameObject:
@@ -610,8 +610,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &943662728
 GameObject:
@@ -1623,8 +1623,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &1428704519
 GameObject:
@@ -2118,8 +2118,8 @@ MonoBehaviour:
   precisionGrab: 1
   rightSnapHandle: {fileID: 0}
   leftSnapHandle: {fileID: 0}
-  throwVelocityWithAttachDistance: 1
-  throwMultiplier: 5
+  throwVelocityWithAttachDistance: 0
+  throwMultiplier: 8
   onGrabCollisionDelay: 0
 --- !u!1 &1768383980
 GameObject:
