@@ -12,6 +12,7 @@ public class Vis : MonoBehaviour
     public Vector3 showHeadDashboardScale;
     public bool showOnHeadDashBoard;
     public bool showOnWaistDashBoard;
+    public bool showOnGround;
 
     public string VisName { get; set; }
     public Vector3 GroundPosition { get; set; }
@@ -20,6 +21,8 @@ public class Vis : MonoBehaviour
     public Vector3 HeadDashboardScale { get; set; }
     public bool OnHeadDashBoard { get; set; }
     public bool OnWaistDashBoard { get; set; }
+    public bool OnGround { get; set; }
+    
 
     public Vis() { }
 
@@ -52,6 +55,7 @@ public class Vis : MonoBehaviour
         HeadDashboardScale = v.HeadDashboardScale;
         OnHeadDashBoard = v.OnHeadDashBoard;
         OnWaistDashBoard = v.OnWaistDashBoard;
+        OnGround = v.OnGround;
 
         showName = VisName;
         showGroundPosition = GroundPosition;
@@ -60,6 +64,7 @@ public class Vis : MonoBehaviour
         showHeadDashboardScale = HeadDashboardScale;
         showOnHeadDashBoard = OnHeadDashBoard;
         showOnWaistDashBoard = OnWaistDashBoard;
+        showOnGround = OnGround;
     }
 
     public void Update()
@@ -71,5 +76,6 @@ public class Vis : MonoBehaviour
         showHeadDashboardScale = HeadDashboardScale;
         showOnHeadDashBoard = OnHeadDashBoard;
         showOnWaistDashBoard = OnWaistDashBoard;
+        showOnGround = OnGround;
     }
 }

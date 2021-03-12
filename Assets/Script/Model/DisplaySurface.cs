@@ -15,8 +15,13 @@ public class DisplaySurface : MonoBehaviour {
         Quaternion oldRot = chart.transform.rotation;
 
         // Rotate the chart such that it aligns against the wall nicely
-        chart.transform.rotation = transform.rotation;
-        rot = transform.rotation;
+        float angle = Vector3.Angle(chart.transform.forward, Camera.main.transform.forward);
+
+        //chart.transform.rotation = transform.rotation;
+        //rot = transform.rotation;
+        chart.transform.LookAt(Camera.main.transform);
+        chart.transform.localEulerAngles = new Vector3(90, 0, chart.transform.localEulerAngles.y + 180);
+        rot = chart.transform.rotation;
 
         // For each of the 8 vertices, calculate how much to move the position of the chart such that it fits "inside" of the wall
         BoxCollider b = chart.GetComponent<BoxCollider>();

@@ -4,6 +4,7 @@ using Habrador_Computational_Geometry;
 using System.Linq;
 using VRTK;
 using DG.Tweening;
+using UnityEngine.UI;
 
 public class VisController : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class VisController : MonoBehaviour
     private BoxCollider currentBoxCollider;
     [SerializeField]
     private Rigidbody currentRigidbody;
+    [SerializeField]
+    private MeshRenderer backgroundMR;
 
     [Header("Variables")]
     public float speed = 3;
@@ -46,6 +49,11 @@ public class VisController : MonoBehaviour
 
     private void Update()
     {
+        if (visualisation.OnGround || interactableObject.IsGrabbed())
+            backgroundMR.material.color = Color.white;
+        else
+            backgroundMR.material.color = new Color(1, 1, 1, 0.5f);
+
         if (interactableObject.IsGrabbed())
         {
             //transform.SetParent(interactableObject.GetGrabbingObject().transform);
@@ -55,14 +63,14 @@ public class VisController : MonoBehaviour
             // Check if the vis is being pulled from the waist Dashboard
             if (ShowingOnWaistDashboard)
             {
-                visualisation.OnWaistDashBoard = false;
+                //visualisation.OnWaistDashBoard = false;
 
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Created", ID);
             }
             // Check if the chart is being pulled from the head Dashboard
             else if (ShowingOnHeadDashboard)
             {
-                visualisation.OnHeadDashBoard = false;
+                //visualisation.OnHeadDashBoard = false;
 
                 //remove vis from ground parent
                 DC.RemoveFromHeadDashboard(this, previousParent);
@@ -102,12 +110,18 @@ public class VisController : MonoBehaviour
         originalPos = transform.localPosition;
         originalRot = transform.localRotation;
         previousParent = transform.parent;
+
+        currentRigidbody.velocity = Vector3.zero;
+        visualisation.OnHeadDashBoard = false;
+        visualisation.OnWaistDashBoard = false;
+        visualisation.OnGround = false;
         //Debug.Log(previousParent.name);
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Grab start", ID);
     }
 
     private void VisUngrabbed(object sender, InteractableObjectEventArgs e)
     {
+        transform.SetParent(null);
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Grab end", ID);
 
         // Check to see if the chart was thrown
@@ -137,6 +151,8 @@ public class VisController : MonoBehaviour
                 DC.ReturnToPocket(this);
                 //AnimateTowards(originalPos, originalRot, 0.4f);
         }
+
+        
     }
 
     private void OnDestroy()
@@ -195,6 +211,7 @@ public class VisController : MonoBehaviour
 
         transform.SetParent(DC.GroundVisParent);
         transform.localScale = Vector3.one;
+        visualisation.OnGround = true;
 
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
     }

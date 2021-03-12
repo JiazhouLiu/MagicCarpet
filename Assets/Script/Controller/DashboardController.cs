@@ -241,6 +241,7 @@ public class DashboardController : MonoBehaviour
 
     public void ReturnToPocket(VisController vis) {
         vis.transform.SetParent(WaistDashboard);
+        vis.GetComponent<Vis>().OnWaistDashBoard = true;
     }
 
     public void RemoveFromHeadDashboard(VisController vis, Transform previousParent) {

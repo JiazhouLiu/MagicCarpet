@@ -42,8 +42,6 @@ public class DashBoard_New : MonoBehaviour
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
-        
-
         if (name.Contains("Waist"))
         { // script for waist-level dashboard
             // configure curved display (vis)
