@@ -101,6 +101,8 @@ public class DashBoard_New : MonoBehaviour
 
                 // configure dashboard rotation (body-fixed)
                 transform.localEulerAngles = WaistTransform.localEulerAngles;
+                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+
 
                 foreach (Transform t in transform)
                 {

@@ -255,20 +255,18 @@ public class DashboardController : MonoBehaviour
             if (selectedVisFromRight.Contains(removedGroundVis))
                 selectedVisFromRight.Remove(removedGroundVis);
         }
+        if (currentVisOnHeadDashboard.ContainsKey(vis.name))
+            currentVisOnHeadDashboard.Remove(vis.name);
 
         if (previousParent.name.Contains("Head")) 
         { // pick from head, remove ground one
-
-                Destroy(removedGroundVis.gameObject);
+            Destroy(removedGroundVis.gameObject);
+            return;
         } else if (previousParent.name.Contains("Ground"))
         { // pick from ground, remove head one
             if (HeadDashboard.Find(vis.name))
                 Destroy(HeadDashboard.Find(vis.name).gameObject);
         }
-
-        if (currentVisOnHeadDashboard.ContainsKey(vis.name))
-            currentVisOnHeadDashboard.Remove(vis.name);
-
     }
 
     #region VIS management
@@ -279,15 +277,13 @@ public class DashboardController : MonoBehaviour
 
         if (leftVis.Count == 0 && rightVis.Count == 0)
         {
+
             // remove old vis
             foreach (Transform t in currentVisOnHeadDashboard.Values.ToList())
             {
-                if (GroundVisParent.Find(t.name) != null)
-                {
-                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnHeadDashBoard = false;
-                    Destroy(currentVisOnHeadDashboard[t.name].gameObject);
-                    currentVisOnHeadDashboard.Remove(t.name);
-                }
+                string removedName = t.name;
+                Destroy(t.gameObject);
+                currentVisOnHeadDashboard.Remove(removedName);
             }
             return new List<Transform>();
         }
@@ -515,8 +511,9 @@ public class DashboardController : MonoBehaviour
         {
             foreach (Transform t in newVis.Values.ToList())
             {
-                t.GetComponent<Vis>().OnHeadDashBoard = true;
                 GameObject visOnDashBoard = Instantiate(t.gameObject, HeadDashboard);
+                visOnDashBoard.GetComponent<Vis>().OnHeadDashBoard = true;
+                visOnDashBoard.GetComponent<Vis>().OnGround = false;
                 visOnDashBoard.transform.position = t.position;
                 visOnDashBoard.transform.localEulerAngles = Vector3.zero;
                 visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
@@ -533,14 +530,11 @@ public class DashboardController : MonoBehaviour
             // add new vis
             foreach (Transform t in newVis.Values.ToList())
             {
-                if (oldVis.Keys.Contains(t.name))
+                if (!oldVis.Keys.Contains(t.name))
                 {
-                    oldVis[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
-                }
-                else
-                {
-                    t.GetComponent<Vis>().OnHeadDashBoard = true;
                     GameObject visOnDashBoard = Instantiate(t.gameObject, HeadDashboard);
+                    visOnDashBoard.GetComponent<Vis>().OnHeadDashBoard = true;
+                    visOnDashBoard.GetComponent<Vis>().OnGround = false;
                     visOnDashBoard.transform.position = t.position;
                     visOnDashBoard.transform.localEulerAngles = Vector3.zero;
                     visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
@@ -548,6 +542,10 @@ public class DashboardController : MonoBehaviour
 
                     currentVisOnHeadDashboard.Add(t.name, visOnDashBoard.transform);
                 }
+                //else
+                //{
+                //    oldVis[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
+                //}
             }
         }
     }

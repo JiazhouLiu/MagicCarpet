@@ -61,18 +61,21 @@ public class VisController : MonoBehaviour
             transform.localEulerAngles = Vector3.zero;
 
             // Check if the vis is being pulled from the waist Dashboard
-            if (ShowingOnWaistDashboard)
+            if (visualisation.OnWaistDashBoard)
             {
-                //visualisation.OnWaistDashBoard = false;
+                visualisation.OnWaistDashBoard = false;
 
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Created", ID);
             }
             // Check if the chart is being pulled from the head Dashboard
-            else if (ShowingOnHeadDashboard)
+            else if (visualisation.OnHeadDashBoard || visualisation.OnGround)
             {
-                //visualisation.OnHeadDashBoard = false;
+               
+                visualisation.OnHeadDashBoard = false;
+                visualisation.OnGround = false;
 
                 //remove vis from ground parent
+
                 DC.RemoveFromHeadDashboard(this, previousParent);
 
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Created", ID);
@@ -112,9 +115,9 @@ public class VisController : MonoBehaviour
         previousParent = transform.parent;
 
         currentRigidbody.velocity = Vector3.zero;
-        visualisation.OnHeadDashBoard = false;
-        visualisation.OnWaistDashBoard = false;
-        visualisation.OnGround = false;
+        //visualisation.OnHeadDashBoard = false;
+        //visualisation.OnWaistDashBoard = false;
+        //visualisation.OnGround = false;
         //Debug.Log(previousParent.name);
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Grab start", ID);
     }
@@ -212,6 +215,8 @@ public class VisController : MonoBehaviour
         transform.SetParent(DC.GroundVisParent);
         transform.localScale = Vector3.one;
         visualisation.OnGround = true;
+        visualisation.OnWaistDashBoard = false;
+        visualisation.OnHeadDashBoard = false;
 
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
     }
@@ -237,26 +242,6 @@ public class VisController : MonoBehaviour
         set
         {
             if (value == ColliderActiveState)
-                return;
-        }
-    }
-
-    public bool ShowingOnHeadDashboard
-    {
-        get { return visualisation.OnHeadDashBoard; }
-        set
-        {
-            if (value == ShowingOnHeadDashboard)
-                return;
-        }
-    }
-
-    public bool ShowingOnWaistDashboard
-    {
-        get { return visualisation.OnWaistDashBoard; }
-        set
-        {
-            if (value == ShowingOnWaistDashboard)
                 return;
         }
     }
