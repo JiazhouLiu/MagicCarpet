@@ -258,11 +258,11 @@ public class DashboardController : MonoBehaviour
         if (currentVisOnHeadDashboard.ContainsKey(vis.name))
             currentVisOnHeadDashboard.Remove(vis.name);
 
-        if (previousParent.name.Contains("Head")) 
+        if (previousParent.GetComponent<DashBoard_New>().display == DisplayDashboard.HeadDisplay) 
         { // pick from head, remove ground one
             Destroy(removedGroundVis.gameObject);
             return;
-        } else if (previousParent.name.Contains("Ground"))
+        } else if (previousParent.GetComponent<DashBoard_New>().display == DisplayDashboard.GroundMarkers)
         { // pick from ground, remove head one
             if (HeadDashboard.Find(vis.name))
                 Destroy(HeadDashboard.Find(vis.name).gameObject);

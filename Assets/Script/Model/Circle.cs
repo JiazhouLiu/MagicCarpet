@@ -5,7 +5,8 @@ using UnityEngine;
 public enum DisplayDashboard // your custom enumeration
 {
     HeadDisplay,
-    WaistDisplay
+    WaistDisplay,
+    GroundMarkers
 };
 
 [RequireComponent(typeof(LineRenderer))]

@@ -20,7 +20,8 @@ public class DisplaySurface : MonoBehaviour {
         //chart.transform.rotation = transform.rotation;
         //rot = transform.rotation;
         chart.transform.LookAt(Camera.main.transform);
-        chart.transform.localEulerAngles = new Vector3(90, 0, chart.transform.localEulerAngles.y + 180);
+        chart.transform.localEulerAngles = new Vector3(chart.transform.localEulerAngles.x, chart.transform.localEulerAngles.y + 180, chart.transform.localEulerAngles.z);
+        chart.transform.localEulerAngles = new Vector3(90, chart.transform.localEulerAngles.y, chart.transform.localEulerAngles.z);
         rot = chart.transform.rotation;
 
         // For each of the 8 vertices, calculate how much to move the position of the chart such that it fits "inside" of the wall
