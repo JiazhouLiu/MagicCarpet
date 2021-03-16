@@ -126,7 +126,6 @@ public class DashboardController : MonoBehaviour
             filteredCameraPosition = vector3Filter.Filter(CameraTransform.position);
             filteredCameraRotation = vector3Filter.Filter(CameraTransform.eulerAngles);
         }
-
         filteredLeftFootPosition = vector3Filter.Filter(LeftFoot.position);
         filteredLeftFootRotation = vector3Filter.Filter(LeftFoot.eulerAngles);
         filteredRightFootPosition = vector3Filter.Filter(RightFoot.position);
@@ -141,6 +140,7 @@ public class DashboardController : MonoBehaviour
                 GenerateTriangulation();
         }
 
+        // check vis triggered from left foot
         if (CheckHumanFeetMoving("left") || DemoFlagLeft)
         {
             DemoFlagLeft = false;
@@ -154,6 +154,7 @@ public class DashboardController : MonoBehaviour
                 currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
         }
 
+        // check vis triggered from right foot
         if (CheckHumanFeetMoving("right") || DemoFlagRight)
         {
             DemoFlagRight = false;
@@ -167,6 +168,21 @@ public class DashboardController : MonoBehaviour
                 currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
         }
 
+        // highlight selected Vis
+        foreach (Transform groundVis in GroundVisParent) {
+            Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
+            if (selectedVis.Contains(groundVis))
+            {
+                groundVis.GetComponent<Vis>().Highlighted = true;
+                highlighter.intensity = 50;
+            }
+            else {
+                groundVis.GetComponent<Vis>().Highlighted = false;
+                highlighter.intensity = 0;
+            }
+        }
+
+        // reorder vis on dashboard based on angle to the waist
         if (CheckHumanWaistRotating())
         {
             selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
@@ -179,6 +195,7 @@ public class DashboardController : MonoBehaviour
                 
         }
 
+        // testing
         if (Input.GetKeyDown("z")) {
             string firstKey = currentVisOnWaistDashboard.Keys.ToList()[0];
             Transform firstTransform = currentVisOnWaistDashboard.Values.ToList()[0];
@@ -519,8 +536,8 @@ public class DashboardController : MonoBehaviour
                 visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
                 visOnDashBoard.name = t.name;
 
-                SpriteRenderer sr = visOnDashBoard.transform.GetChild(0).GetComponent<SpriteRenderer>();
-                sr.sortingOrder = 0;
+                //SpriteRenderer sr = visOnDashBoard.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                //sr.sortingOrder = 0;
 
                 currentVisOnHeadDashboard.Add(t.name, visOnDashBoard.transform);
             }

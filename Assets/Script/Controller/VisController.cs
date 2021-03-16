@@ -49,10 +49,13 @@ public class VisController : MonoBehaviour
 
     private void Update()
     {
-        if (visualisation.OnGround || interactableObject.IsGrabbed())
-            backgroundMR.material.color = Color.white;
+        if (visualisation.OnGround && !visualisation.Highlighted) {
+            backgroundMR.material.SetColor("_BaseColor", new Color(0, 0, 0, 0.5f));
+        }
+        else if (visualisation.OnGround || interactableObject.IsGrabbed())
+            backgroundMR.material.SetColor("_BaseColor", Color.white);
         else
-            backgroundMR.material.color = new Color(1, 1, 1, 0.5f);
+            backgroundMR.material.SetColor("_BaseColor", new Color(1, 1, 1, 0.5f)); 
 
         if (interactableObject.IsGrabbed())
         {

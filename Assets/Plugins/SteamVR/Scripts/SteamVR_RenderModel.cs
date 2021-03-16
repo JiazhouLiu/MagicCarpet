@@ -375,7 +375,7 @@ public class SteamVR_RenderModel : MonoBehaviour
 
 		// Check cache before loading texture.
 		var material = materials[renderModel.diffuseTextureId] as Material;
-		if (material == null || material.mainTexture == null)
+		if (material == null )
 		{
 			var pDiffuseTexture = System.IntPtr.Zero;
 
@@ -441,6 +441,7 @@ public class SteamVR_RenderModel : MonoBehaviour
 				Debug.Log("Failed to load render model texture for render model " + renderModelName);
 			}
 		}
+		
 
 		// Delay freeing when we can since we'll often get multiple requests for the same model right
 		// after another (e.g. two controllers or two basestations).
