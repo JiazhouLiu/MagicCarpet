@@ -14,6 +14,7 @@ public class DashBoard_PhysicalTouch : MonoBehaviour
     public float HSpacing;
     public float animationSpeed;
     public float headDashboardSizeMagnifier;
+    public DisplayDashboard display = new DisplayDashboard();
 
     [Header("Circle")]
     public LineRenderer circle;
@@ -42,9 +43,8 @@ public class DashBoard_PhysicalTouch : MonoBehaviour
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
-        
 
-        if (name.Contains("Waist"))
+        if (display == DisplayDashboard.WaistDisplay)
         { // script for waist-level dashboard
             // configure curved display (vis)
             foreach (Transform t in transform)
@@ -90,7 +90,7 @@ public class DashBoard_PhysicalTouch : MonoBehaviour
             }
         }
 
-        if (name.Contains("Head") && CameraTransform != null)
+        if (display == DisplayDashboard.HeadDisplay && CameraTransform != null)
         {// script for head-level dashboard
             foreach (Transform t in transform)
                 t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
@@ -141,7 +141,22 @@ public class DashBoard_PhysicalTouch : MonoBehaviour
             // configure vis scale based on position
             if (transform.childCount > 0)
                 UpdateVisScale();
-        } 
+            else
+            {
+                foreach (Transform t in transform)
+                    t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
+            }
+        }
+
+        if (display == DisplayDashboard.GroundMarkers && CameraTransform != null)
+        {
+            foreach (Transform chart in transform)
+            {
+                chart.transform.LookAt(Camera.main.transform);
+                chart.transform.localEulerAngles = new Vector3(chart.transform.localEulerAngles.x, chart.transform.localEulerAngles.y + 180, chart.transform.localEulerAngles.z);
+                chart.transform.localEulerAngles = new Vector3(90, chart.transform.localEulerAngles.y, chart.transform.localEulerAngles.z);
+            }
+        }
     }
 
     /// <summary>

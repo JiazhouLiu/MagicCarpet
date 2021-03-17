@@ -162,6 +162,22 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                 currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
         }
 
+        // highlight selected Vis
+        foreach (Transform groundVis in GroundVisParent)
+        {
+            Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
+            if (selectedVis.Contains(groundVis))
+            {
+                groundVis.GetComponent<Vis>().Highlighted = true;
+                highlighter.intensity = 50;
+            }
+            else
+            {
+                groundVis.GetComponent<Vis>().Highlighted = false;
+                highlighter.intensity = 0;
+            }
+        }
+
         if (CheckHumanWaistRotating())
         {
             selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
@@ -364,7 +380,6 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
             }
         }
 
-        Debug.Log(showOnDashboard.Count);
         //if (Delaunay)
         //{
         //    // get foot in triangles
@@ -489,8 +504,8 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                 visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
                 visOnDashBoard.name = t.name;
 
-                SpriteRenderer sr = visOnDashBoard.transform.GetChild(0).GetComponent<SpriteRenderer>();
-                sr.sortingOrder = 0;
+                //SpriteRenderer sr = visOnDashBoard.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                //sr.sortingOrder = 0;
 
                 currentVisOnHeadDashboard.Add(t.name, visOnDashBoard.transform);
             }
@@ -536,7 +551,6 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
         {
             Dictionary<Transform, float> markerAnglesToHuman = new Dictionary<Transform, float>();
 
-            Debug.Log(HumanWaist == null);
             foreach (Transform t in markers) {
                 if(t != null)
                     markerAnglesToHuman.Add(t, Vector3.SignedAngle(HumanWaist.forward, t.position - HumanWaist.position, Vector3.up));
