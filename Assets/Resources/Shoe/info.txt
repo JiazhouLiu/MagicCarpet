@@ -1,0 +1,11 @@
+Name: vans_old_skool_black
+Version: 2011
+Preview: No
+Units: Millimeters
+Dimension: 438.79 x 331.22 x 175.67
+Polys: 310 278
+XForm: No
+Box Trick: No
+Model Parts: 1172
+Render: Corona
+Formats: 3Ds Max 2011, OBJ, 3DS
