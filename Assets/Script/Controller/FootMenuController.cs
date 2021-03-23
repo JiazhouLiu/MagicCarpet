@@ -39,6 +39,7 @@ public class FootMenuController : MonoBehaviour
     {
         // follow the waist
         transform.position = new Vector3(waist.position.x, 0.01f, waist.position.z);
+        transform.localEulerAngles = new Vector3(0, waist.localEulerAngles.y, 0);
 
         // raise foot to cancel footmenu
         if (leftFoot.position.y > footRaiseHeight || rightFoot.position.y > footRaiseHeight) 
