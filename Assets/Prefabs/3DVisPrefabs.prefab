@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 8474618218447803744}
   - component: {fileID: 7377386539142075907}
   - component: {fileID: 5924379810815156815}
+  - component: {fileID: 1622041242438131856}
   m_Layer: 0
   m_Name: Highlighter
   m_TagString: Untagged
@@ -357,6 +358,18 @@ MonoBehaviour:
   useVolumetric: 1
   featuresFoldout: 1
   showAdditionalSettings: 0
+--- !u!114 &1622041242438131856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7989869750622071676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9666e26007992c74d9a0fe33435e7e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9021928950873538981
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,6 +429,7 @@ MonoBehaviour:
   showOnHeadDashBoard: 0
   showOnWaistDashBoard: 0
   showOnGround: 0
+  showHighlighted: 0
 --- !u!65 &8113456723291711514
 BoxCollider:
   m_ObjectHideFlags: 0

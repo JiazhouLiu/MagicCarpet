@@ -37,6 +37,10 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
     public float filterFrequency = 120f;
     public float betweenVisDelta = 0.05f;
 
+    [Header("Footmenu")]
+    public bool footMenu = false;
+
+
     private Transform CameraTransform;
     //The mesh so we can generate when we press a button and display it in DrawGizmos
     private Mesh triangulatedMesh;
@@ -134,65 +138,70 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
-        // detect ground marker change
-        if (CheckMarkerMoving(GroundVisParent) && GroundVisParent.childCount > 2)
-        {
-            GenerateTriangulation();
-        }
 
-        if (CheckHumanFeetMoving("left") || DemoFlagLeft)
-        {
-            DemoFlagLeft = false;
-            if (CurrentTriangles.faces.Count > 0)
-                selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
-
-            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-            if (selectedVis.Count > 0)
-                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-        }
-
-        if (CheckHumanFeetMoving("right") || DemoFlagRight)
-        {
-            DemoFlagRight = false;
-            if (CurrentTriangles.faces.Count > 0)
-                selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
-
-            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-            if (selectedVis.Count > 0)
-                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-        }
-
-        // highlight selected Vis
-        foreach (Transform groundVis in GroundVisParent)
-        {
-            Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
-            if (selectedVis.Contains(groundVis))
+        if (!footMenu) {
+           
+            // detect ground marker change
+            if (CheckMarkerMoving(GroundVisParent) && GroundVisParent.childCount > 2)
             {
-                groundVis.GetComponent<Vis>().Highlighted = true;
-                highlighter.intensity = 50;
+                GenerateTriangulation();
             }
-            else
+
+            if (CheckHumanFeetMoving("left") || DemoFlagLeft)
             {
-                groundVis.GetComponent<Vis>().Highlighted = false;
-                highlighter.intensity = 0;
+                DemoFlagLeft = false;
+                if (CurrentTriangles.faces.Count > 0)
+                    selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+
+                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
+
+            if (CheckHumanFeetMoving("right") || DemoFlagRight)
+            {
+                DemoFlagRight = false;
+                if (CurrentTriangles.faces.Count > 0)
+                    selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+
+                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
+
+            // highlight selected Vis
+            foreach (Transform groundVis in GroundVisParent)
+            {
+                Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
+                if (selectedVis.Contains(groundVis))
+                {
+                    groundVis.GetComponent<Vis>().Highlighted = true;
+                    highlighter.intensity = 50;
+                }
+                else
+                {
+                    groundVis.GetComponent<Vis>().Highlighted = false;
+                    highlighter.intensity = 0;
+                }
+            }
+
+            if (CheckHumanWaistRotating())
+            {
+                selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
+                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
             }
         }
+        
 
-        if (CheckHumanWaistRotating())
-        {
-            selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
-            currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-        }
-
-        if (Input.GetKeyDown("z")) {
-            string firstKey = currentVisOnWaistDashboard.Keys.ToList()[0];
-            Transform firstTransform = currentVisOnWaistDashboard.Values.ToList()[0];
-            firstTransform.SetParent(GroundVisParent);
-            currentVisOnWaistDashboard.Remove(firstKey);
-            firstTransform.position = new Vector3(HumanWaist.position.x, 0.1f, HumanWaist.position.z);
-            firstTransform.localScale = Vector3.one;
-            firstTransform.localEulerAngles = new Vector3(90, HumanWaist.localEulerAngles.y, 0);
-        }
+        //if (Input.GetKeyDown("z")) {
+        //    string firstKey = currentVisOnWaistDashboard.Keys.ToList()[0];
+        //    Transform firstTransform = currentVisOnWaistDashboard.Values.ToList()[0];
+        //    firstTransform.SetParent(GroundVisParent);
+        //    currentVisOnWaistDashboard.Remove(firstKey);
+        //    firstTransform.position = new Vector3(HumanWaist.position.x, 0.1f, HumanWaist.position.z);
+        //    firstTransform.localScale = Vector3.one;
+        //    firstTransform.localEulerAngles = new Vector3(90, HumanWaist.localEulerAngles.y, 0);
+        //}
     }
 
     public void RegisterLeftFootPhysical(Transform collider)
@@ -379,7 +388,6 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                     showOnDashboard.Add(t);
             }
         }
-
         //if (Delaunay)
         //{
         //    // get foot in triangles

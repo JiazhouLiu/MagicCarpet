@@ -564,6 +564,7 @@ GameObject:
   - component: {fileID: 7401694625547984548}
   - component: {fileID: 3208573607755318272}
   - component: {fileID: 7763405274543805850}
+  - component: {fileID: 4676825401590371002}
   m_Layer: 0
   m_Name: Plane050
   m_TagString: Untagged
@@ -632,6 +633,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4676825401590371002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120698991147327506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &137539315238324330
 GameObject:
   m_ObjectHideFlags: 0
@@ -880,6 +895,7 @@ GameObject:
   - component: {fileID: 4352949388941774072}
   - component: {fileID: 5526413900264558214}
   - component: {fileID: 422602274260990408}
+  - component: {fileID: 6873540532554084678}
   m_Layer: 0
   m_Name: Plane044
   m_TagString: Untagged
@@ -948,6 +964,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6873540532554084678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 187312962152119588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &197912953064580154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,6 +1068,7 @@ GameObject:
   - component: {fileID: 128616617950079611}
   - component: {fileID: 8554883748372450654}
   - component: {fileID: 4796100606275024271}
+  - component: {fileID: 6164807000225060804}
   m_Layer: 0
   m_Name: Plane052
   m_TagString: Untagged
@@ -1106,6 +1137,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6164807000225060804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207358862421048621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &211586407702696003
 GameObject:
   m_ObjectHideFlags: 0
@@ -1670,6 +1715,7 @@ GameObject:
   - component: {fileID: 9060953424160994980}
   - component: {fileID: 7675619281665058564}
   - component: {fileID: 4626736740536232633}
+  - component: {fileID: 7236654804287631076}
   m_Layer: 0
   m_Name: Object046
   m_TagString: Untagged
@@ -1738,6 +1784,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &7236654804287631076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326081870513924101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &367612062105861301
 GameObject:
   m_ObjectHideFlags: 0
@@ -1986,6 +2046,7 @@ GameObject:
   - component: {fileID: 4241734815321597126}
   - component: {fileID: 1034288240505601742}
   - component: {fileID: 1577300954117874738}
+  - component: {fileID: 843063297247558927}
   m_Layer: 0
   m_Name: Plane048
   m_TagString: Untagged
@@ -2054,6 +2115,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &843063297247558927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407913475491769764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &411585103611469249
 GameObject:
   m_ObjectHideFlags: 0
@@ -3882,6 +3957,7 @@ GameObject:
   - component: {fileID: 7758564334972288116}
   - component: {fileID: 1198464852380949282}
   - component: {fileID: 5603546620707021862}
+  - component: {fileID: 4847264626388564515}
   m_Layer: 0
   m_Name: Plane040
   m_TagString: Untagged
@@ -3950,6 +4026,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4847264626388564515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845918745236926881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &872284987990491719
 GameObject:
   m_ObjectHideFlags: 0
@@ -4593,6 +4683,7 @@ GameObject:
   - component: {fileID: 3881074661244105070}
   - component: {fileID: 7630164465336500612}
   - component: {fileID: 8213773478322934309}
+  - component: {fileID: 2924488494181882830}
   m_Layer: 0
   m_Name: Plane053
   m_TagString: Untagged
@@ -4661,6 +4752,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &2924488494181882830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072600507551855237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &1092275634047071620
 GameObject:
   m_ObjectHideFlags: 0
@@ -4988,6 +5093,7 @@ GameObject:
   - component: {fileID: 357576871508979936}
   - component: {fileID: 4670723670226926109}
   - component: {fileID: 4742297910505408824}
+  - component: {fileID: 170984630230856225}
   m_Layer: 0
   m_Name: Object051
   m_TagString: Untagged
@@ -5056,6 +5162,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &170984630230856225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129600060779249825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &1137380085194144563
 GameObject:
   m_ObjectHideFlags: 0
@@ -5225,6 +5345,7 @@ GameObject:
   - component: {fileID: 8535330144906560798}
   - component: {fileID: 6765476585574317476}
   - component: {fileID: 7013281708090063247}
+  - component: {fileID: 1472533498809702119}
   m_Layer: 0
   m_Name: Object047
   m_TagString: Untagged
@@ -5293,6 +5414,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1472533498809702119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1158641690721478587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &1167877582370324235
 GameObject:
   m_ObjectHideFlags: 0
@@ -5778,6 +5913,7 @@ GameObject:
   - component: {fileID: 5053623459507544473}
   - component: {fileID: 7749768844566814093}
   - component: {fileID: 7575588616119749345}
+  - component: {fileID: 3421428765472746851}
   m_Layer: 0
   m_Name: Plane051
   m_TagString: Untagged
@@ -5846,6 +5982,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3421428765472746851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235326665993885230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &1270547554595544181
 GameObject:
   m_ObjectHideFlags: 0
@@ -11703,6 +11853,7 @@ GameObject:
   - component: {fileID: 8688081716603983067}
   - component: {fileID: 4664220014844805075}
   - component: {fileID: 6471072260586013633}
+  - component: {fileID: 7925975867219167092}
   m_Layer: 0
   m_Name: Plane047
   m_TagString: Untagged
@@ -11771,6 +11922,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &7925975867219167092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2349240516418161210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &2363981360003592881
 GameObject:
   m_ObjectHideFlags: 0
@@ -13204,6 +13369,7 @@ GameObject:
   - component: {fileID: 6632145578965220537}
   - component: {fileID: 8502849792429580542}
   - component: {fileID: 2064908885292938088}
+  - component: {fileID: 5458957553244943881}
   m_Layer: 0
   m_Name: Object049
   m_TagString: Untagged
@@ -13272,6 +13438,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &5458957553244943881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2599947001525587076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &2625936431724254210
 GameObject:
   m_ObjectHideFlags: 0
@@ -14387,8 +14567,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2776397578937781003}
-  - component: {fileID: 2776397578937781012}
-  - component: {fileID: 2776397578937781013}
   - component: {fileID: 2776397578937781014}
   - component: {fileID: 2776397578937781002}
   m_Layer: 0
@@ -14413,53 +14591,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2776397578937781012
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2776397578937781015}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &2776397578937781013
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2776397578937781015}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 15a9f87a0af5d4d448e2ab9dbc34f827, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!65 &2776397578937781014
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16552,6 +16683,7 @@ GameObject:
   - component: {fileID: 1035446389870785723}
   - component: {fileID: 4359736247818515122}
   - component: {fileID: 5084632892081379944}
+  - component: {fileID: 8389876441846032579}
   m_Layer: 0
   m_Name: Plane037
   m_TagString: Untagged
@@ -16620,6 +16752,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &8389876441846032579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3111839184654556330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 1
 --- !u!1 &3192218743015073724
 GameObject:
   m_ObjectHideFlags: 0
@@ -17184,6 +17330,7 @@ GameObject:
   - component: {fileID: 5017758910887094091}
   - component: {fileID: 4199575116703139439}
   - component: {fileID: 3319833622037729825}
+  - component: {fileID: 3488249891013101453}
   m_Layer: 0
   m_Name: Object050
   m_TagString: Untagged
@@ -17252,6 +17399,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3488249891013101453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323636815820994622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &3332037099828098760
 GameObject:
   m_ObjectHideFlags: 0
@@ -21213,6 +21374,7 @@ GameObject:
   - component: {fileID: 7731008575274222393}
   - component: {fileID: 6746830281344897979}
   - component: {fileID: 4351282904243876289}
+  - component: {fileID: 4265690304910878670}
   m_Layer: 0
   m_Name: Plane049
   m_TagString: Untagged
@@ -21281,6 +21443,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4265690304910878670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4046809975701841086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &4153330933541866759
 GameObject:
   m_ObjectHideFlags: 0
@@ -21608,6 +21784,7 @@ GameObject:
   - component: {fileID: 3399132436632792870}
   - component: {fileID: 1112523835040003887}
   - component: {fileID: 6481597426717589187}
+  - component: {fileID: 6353667542228702441}
   m_Layer: 0
   m_Name: Plane038
   m_TagString: Untagged
@@ -21676,6 +21853,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6353667542228702441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4203115818643233291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &4214192095764480435
 GameObject:
   m_ObjectHideFlags: 0
@@ -23504,6 +23695,7 @@ GameObject:
   - component: {fileID: 518216848897658371}
   - component: {fileID: 6514199797495517307}
   - component: {fileID: 3639241058769347827}
+  - component: {fileID: 5621021806164947006}
   m_Layer: 0
   m_Name: Plane054
   m_TagString: Untagged
@@ -23572,6 +23764,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &5621021806164947006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4554207873935016301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &4554871735936602080
 GameObject:
   m_ObjectHideFlags: 0
@@ -25795,6 +26001,7 @@ GameObject:
   - component: {fileID: 3714663991018331127}
   - component: {fileID: 7056620679849216191}
   - component: {fileID: 3699876630861608206}
+  - component: {fileID: 6451153083462137200}
   m_Layer: 0
   m_Name: Plane045
   m_TagString: Untagged
@@ -25863,6 +26070,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6451153083462137200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4921086111703018319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &4927630971603247772
 GameObject:
   m_ObjectHideFlags: 0
@@ -27375,6 +27596,7 @@ GameObject:
   - component: {fileID: 3149697983707277939}
   - component: {fileID: 7162105375525482125}
   - component: {fileID: 315322167897795674}
+  - component: {fileID: 7617242965345419099}
   m_Layer: 0
   m_Name: Plane039
   m_TagString: Untagged
@@ -27443,6 +27665,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &7617242965345419099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5205871877021589828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &5214042806100988283
 GameObject:
   m_ObjectHideFlags: 0
@@ -28797,6 +29033,7 @@ GameObject:
   - component: {fileID: 9213754828775228456}
   - component: {fileID: 4657778322859891256}
   - component: {fileID: 8750844084561699862}
+  - component: {fileID: 4483136562604362996}
   m_Layer: 0
   m_Name: Plane042
   m_TagString: Untagged
@@ -28865,6 +29102,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4483136562604362996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5452020031530591701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &5467124606397657248
 GameObject:
   m_ObjectHideFlags: 0
@@ -31720,6 +31971,7 @@ GameObject:
   - component: {fileID: 4527977950208978144}
   - component: {fileID: 4826548553928633568}
   - component: {fileID: 8832772925202679155}
+  - component: {fileID: 9037939700741536617}
   m_Layer: 0
   m_Name: Object044
   m_TagString: Untagged
@@ -31788,6 +32040,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &9037939700741536617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5985572046733490699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &6022937949822689570
 GameObject:
   m_ObjectHideFlags: 0
@@ -36774,6 +37040,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5793098712929956046}
+  - component: {fileID: 8857080983300877694}
   m_Layer: 0
   m_Name: leftShoeModel
   m_TagString: Untagged
@@ -37381,6 +37648,21 @@ Transform:
   m_Father: {fileID: 2776397578937781003}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8857080983300877694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7207013483658190276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322c0af07afe4384d9648bedbc10e315, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shoeSurfaceMat: {fileID: 2100000, guid: b5c022fb0a2a3ce408c450065c080532, type: 2}
+  shoeInnerMat: {fileID: 2100000, guid: c79b43972aa629c41804e57d0182676c, type: 2}
+  shoeLacesMat: {fileID: 2100000, guid: 2d30119bd3a545344a3b9435c210c4bd, type: 2}
 --- !u!1 &7242211895743596531
 GameObject:
   m_ObjectHideFlags: 0
@@ -38735,6 +39017,7 @@ GameObject:
   - component: {fileID: 6892406079781134713}
   - component: {fileID: 5136794878032329697}
   - component: {fileID: 3392113551469845247}
+  - component: {fileID: 7339610609412421603}
   m_Layer: 0
   m_Name: Plane043
   m_TagString: Untagged
@@ -38803,6 +39086,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &7339610609412421603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7482790045784848127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &7505785508509558566
 GameObject:
   m_ObjectHideFlags: 0
@@ -42053,6 +42350,7 @@ GameObject:
   - component: {fileID: 7922842525195254464}
   - component: {fileID: 5788645944116133658}
   - component: {fileID: 8949919168655912044}
+  - component: {fileID: 3050995960866703839}
   m_Layer: 0
   m_Name: Plane041
   m_TagString: Untagged
@@ -42121,6 +42419,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3050995960866703839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8052820721195050774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &8075202702040530188
 GameObject:
   m_ObjectHideFlags: 0
@@ -43949,6 +44261,7 @@ GameObject:
   - component: {fileID: 7436342038166384487}
   - component: {fileID: 8207023694377008459}
   - component: {fileID: 4669895797634993941}
+  - component: {fileID: 5608209159870090348}
   m_Layer: 0
   m_Name: Object045
   m_TagString: Untagged
@@ -44017,6 +44330,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &5608209159870090348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8414159246840437589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &8426715912009414559
 GameObject:
   m_ObjectHideFlags: 0
@@ -44739,6 +45066,7 @@ GameObject:
   - component: {fileID: 6769133864008432599}
   - component: {fileID: 9043065124943923131}
   - component: {fileID: 9147342603740375848}
+  - component: {fileID: 8721691849415494241}
   m_Layer: 0
   m_Name: Plane046
   m_TagString: Untagged
@@ -44807,6 +45135,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &8721691849415494241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8611014631505155344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 2
 --- !u!1 &8686434446722121562
 GameObject:
   m_ObjectHideFlags: 0
@@ -45766,6 +46108,7 @@ GameObject:
   - component: {fileID: 4167438825461489340}
   - component: {fileID: 4544900640228449319}
   - component: {fileID: 8952750683261814293}
+  - component: {fileID: 6815198591299723578}
   m_Layer: 0
   m_Name: Object048
   m_TagString: Untagged
@@ -45834,6 +46177,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6815198591299723578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8879788607417996910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &8910157146116908008
 GameObject:
   m_ObjectHideFlags: 0
@@ -46398,6 +46755,7 @@ GameObject:
   - component: {fileID: 6427533167305480629}
   - component: {fileID: 1845656793362470604}
   - component: {fileID: 7611529129276566682}
+  - component: {fileID: 1822373036232279443}
   m_Layer: 0
   m_Name: Plane055
   m_TagString: Untagged
@@ -46466,6 +46824,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1822373036232279443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9026057738391281643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138212b05a024ff42893a43c4dd1a0f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matCollection: {fileID: 8857080983300877694}
+  shoePart: 0
 --- !u!1 &9062744202337018614
 GameObject:
   m_ObjectHideFlags: 0

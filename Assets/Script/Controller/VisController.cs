@@ -24,12 +24,6 @@ public class VisController : MonoBehaviour
     [Header("Variables")]
     public float speed = 3;
 
-    private Vector3 originalWorldPos;
-    private Vector3 originalPos;
-    private Quaternion originalRot;
-
-    private Transform CameraTransform;
-
     private bool isThrowing = false;
     private bool isTouchingDisplaySurface = false;
 
@@ -112,17 +106,9 @@ public class VisController : MonoBehaviour
 
     private void VisGrabbed(object sender, InteractableObjectEventArgs e)
     {
-        originalWorldPos = transform.position;
-        originalPos = transform.localPosition;
-        originalRot = transform.localRotation;
         previousParent = transform.parent;
 
         currentRigidbody.velocity = Vector3.zero;
-        //visualisation.OnHeadDashBoard = false;
-        //visualisation.OnWaistDashBoard = false;
-        //visualisation.OnGround = false;
-        //Debug.Log(previousParent.name);
-        //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Grab start", ID);
     }
 
     private void VisUngrabbed(object sender, InteractableObjectEventArgs e)

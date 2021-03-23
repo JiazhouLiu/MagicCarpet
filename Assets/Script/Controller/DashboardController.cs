@@ -37,6 +37,9 @@ public class DashboardController : MonoBehaviour
     public float filterFrequency = 120f;
     public float betweenVisDelta = 0.05f;
 
+    [Header("Footmenu")]
+    public bool footMenu = false;
+
     private Transform CameraTransform;
     //The mesh so we can generate when we press a button and display it in DrawGizmos
     private Mesh triangulatedMesh;
@@ -133,101 +136,86 @@ public class DashboardController : MonoBehaviour
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
-        // detect ground marker change
-        if (CheckMarkerMoving(GroundVisParent))
-        {
-            if(GroundVisParent.childCount > 0)
-                GenerateTriangulation();
-        }
-
-        // check vis triggered from left foot
-        if (CheckHumanFeetMoving("left") || DemoFlagLeft)
-        {
-            DemoFlagLeft = false;
-            if (CurrentTriangles.faces.Count > 0)
-                selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
-            else
-                selectedVisFromLeft = new List<Transform>();
-
-            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-            if (selectedVis.Count > 0)
-                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-        }
-
-        // check vis triggered from right foot
-        if (CheckHumanFeetMoving("right") || DemoFlagRight)
-        {
-            DemoFlagRight = false;
-            if (CurrentTriangles.faces.Count > 0)
-                selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
-            else
-                selectedVisFromRight = new List<Transform>();
-
-            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-            if (selectedVis.Count > 0)
-                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-        }
-
-        // highlight selected Vis
-        foreach (Transform groundVis in GroundVisParent) {
-            Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
-            if (selectedVis.Contains(groundVis))
+        
+        if (!footMenu) {
+            // detect ground marker change
+            if (CheckMarkerMoving(GroundVisParent))
             {
-                groundVis.GetComponent<Vis>().Highlighted = true;
-                highlighter.intensity = 50;
+                if (GroundVisParent.childCount > 0)
+                    GenerateTriangulation();
             }
-            else {
-                groundVis.GetComponent<Vis>().Highlighted = false;
-                highlighter.intensity = 0;
+
+            // check vis triggered from left foot
+            if (CheckHumanFeetMoving("left") || DemoFlagLeft)
+            {
+                DemoFlagLeft = false;
+                if (CurrentTriangles.faces.Count > 0)
+                    selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+                else
+                    selectedVisFromLeft = new List<Transform>();
+
+                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
+
+            // check vis triggered from right foot
+            if (CheckHumanFeetMoving("right") || DemoFlagRight)
+            {
+                DemoFlagRight = false;
+                if (CurrentTriangles.faces.Count > 0)
+                    selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+                else
+                    selectedVisFromRight = new List<Transform>();
+
+                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
+
+            // highlight selected Vis
+            foreach (Transform groundVis in GroundVisParent)
+            {
+                Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
+                if (selectedVis.Contains(groundVis))
+                {
+                    groundVis.GetComponent<Vis>().Highlighted = true;
+                    highlighter.intensity = 50;
+                }
+                else
+                {
+                    groundVis.GetComponent<Vis>().Highlighted = false;
+                    highlighter.intensity = 0;
+                }
+            }
+
+            // reorder vis on dashboard based on angle to the waist
+            if (CheckHumanWaistRotating())
+            {
+                selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
+                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+
+                HeadDashboard.DetachChildren();
+                for (int i = 0; i < currentVisOnHeadDashboard.Count; i++)
+                {
+                    currentVisOnHeadDashboard.Values.ToList()[currentVisOnHeadDashboard.Count - i - 1].SetParent(HeadDashboard);
+                }
+
             }
         }
+        
 
-        // reorder vis on dashboard based on angle to the waist
-        if (CheckHumanWaistRotating())
-        {
-            selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
-            currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-
-            HeadDashboard.DetachChildren();
-            for (int i = 0; i < currentVisOnHeadDashboard.Count; i++) {
-                currentVisOnHeadDashboard.Values.ToList()[currentVisOnHeadDashboard.Count - i - 1].SetParent(HeadDashboard);
-            }
-                
-        }
-
-        // testing
-        if (Input.GetKeyDown("z")) {
-            string firstKey = currentVisOnWaistDashboard.Keys.ToList()[0];
-            Transform firstTransform = currentVisOnWaistDashboard.Values.ToList()[0];
-            firstTransform.SetParent(GroundVisParent);
-            currentVisOnWaistDashboard.Remove(firstKey);
-            firstTransform.position = new Vector3(HumanWaist.position.x, 0.1f, HumanWaist.position.z);
-            firstTransform.localScale = Vector3.one;
-            firstTransform.localEulerAngles = new Vector3(90, HumanWaist.localEulerAngles.y, 0);
-        }
+        //// testing
+        //if (Input.GetKeyDown("z")) {
+        //    string firstKey = currentVisOnWaistDashboard.Keys.ToList()[0];
+        //    Transform firstTransform = currentVisOnWaistDashboard.Values.ToList()[0];
+        //    firstTransform.SetParent(GroundVisParent);
+        //    currentVisOnWaistDashboard.Remove(firstKey);
+        //    firstTransform.position = new Vector3(HumanWaist.position.x, 0.1f, HumanWaist.position.z);
+        //    firstTransform.localScale = Vector3.one;
+        //    firstTransform.localEulerAngles = new Vector3(90, HumanWaist.localEulerAngles.y, 0);
+        //}
     }
-
-    //public void RegisterLeftFootPhysical(Transform collider)
-    //{
-    //    currentVisFromLeftFootPhysical.Add(GroundVisParent.Find(collider.name));
-    //}
-
-    //public void RegisterRightFootPhysical(Transform collider)
-    //{
-    //    currentVisFromRightFootPhysical.Add(GroundVisParent.Find(collider.name));
-    //}
-
-    //public void RemoveLeftFootPhysical(Transform collider)
-    //{
-    //    if (currentVisFromLeftFootPhysical.Contains(GroundVisParent.Find(collider.name)))
-    //        currentVisFromLeftFootPhysical.Remove(GroundVisParent.Find(collider.name));
-    //}
-
-    //public void RemoveRightFootPhysical(Transform collider)
-    //{
-    //    if (currentVisFromRightFootPhysical.Contains(GroundVisParent.Find(collider.name)))
-    //        currentVisFromRightFootPhysical.Remove(GroundVisParent.Find(collider.name));
-    //}
 
     public void PinToGround(Transform t)
     {
@@ -393,24 +381,6 @@ public class DashboardController : MonoBehaviour
 
         List<Transform> showOnDashboard = new List<Transform>();
 
-        //// get foot physically stand vis
-        //if (foot.name == "LeftFoot")
-        //{
-        //    if (currentVisFromLeftFootPhysical.Count > 0)
-        //    {
-        //        foreach (Transform t in currentVisFromLeftFootPhysical)
-        //            showOnDashboard.Add(t);
-        //    }
-        //}
-        //else
-        //{
-        //    if (currentVisFromRightFootPhysical.Count > 0)
-        //    {
-        //        foreach (Transform t in currentVisFromRightFootPhysical)
-        //            showOnDashboard.Add(t);
-        //    }
-        //}
-
         if (Delaunay)
         {
             // get foot in triangles
@@ -536,9 +506,6 @@ public class DashboardController : MonoBehaviour
                 visOnDashBoard.transform.localScale = Vector3.one * 0.1f;
                 visOnDashBoard.name = t.name;
 
-                //SpriteRenderer sr = visOnDashBoard.transform.GetChild(0).GetComponent<SpriteRenderer>();
-                //sr.sortingOrder = 0;
-
                 currentVisOnHeadDashboard.Add(t.name, visOnDashBoard.transform);
             }
         }
@@ -559,10 +526,6 @@ public class DashboardController : MonoBehaviour
 
                     currentVisOnHeadDashboard.Add(t.name, visOnDashBoard.transform);
                 }
-                //else
-                //{
-                //    oldVis[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
-                //}
             }
         }
     }
