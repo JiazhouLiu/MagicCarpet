@@ -130,11 +130,6 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
-      propertyPath: groundVisParent.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
-        type: 3}
       propertyPath: dcpt
       value: 
       objectReference: {fileID: 126790190}
@@ -155,11 +150,6 @@ PrefabInstance:
       objectReference: {fileID: 2132094267}
     - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
-      propertyPath: headVisParent
-      value: 
-      objectReference: {fileID: 197005175}
-    - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
-        type: 3}
       propertyPath: groundVisParent.Array.data[0]
       value: 
       objectReference: {fileID: 789476394}
@@ -168,6 +158,11 @@ PrefabInstance:
       propertyPath: groundVisParent.Array.data[1]
       value: 
       objectReference: {fileID: 1610246805}
+    - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: headVisParent
+      value: 
+      objectReference: {fileID: 197005175}
     - target: {fileID: 267273484810350935, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -176,7 +171,7 @@ PrefabInstance:
     - target: {fileID: 267273484810350935, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 267273484810350935, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
@@ -227,11 +222,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FootMenu Controller
-      objectReference: {fileID: 0}
-    - target: {fileID: 267273484810350952, guid: d22aef68bcb3fd74abd0f58caaee62a4,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d22aef68bcb3fd74abd0f58caaee62a4, type: 3}

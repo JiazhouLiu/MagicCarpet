@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3678544, g: 0.7660766, b: 0.82167494, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3319,7 +3319,7 @@ PrefabInstance:
     - target: {fileID: 267273486466690722, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2680263221200434190, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
@@ -3340,6 +3340,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4072440964676238833, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_Name
+      value: Carpet
+      objectReference: {fileID: 0}
+    - target: {fileID: 4072440964676238833, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5084633509308920241, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e72f7202cf55cff449ba6cc69b6a46a5, type: 2}
+    - target: {fileID: 5267975317728473244, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5351879780540805846, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
@@ -3420,6 +3440,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.1527
+      objectReference: {fileID: 0}
+    - target: {fileID: 8376608408873683156, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8376608408873683156, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8376608408873683156, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 15.915494
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2680263221200434190, guid: d22aef68bcb3fd74abd0f58caaee62a4, type: 3}

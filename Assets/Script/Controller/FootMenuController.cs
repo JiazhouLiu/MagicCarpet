@@ -11,7 +11,7 @@ public class FootMenuController : MonoBehaviour
     public Transform waist;
     public List<Transform> groundVisParent;
     public Transform headVisParent;
-    public Transform groundLight;
+    public Transform carpet;
     public Transform menuItems;
 
     [Header("Variable")]
@@ -78,14 +78,14 @@ public class FootMenuController : MonoBehaviour
         // make menu visible
         if (footMenu)
         {
-            groundLight.gameObject.SetActive(true);
+            carpet.gameObject.SetActive(true);
             menuItems.gameObject.SetActive(true);
 
             // foot menu functions
             CheckAndChangeLandmarksScale();
         }
         else {
-            groundLight.gameObject.SetActive(false);
+            carpet.gameObject.SetActive(false);
             menuItems.gameObject.SetActive(false);
         }
 
@@ -99,13 +99,23 @@ public class FootMenuController : MonoBehaviour
         {
             float diff = Vector3.Distance(leftFoot.position, rightFoot.position) - changeScaleDelta;
             foreach (Transform t in groundVisParent) {
-                //foreach (Transform t in parent) {
+                if (dc != null)
+                {
+                    foreach (Transform child in t) {
+                        Vector3 result = child.localScale + Vector3.one * 0.01f * changeSpeed * diff;
+                        if (result.x <= 1.5f && result.x >= 0.5f)
+                        {
+                            child.localScale = result;
+                        }
+                    }
+                }
+                if (dcpt != null) {
                     Vector3 result = t.localScale + Vector3.one * 0.01f * changeSpeed * diff;
                     if (result.x <= 1.5f && result.x >= 0.5f)
                     {
                         t.localScale = result;
                     }
-                //}
+                }
             }           
         }
     }
