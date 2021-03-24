@@ -61,7 +61,7 @@ public class DashBoard_New : MonoBehaviour
                     UpdateVisPosition(t);
 
                     t.LookAt(CameraTransform);
-                    t.localEulerAngles = new Vector3(-t.localEulerAngles.x, t.localEulerAngles.y + 180, 0);
+                    t.localEulerAngles = new Vector3(-t.localEulerAngles.x, t.localEulerAngles.y + 180, 180);
                 }
 
                 // configure dashboard rotation (body-fixed)

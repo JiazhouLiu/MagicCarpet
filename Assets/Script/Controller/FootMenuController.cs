@@ -93,9 +93,9 @@ public class FootMenuController : MonoBehaviour
     }
 
     private void CheckAndChangeLandmarksScale() {
-        //Debug.Log(Vector3.Angle(leftFoot.right, rightFoot.position - leftFoot.position));
-        //Debug.Log(Vector3.Angle(rightFoot.right, rightFoot.position - leftFoot.position));
-        if (Vector3.Angle(leftFoot.right, rightFoot.position - leftFoot.position) < 10 && Vector3.Angle(rightFoot.right, rightFoot.position - leftFoot.position) < 10) // if two feet are parallel
+        //Debug.Log(Vector3.Angle(leftFoot.up, rightFoot.position - leftFoot.position));
+        //Debug.Log(Vector3.Angle(rightFoot.up, rightFoot.position - leftFoot.position));
+        if (Vector3.Angle(leftFoot.up, rightFoot.position - leftFoot.position) < 15 && Vector3.Angle(rightFoot.up, rightFoot.position - leftFoot.position) < 15) // if two feet are parallel
         {
             float diff = Vector3.Distance(leftFoot.position, rightFoot.position) - changeScaleDelta;
             foreach (Transform t in groundVisParent) {
