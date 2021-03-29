@@ -17,16 +17,21 @@ public class FootGestureController : MonoBehaviour
 
     public int windowFrames = 5;
     public float scaleFactor = 0.01f;
+    public int GlobalStaticPosCounter = 100;
+    public float GlobalAngleToCancelGes = 20;
+    public float GlobalRaiseFootToCancelGes = 0.18f;
 
     private List<Vector3> rightFootLocPositions;
 
     private Gesture currentGesture;
     private bool passedWindow = false;
+    private int staticPosCounter;
 
     // Start is called before the first frame update
     void Start()
     {
         rightFootLocPositions = new List<Vector3>();
+        staticPosCounter = GlobalStaticPosCounter;
     }
 
     // Update is called once per frame
@@ -55,7 +60,6 @@ public class FootGestureController : MonoBehaviour
             else {
                 if (currentGesture == Gesture.SlideToLeft)
                 {
-                    Debug.Log("Slide Left");
                     directionIndicator.Find("ArrowLeft").GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.green);
                     if (!SlideGestureCheck(currentGesture))
                     {
@@ -66,7 +70,6 @@ public class FootGestureController : MonoBehaviour
 
                 if (currentGesture == Gesture.SlideToRight)
                 {
-                    Debug.Log("Slide Right");
                     directionIndicator.Find("ArrowRight").GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.green);
                     if (!SlideGestureCheck(currentGesture))
                     {
@@ -92,7 +95,7 @@ public class FootGestureController : MonoBehaviour
 
         // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++) {
-            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.right));
+            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.up));
             distance.Add(Vector3.Distance(rightFootLocPositions[i + 1], rightFootLocPositions[i]));
             footHeight.Add(rightFoot.position.y);
         }
@@ -105,13 +108,13 @@ public class FootGestureController : MonoBehaviour
             if (angle == 0 && distance[angles.IndexOf(angle)] == 0) // if stationary
                 angles.Remove(angle); // remove 0 for validation
             else {
-                if (footHeight[angles.IndexOf(angle)] > 0.18f) {
+                if (footHeight[angles.IndexOf(angle)] > GlobalRaiseFootToCancelGes) {
                     slideRight = false;
                     slideLeft = false;
                 }
-                if (angle > 10) // if not to right
+                if (angle > GlobalAngleToCancelGes) // if not to right
                     slideRight = false;
-                if (angle < 170) // if not to left
+                if (angle < (180 - GlobalAngleToCancelGes)) // if not to left
                     slideLeft = false;
             }
         }
@@ -139,7 +142,7 @@ public class FootGestureController : MonoBehaviour
         // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++)
         {
-            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.right));
+            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.up));
             distance.Add(Vector3.Distance(rightFootLocPositions[i + 1], rightFootLocPositions[i]));
             footHeight.Add(rightFoot.position.y);
         }
@@ -152,7 +155,7 @@ public class FootGestureController : MonoBehaviour
             {
                 if (gesture == Gesture.SlideToRight)
                 {
-                    if (angle > 10 || footHeight[angles.IndexOf(angle)] > 0.18f)
+                    if (angle > GlobalAngleToCancelGes || footHeight[angles.IndexOf(angle)] > GlobalRaiseFootToCancelGes)
                     {
                         return false;
                     } // if not to right
@@ -168,8 +171,9 @@ public class FootGestureController : MonoBehaviour
 
                 if (gesture == Gesture.SlideToLeft)
                 {
-                    if (angle < 170 || footHeight[angles.IndexOf(angle)] > 0.18f) // if not to left
+                    if (angle < (180 - GlobalAngleToCancelGes) || footHeight[angles.IndexOf(angle)] > GlobalRaiseFootToCancelGes) {
                         return false;
+                    } // if not to left
                     else
                     {
                         Vector3 resultScale = interactiveOBJ.localScale - distance[angles.IndexOf(angle)] * Vector3.one * scaleFactor;
@@ -180,8 +184,13 @@ public class FootGestureController : MonoBehaviour
             }
         }
 
-        if (angles.Count == 0)
-            return false;
+        if (angles.Count == 0) {
+            if (staticPosCounter-- == 0) {
+                staticPosCounter = GlobalStaticPosCounter;
+                return false;
+            }
+        }
+            
 
         return true;
     }
