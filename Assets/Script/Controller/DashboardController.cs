@@ -137,7 +137,7 @@ public class DashboardController : MonoBehaviour
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
         
-        if (!footMenu) {
+        //if (!footMenu) {
             // detect ground marker change
             if (CheckMarkerMoving(GroundVisParent))
             {
@@ -202,7 +202,7 @@ public class DashboardController : MonoBehaviour
                 }
 
             }
-        }
+        //}
         
 
         //// testing

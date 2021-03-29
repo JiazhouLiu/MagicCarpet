@@ -130,6 +130,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
         type: 3}
+      propertyPath: groundVisParent.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 267273484810350934, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
       propertyPath: dcpt
       value: 
       objectReference: {fileID: 126790190}
@@ -222,6 +227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FootMenu Controller
+      objectReference: {fileID: 0}
+    - target: {fileID: 4072440964676238833, guid: d22aef68bcb3fd74abd0f58caaee62a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d22aef68bcb3fd74abd0f58caaee62a4, type: 3}
@@ -331,7 +341,7 @@ MonoBehaviour:
   ForwardParameter: 3
   curved: 1
   lerp: 1
-  size: 0.8
+  size: 0.6
   HSpacing: 0.1
   animationSpeed: 3
   headDashboardSizeMagnifier: 5
@@ -3073,17 +3083,17 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.204
+      value: -0.17
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.094
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.408
+      value: 0.101
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3145,6 +3155,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5605905078656022475, guid: 56af40b9ce01df345b295050108afc34,
+        type: 3}
+      propertyPath: shader
+      value: 
+      objectReference: {fileID: 4800000, guid: cd2a7e62188ddd04b85f12f729ec85cf, type: 3}
     - target: {fileID: 5606122278164774623, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: showControlHints
@@ -3160,6 +3175,11 @@ PrefabInstance:
       propertyPath: resetHandsAtSwitch
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5606129776438852919, guid: 56af40b9ce01df345b295050108afc34,
+        type: 3}
+      propertyPath: shader
+      value: 
+      objectReference: {fileID: 4800000, guid: cd2a7e62188ddd04b85f12f729ec85cf, type: 3}
     - target: {fileID: 5606331143693421013, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: setups.Array.size

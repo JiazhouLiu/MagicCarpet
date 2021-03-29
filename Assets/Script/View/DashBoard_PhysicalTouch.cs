@@ -92,8 +92,8 @@ public class DashBoard_PhysicalTouch : MonoBehaviour
 
         if (display == DisplayDashboard.HeadDisplay && CameraTransform != null)
         {// script for head-level dashboard
-            foreach (Transform t in transform)
-                t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
+            //foreach (Transform t in transform)
+            //    t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
             // configure curved display (vis)
             if (curved)
             {
@@ -104,6 +104,7 @@ public class DashBoard_PhysicalTouch : MonoBehaviour
 
                 // configure dashboard rotation (body-fixed)
                 transform.localEulerAngles = WaistTransform.localEulerAngles;
+                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 
                 foreach (Transform t in transform)
                 {
