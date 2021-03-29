@@ -5,14 +5,16 @@ using UnityEngine;
 enum Gesture { 
     SlideToRight,
     SlideToLeft,
+    RightToeTap,
+    LeftToeTap,
     None
 }
 
 public class FootGestureController : MonoBehaviour
 {
     public Transform directionIndicator;
-    public Transform leftFoot;
-    public Transform rightFoot;
+    public Foot leftFoot;
+    public Foot rightFoot;
     public Transform interactiveOBJ;
 
     public int windowFrames = 5;
@@ -37,7 +39,10 @@ public class FootGestureController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rightFootLocPositions.Add(rightFoot.localPosition);
+        Debug.Log("Left Foot Toe Height: " + leftFoot.Toe.position.y);
+        Debug.Log("Right Foot Toe Height: " + rightFoot.Toe.position.y);
+
+        rightFootLocPositions.Add(rightFoot.CurrentTransform.localPosition);
         if (rightFootLocPositions.Count > windowFrames) {
             rightFootLocPositions.RemoveAt(0);
         }
@@ -95,9 +100,9 @@ public class FootGestureController : MonoBehaviour
 
         // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++) {
-            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.up));
+            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.CurrentTransform.up));
             distance.Add(Vector3.Distance(rightFootLocPositions[i + 1], rightFootLocPositions[i]));
-            footHeight.Add(rightFoot.position.y);
+            footHeight.Add(rightFoot.CurrentTransform.position.y);
         }
 
         bool slideLeft = true;
@@ -142,9 +147,9 @@ public class FootGestureController : MonoBehaviour
         // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++)
         {
-            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.up));
+            angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.CurrentTransform.up));
             distance.Add(Vector3.Distance(rightFootLocPositions[i + 1], rightFootLocPositions[i]));
-            footHeight.Add(rightFoot.position.y);
+            footHeight.Add(rightFoot.CurrentTransform.position.y);
         }
 
         foreach (float angle in angles.ToArray())
