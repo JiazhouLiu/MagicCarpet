@@ -88,11 +88,13 @@ public class FootGestureController : MonoBehaviour
 
         List<float> angles = new List<float>();
         List<float> distance = new List<float>();
+        List<float> footHeight = new List<float>();
 
         // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++) {
             angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.right));
             distance.Add(Vector3.Distance(rightFootLocPositions[i + 1], rightFootLocPositions[i]));
+            footHeight.Add(rightFoot.position.y);
         }
 
         bool slideLeft = true;
@@ -103,6 +105,10 @@ public class FootGestureController : MonoBehaviour
             if (angle == 0 && distance[angles.IndexOf(angle)] == 0) // if stationary
                 angles.Remove(angle); // remove 0 for validation
             else {
+                if (footHeight[angles.IndexOf(angle)] > 0.18f) {
+                    slideRight = false;
+                    slideLeft = false;
+                }
                 if (angle > 10) // if not to right
                     slideRight = false;
                 if (angle < 170) // if not to left
@@ -128,12 +134,14 @@ public class FootGestureController : MonoBehaviour
     {
         List<float> angles = new List<float>();
         List<float> distance = new List<float>();
+        List<float> footHeight = new List<float>();
 
         // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++)
         {
             angles.Add(Vector3.Angle(rightFootLocPositions[i + 1] - rightFootLocPositions[i], rightFoot.right));
             distance.Add(Vector3.Distance(rightFootLocPositions[i + 1], rightFootLocPositions[i]));
+            footHeight.Add(rightFoot.position.y);
         }
 
         foreach (float angle in angles.ToArray())
@@ -144,9 +152,8 @@ public class FootGestureController : MonoBehaviour
             {
                 if (gesture == Gesture.SlideToRight)
                 {
-                    if (angle > 10)
+                    if (angle > 10 || footHeight[angles.IndexOf(angle)] > 0.18f)
                     {
-                        Debug.Log("Not right");
                         return false;
                     } // if not to right
                     else
@@ -161,7 +168,7 @@ public class FootGestureController : MonoBehaviour
 
                 if (gesture == Gesture.SlideToLeft)
                 {
-                    if (angle < 170) // if not to left
+                    if (angle < 170 || footHeight[angles.IndexOf(angle)] > 0.18f) // if not to left
                         return false;
                     else
                     {
