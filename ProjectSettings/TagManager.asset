@@ -6,6 +6,7 @@ TagManager:
   tags:
   - View
   - DisplaySurface
+  - InteractableObj
   layers:
   - Default
   - TransparentFX
