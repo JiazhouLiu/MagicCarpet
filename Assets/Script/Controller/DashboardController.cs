@@ -136,74 +136,79 @@ public class DashboardController : MonoBehaviour
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
-        
+
         //if (!footMenu) {
-            // detect ground marker change
-            if (CheckMarkerMoving(GroundVisParent))
-            {
-                if (GroundVisParent.childCount > 0)
-                    GenerateTriangulation();
-            }
+        // detect ground marker change
+        if (CheckMarkerMoving(GroundVisParent))
+        {
+            if (GroundVisParent.childCount > 0)
+                GenerateTriangulation();
+        }
 
-            // check vis triggered from left foot
-            if (CheckHumanFeetMoving("left") || DemoFlagLeft)
-            {
-                DemoFlagLeft = false;
-                if (CurrentTriangles.faces.Count > 0)
-                    selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
-                else
-                    selectedVisFromLeft = new List<Transform>();
+        // check vis triggered from left foot
+        if (CheckHumanFeetMoving("left") || DemoFlagLeft)
+        {
+            DemoFlagLeft = false;
+            if (CurrentTriangles.faces.Count > 0)
+                selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+            else
+                selectedVisFromLeft = new List<Transform>();
 
-                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-                if (selectedVis.Count > 0)
-                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-            }
-
-            // check vis triggered from right foot
-            if (CheckHumanFeetMoving("right") || DemoFlagRight)
-            {
-                DemoFlagRight = false;
-                if (CurrentTriangles.faces.Count > 0)
-                    selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
-                else
-                    selectedVisFromRight = new List<Transform>();
-
-                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-                if (selectedVis.Count > 0)
-                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-            }
-
-            // highlight selected Vis
-            foreach (Transform groundVis in GroundVisParent)
-            {
-                Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
-                if (selectedVis.Contains(groundVis) || groundVis.GetComponent<Vis>().Selected)
-                {
-                    groundVis.GetComponent<Vis>().Highlighted = true;
-                    highlighter.intensity = 50;
-                }
-                else
-                {
-                    groundVis.GetComponent<Vis>().Highlighted = false;
-                    highlighter.intensity = 0;
-                }
-            }
-
-            // reorder vis on dashboard based on angle to the waist
-            if (CheckHumanWaistRotating())
-            {
-                selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
+            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+            if (selectedVis.Count > 0)
                 currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+        }
 
-                HeadDashboard.DetachChildren();
-                for (int i = 0; i < currentVisOnHeadDashboard.Count; i++)
-                {
-                    currentVisOnHeadDashboard.Values.ToList()[currentVisOnHeadDashboard.Count - i - 1].SetParent(HeadDashboard);
-                }
+        // check vis triggered from right foot
+        if (CheckHumanFeetMoving("right") || DemoFlagRight)
+        {
+            DemoFlagRight = false;
+            if (CurrentTriangles.faces.Count > 0)
+                selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+            else
+                selectedVisFromRight = new List<Transform>();
 
+            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+            if (selectedVis.Count > 0)
+                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+        }
+
+        // highlight selected Vis
+        foreach (Transform groundVis in GroundVisParent)
+        {
+            Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
+            if (groundVis.GetComponent<Vis>().Selected)
+            {
+                highlighter.color = Color.blue;
+                highlighter.intensity = 50;
+            } else if (selectedVis.Contains(groundVis))  {
+                highlighter.color = Color.green;
+                groundVis.GetComponent<Vis>().Highlighted = true;
+                highlighter.intensity = 50;
             }
+            else
+            {
+                highlighter.color = Color.green;
+                groundVis.GetComponent<Vis>().Highlighted = false;
+                highlighter.intensity = 0;
+            }
+        }
+
+        // reorder vis on dashboard based on angle to the waist
+        if (CheckHumanWaistRotating())
+        {
+            selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
+            currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+
+            HeadDashboard.DetachChildren();
+            for (int i = 0; i < currentVisOnHeadDashboard.Count; i++)
+            {
+                currentVisOnHeadDashboard.Values.ToList()[currentVisOnHeadDashboard.Count - i - 1].SetParent(HeadDashboard);
+            }
+
+        }
         //}
-        
+
 
         //// testing
         //if (Input.GetKeyDown("z")) {
@@ -244,12 +249,14 @@ public class DashboardController : MonoBehaviour
         }
     }
 
-    public void ReturnToPocket(VisController vis) {
+    public void ReturnToPocket(VisController vis)
+    {
         vis.transform.SetParent(WaistDashboard);
         vis.GetComponent<Vis>().OnWaistDashBoard = true;
     }
 
-    public void RemoveFromHeadDashboard(VisController vis, Transform previousParent) {
+    public void RemoveFromHeadDashboard(VisController vis, Transform previousParent)
+    {
         Transform removedGroundVis = null;
         if (GroundVisParent.Find(vis.name))
         {
@@ -263,15 +270,36 @@ public class DashboardController : MonoBehaviour
         if (currentVisOnHeadDashboard.ContainsKey(vis.name))
             currentVisOnHeadDashboard.Remove(vis.name);
 
-        if (previousParent.GetComponent<DashBoard_New>().display == DisplayDashboard.HeadDisplay) 
+        if (previousParent.GetComponent<DashBoard_New>().display == DisplayDashboard.HeadDisplay)
         { // pick from head, remove ground one
             Destroy(removedGroundVis.gameObject);
             return;
-        } else if (previousParent.GetComponent<DashBoard_New>().display == DisplayDashboard.GroundMarkers)
+        }
+        else if (previousParent.GetComponent<DashBoard_New>().display == DisplayDashboard.GroundMarkers)
         { // pick from ground, remove head one
             if (HeadDashboard.Find(vis.name))
                 Destroy(HeadDashboard.Find(vis.name).gameObject);
         }
+    }
+
+    public void RemoveFromHeadDashboard(Transform vis)
+    {
+        Transform removedGroundVis = null;
+        if (GroundVisParent.Find(vis.name))
+        {
+            removedGroundVis = GroundVisParent.Find(vis.name);
+
+            if (selectedVisFromLeft.Contains(removedGroundVis))
+                selectedVisFromLeft.Remove(removedGroundVis);
+            if (selectedVisFromRight.Contains(removedGroundVis))
+                selectedVisFromRight.Remove(removedGroundVis);
+        }
+        if (currentVisOnHeadDashboard.ContainsKey(vis.name))
+            currentVisOnHeadDashboard.Remove(vis.name);
+
+
+        if (HeadDashboard.Find(vis.name))
+            Destroy(HeadDashboard.Find(vis.name).gameObject);
     }
 
     #region VIS management

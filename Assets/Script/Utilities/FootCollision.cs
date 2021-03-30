@@ -41,7 +41,6 @@ public class FootCollision : MonoBehaviour
         else {
             if (other.CompareTag("InteractableObj"))
             {
-                
                 TouchedObj = other.transform;
             }
         }

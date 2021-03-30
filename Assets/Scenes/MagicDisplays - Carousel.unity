@@ -473,6 +473,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Line Chart
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -944,16 +949,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   directionIndicator: {fileID: 3964280016841834263}
+  WaistDashboard: {fileID: 943662730}
   mainFoot: {fileID: 195106548}
   mainFootToe: {fileID: 3964280016841834262}
   mainFootHeel: {fileID: 3964280016841834261}
   mainFootToeComponent: {fileID: 3964280016841834264}
   FC: {fileID: 3964280016841834266}
+  DC: {fileID: 126790192}
   windowFrames: 10
   scaleFactor: 0.1
   GlobalStaticPosCounter: 100
   GlobalAngleToCancelGes: 20
   GlobalRaiseFootToCancelGes: 0.1
+  KickVelocityRecognizer: 4
 --- !u!4 &583742129
 Transform:
   m_ObjectHideFlags: 0
@@ -1126,6 +1134,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Scatter Plot 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -1452,6 +1465,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pie Chart 2
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1583,6 +1601,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree Diagram
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1713,6 +1736,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pie Chart 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -2105,6 +2133,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stacked Bar Chart 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2347,6 +2380,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Scatter Plot 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -2683,6 +2721,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stacked Bar Chart 2
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_TagString
+      value: InteractableObj
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2808,7 +2851,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.13
+      value: -0.395
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -2818,7 +2861,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.137
+      value: 0.913
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3429,6 +3472,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2776397578937781014, guid: 779ddae7652c42d40a93be6220b853ba,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2776397578937781015, guid: 779ddae7652c42d40a93be6220b853ba,
         type: 3}
       propertyPath: m_Name
@@ -3456,6 +3504,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DC: {fileID: 0}
   TouchedObj: {fileID: 0}
+--- !u!54 &2776397578515787518
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2776397578515787516}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &2937586059951030945
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3612,6 +3676,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RightFoot
       objectReference: {fileID: 0}
+    - target: {fileID: 3964280016969689573, guid: 2007d0aedaa0c59468a9e378617041e1,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2007d0aedaa0c59468a9e378617041e1, type: 3}
 --- !u!4 &3964280016841834261 stripped
@@ -3658,3 +3727,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DC: {fileID: 0}
   TouchedObj: {fileID: 0}
+--- !u!54 &3964280016841834267
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3964280016841834265}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
