@@ -14,6 +14,7 @@ public class Vis : MonoBehaviour
     public bool showOnWaistDashBoard;
     public bool showOnGround;
     public bool showHighlighted;
+    public bool showSelected;
 
     public string VisName { get; set; }
     public Vector3 GroundPosition { get; set; }
@@ -24,6 +25,7 @@ public class Vis : MonoBehaviour
     public bool OnWaistDashBoard { get; set; }
     public bool OnGround { get; set; }
     public bool Highlighted { get; set; }
+    public bool Selected { get; set; }
 
 
     public Vis() { }
@@ -59,6 +61,7 @@ public class Vis : MonoBehaviour
         OnWaistDashBoard = v.OnWaistDashBoard;
         OnGround = v.OnGround;
         Highlighted = v.Highlighted;
+        Selected = v.Selected;
 
         showName = VisName;
         showGroundPosition = GroundPosition;
@@ -69,6 +72,7 @@ public class Vis : MonoBehaviour
         showOnWaistDashBoard = OnWaistDashBoard;
         showOnGround = OnGround;
         showHighlighted = Highlighted;
+        showSelected = Selected;
     }
 
     public void Update()
@@ -82,5 +86,6 @@ public class Vis : MonoBehaviour
         showOnWaistDashBoard = OnWaistDashBoard;
         showOnGround = OnGround;
         showHighlighted = Highlighted;
+        showSelected = Selected;
     }
 }

@@ -177,7 +177,7 @@ public class DashboardController : MonoBehaviour
             foreach (Transform groundVis in GroundVisParent)
             {
                 Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
-                if (selectedVis.Contains(groundVis))
+                if (selectedVis.Contains(groundVis) || groundVis.GetComponent<Vis>().Selected)
                 {
                     groundVis.GetComponent<Vis>().Highlighted = true;
                     highlighter.intensity = 50;
