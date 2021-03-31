@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 enum Gesture
 {
@@ -8,6 +9,7 @@ enum Gesture
     SlideToLeft,
     ToeRaised,
     Kick,
+    Shake,
     None
 }
 
@@ -28,7 +30,8 @@ public class FootGestureController : MonoBehaviour
     public int GlobalStaticPosCounter = 100;    // smooth people stop moving during sliding
     public float GlobalAngleToCancelGes = 20; // foot with related angle will cancel sliding
     public float GlobalRaiseFootToCancelGes = 0.18f; // foot over this height will cancel sliding
-    public float KickVelocityRecognizer = 1f; // foot over this height will cancel sliding
+    public float KickVelocityRecognizer = 1f; // foot velocity to recongnize kicking
+    public float footHoldingHeightDiff = 0.1f; // foot height difference during window frames, max - min 
 
     // sliding
     private List<Vector3> mainFootLocPositions;
@@ -146,6 +149,11 @@ public class FootGestureController : MonoBehaviour
                 RunFootKickToArchive();
                 passedWindow = false;
             }
+
+            if (currentGesture == Gesture.Shake) {
+                RunFootShakeToArchive();
+                passedWindow = false;
+            }
         }
     }
 
@@ -160,34 +168,30 @@ public class FootGestureController : MonoBehaviour
         // toe touch
         List<float> footToeHeight = new List<float>();
         List<float> footHeelHeight = new List<float>();
-
-
         List<float> footHeight = new List<float>();
 
         List<float> velocity = new List<float>();
 
-        // angles between right direction of right foot and different frames
         for (int i = 0; i < windowFrames - 1; i++)
         {
-            anglesToRight.Add(Vector3.Angle(mainFootLocPositions[i + 1] - mainFootLocPositions[i], mainFoot.up));
-            anglesToFront.Add(Vector3.Angle(mainFootLocPositions[i + 1] - mainFootLocPositions[i], mainFoot.right));
-            distance.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]));
+            anglesToRight.Add(Vector3.Angle(mainFootLocPositions[i + 1] - mainFootLocPositions[i], mainFoot.up)); // angles between right direction of right foot
+            anglesToFront.Add(Vector3.Angle(mainFootLocPositions[i + 1] - mainFootLocPositions[i], mainFoot.right)); // angles between front direction of right foot
+            distance.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]));  // distance foot moved
 
-            velocity.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]) / eachFrameTime[i]);
+            velocity.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]) / eachFrameTime[i]); // velocity calculation
         }
         for (int i = 0; i < windowFrames; i++)
         {
-            footHeight.Add(mainFootHeight[i]);
-            footToeHeight.Add(mainFootToeHeight[i]);
-            footHeelHeight.Add(mainFootHeelHeight[i]);
+            footHeight.Add(mainFootHeight[i]); // foot height change
+            footToeHeight.Add(mainFootToeHeight[i]); // foot toe height change
+            footHeelHeight.Add(mainFootHeelHeight[i]); // foot heel height change
         }
 
         bool slideLeft = true;
         bool slideRight = true;
-
         bool toeRaised = true;
-
         bool kicking = false;
+        bool shaking = false;
 
         // sliding
         foreach (float angle in anglesToRight.ToArray())
@@ -223,7 +227,7 @@ public class FootGestureController : MonoBehaviour
         // toe touch
         foreach (float toeHeight in footToeHeight)
         {
-            if (!(footHeight[footToeHeight.IndexOf(toeHeight)] < 0.15f && mainFootHeel.position.y < 0.02f && toeHeight > 0.1f))
+            if (!(footHeight[footToeHeight.IndexOf(toeHeight)] < 0.15f && mainFootHeel.position.y < 0.02f && toeHeight > 0.08f))
                 toeRaised = false;
         }
 
@@ -239,6 +243,10 @@ public class FootGestureController : MonoBehaviour
 
         if (kicking)
             return Gesture.Kick;
+
+        // shaking
+        if (footHeight.Max() - footHeight.Min() < footHoldingHeightDiff)
+            Debug.Log("Foot in same Height");
 
         return Gesture.None;
     }

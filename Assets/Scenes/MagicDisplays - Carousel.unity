@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12306206, g: 0.18945119, b: 0.34020495, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -143,6 +143,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Line Chart
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -341,6 +346,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tree Diagram
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -688,6 +698,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stacked Bar Chart 2
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -788,6 +803,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Scatter Plot 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -1003,6 +1023,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pie Chart 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
@@ -2614,6 +2639,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Scatter Plot 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3116,6 +3146,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stacked Bar Chart 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3216,6 +3251,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pie Chart 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9021928950873538981, guid: d0ec64514bcdbd24f8de3c29aab87db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9021928950873538987, guid: d0ec64514bcdbd24f8de3c29aab87db4,
         type: 3}
