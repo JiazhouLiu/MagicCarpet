@@ -15,44 +15,49 @@ enum Gesture
 
 public class FootGestureController : MonoBehaviour
 {
+    [Header("Prefabs or OBJ in Scene")]
     public Transform directionIndicator;
     public Transform WaistDashboard;
+    public Transform GroundMarkerParent;
+    public FootCollision FC;
+    public DashboardController DC;
+
+    [Header("Main Foot")]
     public Transform mainFoot;
     public Transform mainFootToe;
     public Transform mainFootHeel;
     public Transform mainFootToeComponent;
-    public FootCollision FC;
-    public DashboardController DC;
-    //public Transform interactiveOBJ;
 
+    [Header("Variable")]
     public int windowFrames = 5;    // buff frames before detecting sliding
     public float scaleFactor = 0.01f;     // scale object multiplier
     public int GlobalStaticPosCounter = 100;    // smooth people stop moving during sliding
     public float GlobalAngleToCancelGes = 20; // foot with related angle will cancel sliding
-    public float GlobalRaiseFootToCancelGes = 0.18f; // foot over this height will cancel sliding
+    public float GlobalRaiseFootToCancelSliding = 0.18f; // foot over this height will cancel sliding
     public float KickVelocityRecognizer = 1f; // foot velocity to recongnize kicking
     public float footHoldingHeightDiff = 0.1f; // foot height difference during window frames, max - min 
+    public float BlindSelectionRange = 0.3f;
 
-    // sliding
+    // lists
     private List<Vector3> mainFootLocPositions;
+    private List<Vector3> mainFootToePositions;
+
+    private List<float> mainFootHeight;
+    private List<float> mainFootToeHeight;
+    private List<float> mainFootHeelHeight;
+    private List<float> eachFrameTime;
 
     private Gesture currentGesture;
     private bool passedWindow = false;
     private int staticPosCounter;
 
-    // toe touch
-    //private bool selected = false;
     private List<Transform> interactingOBJ;
-    private List<float> mainFootHeight;
-    private List<float> mainFootToeHeight;
-    private List<float> mainFootHeelHeight;
-
-    private List<float> eachFrameTime;
 
     // Start is called before the first frame update
     void Start()
     {
         mainFootLocPositions = new List<Vector3>();
+        mainFootToePositions = new List<Vector3>();
         eachFrameTime = new List<float>();
         staticPosCounter = GlobalStaticPosCounter;
         interactingOBJ = new List<Transform>();
@@ -75,6 +80,7 @@ public class FootGestureController : MonoBehaviour
         }
 
         mainFootLocPositions.Add(mainFoot.localPosition);
+        mainFootToePositions.Add(mainFootToe.position);
         mainFootHeight.Add(mainFoot.position.y);
         mainFootToeHeight.Add(mainFootToe.position.y);
         mainFootHeelHeight.Add(mainFootHeel.position.y);
@@ -82,6 +88,8 @@ public class FootGestureController : MonoBehaviour
 
         if (mainFootLocPositions.Count > windowFrames)
             mainFootLocPositions.RemoveAt(0);
+        if (mainFootToePositions.Count > windowFrames)
+            mainFootToePositions.RemoveAt(0);
         if (mainFootHeight.Count > windowFrames)
             mainFootHeight.RemoveAt(0);
         if (mainFootToeHeight.Count > windowFrames)
@@ -113,6 +121,7 @@ public class FootGestureController : MonoBehaviour
         }
         else
         {
+            Debug.Log(currentGesture.ToString());
             if (currentGesture == Gesture.SlideToLeft)
             {
                 SetGestureIndicator(directionIndicator.Find("ArrowLeft"));
@@ -170,7 +179,8 @@ public class FootGestureController : MonoBehaviour
         List<float> footHeelHeight = new List<float>();
         List<float> footHeight = new List<float>();
 
-        List<float> velocity = new List<float>();
+        List<float> footVelocity = new List<float>();
+        List<float> footToeVelocity = new List<float>();
 
         for (int i = 0; i < windowFrames - 1; i++)
         {
@@ -178,7 +188,8 @@ public class FootGestureController : MonoBehaviour
             anglesToFront.Add(Vector3.Angle(mainFootLocPositions[i + 1] - mainFootLocPositions[i], mainFoot.right)); // angles between front direction of right foot
             distance.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]));  // distance foot moved
 
-            velocity.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]) / eachFrameTime[i]); // velocity calculation
+            footVelocity.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]) / eachFrameTime[i]); // footVelocity calculation
+            footToeVelocity.Add(Vector3.Distance(mainFootToePositions[i + 1], mainFootToePositions[i]) / eachFrameTime[i]); // footVelocity calculation
         }
         for (int i = 0; i < windowFrames; i++)
         {
@@ -190,8 +201,6 @@ public class FootGestureController : MonoBehaviour
         bool slideLeft = true;
         bool slideRight = true;
         bool toeRaised = true;
-        bool kicking = false;
-        bool shaking = false;
 
         // sliding
         foreach (float angle in anglesToRight.ToArray())
@@ -200,7 +209,7 @@ public class FootGestureController : MonoBehaviour
                 anglesToRight.Remove(angle); // remove 0 for validation
             else
             {
-                if (footHeight[anglesToRight.IndexOf(angle)] > GlobalRaiseFootToCancelGes)
+                if (footHeight[anglesToRight.IndexOf(angle)] > GlobalRaiseFootToCancelSliding)
                 {
                     slideRight = false;
                     slideLeft = false;
@@ -227,7 +236,7 @@ public class FootGestureController : MonoBehaviour
         // toe touch
         foreach (float toeHeight in footToeHeight)
         {
-            if (!(footHeight[footToeHeight.IndexOf(toeHeight)] < 0.15f && mainFootHeel.position.y < 0.02f && toeHeight > 0.08f))
+            if (!(footHeight[footToeHeight.IndexOf(toeHeight)] < 0.15f && mainFootHeel.position.y < 0.02f && toeHeight > 0.1f))
                 toeRaised = false;
         }
 
@@ -235,23 +244,15 @@ public class FootGestureController : MonoBehaviour
             return Gesture.ToeRaised;
 
         // kicking
-        foreach (float f in velocity)
-        {
-            if (f > KickVelocityRecognizer)
-                kicking = true;
-        }
-
-        if (kicking)
+        if(footVelocity.Max() > KickVelocityRecognizer)
             return Gesture.Kick;
 
         // shaking
-        if (footHeight.Max() - footHeight.Min() < footHoldingHeightDiff)
-            Debug.Log("Foot in same Height");
+        if (footHeight.Max() - footHeight.Min() < footHoldingHeightDiff && footHeight.Min() > 0.2f && footToeVelocity.Max() > 1)
+            return Gesture.Shake;
 
         return Gesture.None;
     }
-
-    
     #endregion
 
     #region Foot Kick Gesture
@@ -261,15 +262,32 @@ public class FootGestureController : MonoBehaviour
     }
     private void RunFootKickToArchive()
     {
-        foreach (Transform t in interactingOBJ)
-            ArchiveVisToBelt(t);
+        List<Transform> blindSelection = CheckNearestVisOnGround();
+        if (interactingOBJ.Count > 0)
+        {
+            foreach (Transform t in interactingOBJ)
+                ArchiveVisToBelt(t);
+        }
+        else if (blindSelection.Count > 0) {
+            foreach (Transform t in blindSelection)
+                ArchiveVisToBelt(t);
+        }
     }
     #endregion
 
     #region Foot Shake Gesture
     private void RunFootShakeToArchive() {
-        foreach (Transform t in interactingOBJ)
-            ArchiveVisToBelt(t);
+        List<Transform> blindSelection = CheckNearestVisOnGround();
+        if (interactingOBJ.Count > 0)
+        {
+            foreach (Transform t in interactingOBJ)
+                ArchiveVisToBelt(t);
+        }
+        else if (blindSelection.Count > 0)
+        {
+            foreach (Transform t in blindSelection)
+                ArchiveVisToBelt(t);
+        }
     }
     #endregion
 
@@ -323,26 +341,30 @@ public class FootGestureController : MonoBehaviour
             footHeight.Add(mainFoot.position.y);
         }
 
-        foreach (float angle in angles.ToArray())
-        {
-            if (angle == 0 && distance[angles.IndexOf(angle)] == 0) // if stationary
-                angles.Remove(angle); // remove 0 for validation
-            else
+        if (footHeight.Max() > GlobalRaiseFootToCancelSliding)
+            return false;
+        else {
+            foreach (float angle in angles.ToArray())
             {
-                if (gesture == Gesture.SlideToRight)
+                if (angle == 0 && distance[angles.IndexOf(angle)] == 0) // if stationary
+                    angles.Remove(angle); // remove 0 for validation
+                else
                 {
-                    if (angle > GlobalAngleToCancelGes || footHeight[angles.IndexOf(angle)] > GlobalRaiseFootToCancelGes) // if not to right
-                        return false;
-                    else
-                        RunSlidingToScale(distance[angles.IndexOf(angle)]);
-                }
+                    if (gesture == Gesture.SlideToRight)
+                    {
+                        if (angle > GlobalAngleToCancelGes) // if not to right
+                            return false;
+                        else
+                            RunSlidingToScale(distance[angles.IndexOf(angle)]);
+                    }
 
-                if (gesture == Gesture.SlideToLeft)
-                {
-                    if (angle < (180 - GlobalAngleToCancelGes) || footHeight[angles.IndexOf(angle)] > GlobalRaiseFootToCancelGes) // if not to left
-                        return false;
-                    else
-                        RunSlidingToScale(-distance[angles.IndexOf(angle)]);
+                    if (gesture == Gesture.SlideToLeft)
+                    {
+                        if (angle < (180 - GlobalAngleToCancelGes)) // if not to left
+                            return false;
+                        else
+                            RunSlidingToScale(-distance[angles.IndexOf(angle)]);
+                    }
                 }
             }
         }
@@ -361,13 +383,25 @@ public class FootGestureController : MonoBehaviour
 
     private void RunSlidingToScale(float d)
     {
-        foreach (Transform obj in interactingOBJ)
+        List<Transform> blindSelection = CheckNearestVisOnGround();
+        if (interactingOBJ.Count > 0)
         {
-            Vector3 resultScale = obj.localScale + d * Vector3.one * scaleFactor;
-            if (resultScale.x > 0 && resultScale.x < 2)
-                obj.localScale = resultScale;
+            foreach (Transform obj in interactingOBJ)
+            {
+                Vector3 resultScale = obj.localScale + d * Vector3.one * scaleFactor;
+                if (resultScale.x > 0 && resultScale.x < 2)
+                    obj.localScale = resultScale;
+            }
         }
-
+        else if (blindSelection.Count > 0)
+        {
+            foreach (Transform obj in blindSelection)
+            {
+                Vector3 resultScale = obj.localScale + d * Vector3.one * scaleFactor;
+                if (resultScale.x > 0 && resultScale.x < 2)
+                    obj.localScale = resultScale;
+            }
+        }
     }
     #endregion
 
@@ -411,5 +445,16 @@ public class FootGestureController : MonoBehaviour
         vis.GetComponent<Vis>().OnWaistDashBoard = true;
     }
 
+    private List<Transform> CheckNearestVisOnGround() {
+        List<Transform> rangeSelected = new List<Transform>();
+
+        foreach (Transform t in GroundMarkerParent) {
+            Vector3 CameraPosition2D = new Vector3(Camera.main.transform.position.x, 0, Camera.main.transform.position.z);
+            Vector3 VisPosition2D = new Vector3(t.position.x, 0, t.position.z);
+            if (Vector3.Distance(CameraPosition2D, VisPosition2D) < BlindSelectionRange)
+                rangeSelected.Add(t);
+        }
+        return rangeSelected;
+    }
     #endregion
 }
