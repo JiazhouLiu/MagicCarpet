@@ -150,9 +150,11 @@ public class DashBoard_New : MonoBehaviour
 
         if (display == DisplayDashboard.GroundMarkers && CameraTransform != null) {
             foreach (Transform chart in transform) {
-                chart.transform.LookAt(Camera.main.transform);
-                chart.transform.localEulerAngles = new Vector3(chart.transform.localEulerAngles.x, chart.transform.localEulerAngles.y + 180, chart.transform.localEulerAngles.z);
-                chart.transform.localEulerAngles = new Vector3(90, chart.transform.localEulerAngles.y, chart.transform.localEulerAngles.z);
+                if (Vector3.Distance(new Vector3(chart.position.x, 0, chart.position.z), new Vector3(Camera.main.transform.position.x, 0, Camera.main.transform.position.z)) > 0.3f) { // north pole issue
+                    chart.LookAt(Camera.main.transform);
+                    chart.localEulerAngles = new Vector3(chart.localEulerAngles.x, chart.localEulerAngles.y + 180, chart.localEulerAngles.z);
+                    chart.localEulerAngles = new Vector3(90, chart.localEulerAngles.y, chart.localEulerAngles.z);
+                }
             }
         }
     }

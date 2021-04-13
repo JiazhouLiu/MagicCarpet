@@ -15,6 +15,7 @@ public class Vis : MonoBehaviour
     public bool showOnGround;
     public bool showHighlighted;
     public bool showSelected;
+    public bool testingOnGround;
 
     public string VisName { get; set; }
     public Vector3 GroundPosition { get; set; }
@@ -27,6 +28,11 @@ public class Vis : MonoBehaviour
     public bool Highlighted { get; set; }
     public bool Selected { get; set; }
 
+    private void Awake()
+    {
+        if (testingOnGround)
+            OnGround = true;
+    }
 
     public Vis() { }
 

@@ -210,6 +210,31 @@ public class VisController : MonoBehaviour
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
     }
 
+    public void AttachToDisplayScreen(DisplaySurface ds)
+    {
+        Vector3 pos;
+        Quaternion rot;
+
+        //Debug.Log("Attach to screen method");
+
+        ds.CalculatePositionOnScreen(this, out pos, out rot);
+
+        //transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * speed);
+        //transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, rot.eulerAngles, Time.deltaTime * speed);
+        AnimateTowards(pos, rot, 0f);
+
+        isTouchingDisplaySurface = false;
+        ds = null;
+
+        transform.SetParent(DC.GroundVisParent);
+        transform.localScale = Vector3.one;
+        GetComponent<Vis>().OnGround = true;
+        GetComponent<Vis>().OnWaistDashBoard = false;
+        GetComponent<Vis>().OnHeadDashBoard = false;
+
+        //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
+    }
+
     public void AnimateTowards(Vector3 targetPos, Quaternion targetRot, float duration, bool toDestroy = false)
     {
         ColliderActiveState = false;

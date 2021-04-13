@@ -22,6 +22,7 @@ public class FootGestureController : MonoBehaviour
     public Transform GroundMarkerParent;
     public FootCollision FC;
     public DashboardController DC;
+    public DisplaySurface ds;
 
     [Header("Main Foot")]
     public Transform mainFoot;
@@ -96,6 +97,17 @@ public class FootGestureController : MonoBehaviour
 
         if (mainFootLocPositions.Count == windowFrames)
             GestureProcessing();
+
+        if (interactingOBJ.Count > 0) {
+            foreach (Transform t in interactingOBJ) {
+                t.SetParent(mainFoot);
+                t.transform.localPosition = new Vector3(0, 0, 0);
+                t.transform.position = new Vector3(t.transform.position.x, 0.05f, t.transform.position.z);
+
+                t.transform.eulerAngles = new Vector3(90, t.transform.eulerAngles.y, 0);
+                t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, 90);
+            }
+        }
     }
 
     #region Gesture Recognizer
@@ -265,9 +277,9 @@ public class FootGestureController : MonoBehaviour
             return Gesture.ToeRaised;
 
         // kicking
-        
+        //Debug.Log(distance.Max() + " " + (anglesToFront.Max() - anglesToFront.Min()) + " " + (footHeight.Max() - footHeight.Min()) + " " + footVelocity.Min() + " " + footVelocity.Max());
         if ((distance.Max() > 0.001f) && // moving
-            (anglesToFront.Max() - anglesToFront.Min() < GlobalRaiseFootToCancelSliding) &&  // keep in a direction
+            (anglesToFront.Max() - anglesToFront.Min() < GlobalAngleToCancelGes) &&  // keep in a direction
             (footHeight.Max() - footHeight.Min() > 0.1f) && // height diff
             (footVelocity.Min() < 1) && // remove accidentally trigger
             (footVelocity.Max() > KickVelocityRecognizer)) // detect speed
@@ -472,6 +484,14 @@ public class FootGestureController : MonoBehaviour
         interactingOBJ.Add(t);
         if (t.GetComponent<Vis>() != null)
             t.GetComponent<Vis>().Selected = true;
+
+        Light highlighter = t.GetChild(2).GetComponent<Light>();
+        highlighter.color = Color.blue;
+        highlighter.intensity = 50;
+
+        DC.RemoveFromHeadDashboard(t);
+        t.GetComponent<Vis>().OnGround = false;
+        t.GetComponent<Vis>().OnWaistDashBoard = true;
     }
 
     private bool DeregisterInteractingOBJ(Transform t)
@@ -480,6 +500,12 @@ public class FootGestureController : MonoBehaviour
             if (t.GetComponent<Vis>() != null)
                 t.GetComponent<Vis>().Selected = false;
             interactingOBJ.Remove(t);
+
+            Light highlighter = t.GetChild(2).GetComponent<Light>();
+            highlighter.intensity = 0;
+
+            t.GetComponent<VisController>().AttachToDisplayScreen(ds);
+
             return true;
         }
         else
@@ -491,6 +517,10 @@ public class FootGestureController : MonoBehaviour
             if (t.GetComponent<Vis>() != null)
                 t.GetComponent<Vis>().Selected = false;
             interactingOBJ.Remove(t);
+
+            Light highlighter = t.GetChild(2).GetComponent<Light>();
+            highlighter.intensity = 0;
+            t.GetComponent<VisController>().AttachToDisplayScreen(ds);
         }
     }
 
