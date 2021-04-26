@@ -12,6 +12,7 @@ public class DashboardController : MonoBehaviour
     private VRTK_InteractableObject interactableObject;
 
     public Transform HumanWaist;
+    public Transform MainFoot;
     public Transform LeftFoot;
     public Transform RightFoot;
 

@@ -6,7 +6,8 @@ public enum DisplayDashboard // your custom enumeration
 {
     HeadDisplay,
     WaistDisplay,
-    GroundMarkers
+    GroundMarkers,
+    FootDisplay
 };
 
 [RequireComponent(typeof(LineRenderer))]
@@ -14,6 +15,7 @@ public class Circle : MonoBehaviour
 {
     public Transform HeadDashboard;
     public Transform WaistDashboard;
+    public Transform FootDashboard;
     public int vertexCount = 100;
     public float lineWidth = 0.2f;
     public DisplayDashboard display = new DisplayDashboard();
@@ -42,7 +44,8 @@ public class Circle : MonoBehaviour
                     vertexCount = HeadDashboard.childCount * 2 - 2;
                 }
             }
-            else {
+            else if (display == DisplayDashboard.WaistDisplay)
+            {
                 if (WaistDashboard.GetComponent<DashBoard_New>() != null)
                     radius = WaistDashboard.GetComponent<DashBoard_New>().ForwardParameter;
                 else
@@ -51,6 +54,18 @@ public class Circle : MonoBehaviour
                 if (WaistDashboard.childCount > 1)
                 {
                     vertexCount = WaistDashboard.childCount * 2 - 2;
+                }
+            }
+            else if (display == DisplayDashboard.FootDisplay)
+            {
+                if (FootDashboard.GetComponent<DashBoard_New>() != null)
+                    radius = FootDashboard.GetComponent<DashBoard_New>().ForwardParameter;
+                else
+                    radius = FootDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
+
+                if (FootDashboard.childCount > 1)
+                {
+                    vertexCount = FootDashboard.childCount * 2 - 2;
                 }
             }
         }
@@ -78,7 +93,7 @@ public class Circle : MonoBehaviour
                     vertexCount = HeadDashboard.childCount * 2 - 2;
                 }
             }
-            else
+            else if (display == DisplayDashboard.WaistDisplay)
             {
                 if (WaistDashboard.GetComponent<DashBoard_New>() != null)
                     radius = WaistDashboard.GetComponent<DashBoard_New>().ForwardParameter;
@@ -88,6 +103,18 @@ public class Circle : MonoBehaviour
                 if (WaistDashboard.childCount > 1)
                 {
                     vertexCount = WaistDashboard.transform.childCount * 2 - 2;
+                }
+            }
+            else if (display == DisplayDashboard.FootDisplay)
+            {
+                if (FootDashboard.GetComponent<DashBoard_New>() != null)
+                    radius = FootDashboard.GetComponent<DashBoard_New>().ForwardParameter;
+                else
+                    radius = FootDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
+
+                if (FootDashboard.childCount > 1)
+                {
+                    vertexCount = FootDashboard.transform.childCount * 2 - 2;
                 }
             }
         }

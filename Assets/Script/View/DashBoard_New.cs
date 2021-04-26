@@ -21,6 +21,7 @@ public class DashBoard_New : MonoBehaviour
 
     private Transform CameraTransform;
     private Transform WaistTransform;
+    private Transform MainFootTransform;
 
     private List<Vector3> circlePointPositions;
     private List<Vector3> visPositions;
@@ -29,6 +30,7 @@ public class DashBoard_New : MonoBehaviour
     {
         // sync Camera/Human Game Object
         WaistTransform = DC.HumanWaist;
+        MainFootTransform = DC.MainFoot;
 
         circlePointPositions = new List<Vector3>();
         visPositions = new List<Vector3>();
@@ -157,6 +159,36 @@ public class DashBoard_New : MonoBehaviour
                 }
             }
         }
+
+        if (display == DisplayDashboard.FootDisplay)
+        {// script for foot-level dashboard
+
+            // configure curved display (vis)
+            if (curved)
+            {
+                // configure dashboard position (foot position)
+                if (lerp) transform.position = Vector3.Lerp(transform.position, MainFootTransform.position,
+                    Time.deltaTime * animationSpeed);
+                else transform.position = SmoothChangingVector3(MainFootTransform.position, 2);
+
+                // configure dashboard rotation (foot-fixed)
+                transform.localEulerAngles = SmoothChangingVector3(MainFootTransform.localEulerAngles, 0);
+                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+
+                foreach (Transform t in transform)
+                {
+                    UpdateVisPosition(t);
+
+                    t.localPosition += Vector3.up * 0.1f;
+
+                    t.localScale = Vector3.one * 1f;
+
+                    t.LookAt(MainFootTransform);
+                    t.transform.eulerAngles = new Vector3(90, t.transform.eulerAngles.y, -90);
+                    t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, -90);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -262,5 +294,27 @@ public class DashBoard_New : MonoBehaviour
             edgeLengthSum += Vector3.Distance(targetVis.position, t.position);
 
         return copyList.Count * waistToTarget / edgeLengthSum;
+    }
+
+    private Vector3 SmoothChangingVector3(Vector3 origin, int decimalPoint)
+    {
+        float newX = 0;
+        float newY = 0;
+        float newZ = 0;
+
+        if (decimalPoint == 0)
+        {
+            newX = float.Parse(origin.x.ToString("F0"));
+            newY = float.Parse(origin.y.ToString("F0"));
+            newZ = float.Parse(origin.z.ToString("F0"));
+        }
+        else if (decimalPoint == 2)
+        {
+            newX = float.Parse(origin.x.ToString("F2"));
+            newY = float.Parse(origin.y.ToString("F2"));
+            newZ = float.Parse(origin.z.ToString("F2"));
+        }
+
+        return new Vector3(newX, newY, newZ);
     }
 }

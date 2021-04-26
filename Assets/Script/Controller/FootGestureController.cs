@@ -11,6 +11,7 @@ enum Gesture
     Kick,
     Shake,
     Sliding,
+    Still,
     None
 }
 
@@ -19,6 +20,7 @@ public class FootGestureController : MonoBehaviour
     [Header("Prefabs or OBJ in Scene")]
     public Transform directionIndicator;
     public Transform WaistDashboard;
+    public Transform FootDashboard;
     public Transform GroundMarkerParent;
     public FootCollision FC;
     public DashboardController DC;
@@ -55,6 +57,9 @@ public class FootGestureController : MonoBehaviour
     private float[] currentSlidingAngles;
     private bool passedWindow = false;
     private int staticPosCounter;
+
+    private float stillTimer = 0; // check foot is still
+    private Vector3 previousPosition;
 
     private List<Transform> interactingOBJ;
 
@@ -108,6 +113,7 @@ public class FootGestureController : MonoBehaviour
                 t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, 90);
             }
         }
+        previousPosition = mainFoot.position;
     }
 
     #region Gesture Recognizer
@@ -173,6 +179,12 @@ public class FootGestureController : MonoBehaviour
             if (currentGesture == Gesture.Kick)
             {
                 RunFootKickToArchive();
+                passedWindow = false;
+            }
+
+            if (currentGesture == Gesture.Still)
+            {
+                RunStandStillToSplitCollapse();
                 passedWindow = false;
             }
 
@@ -284,12 +296,44 @@ public class FootGestureController : MonoBehaviour
             (footVelocity.Min() < 1) && // remove accidentally trigger
             (footVelocity.Max() > KickVelocityRecognizer)) // detect speed
             return Gesture.Kick;
-            
+
         //// shaking
         //if (footHeight.Max() - footHeight.Min() < footHoldingHeightDiff && footHeight.Min() > 0.2f && footToeVelocity.Max() > 1)
         //    return Gesture.Shake;
 
+        if (stillTimer > 1)
+        {
+            stillTimer = 0;
+            return Gesture.Still;
+        }
+        else
+        {
+            stillTimer += Time.deltaTime;
+            //Debug.Log(Vector3.Distance(previousPosition, mainFoot.position));
+            if (Vector3.Distance(previousPosition, mainFoot.position) > 0.01f)
+                stillTimer = 0;
+        }
+
+
         return Gesture.None;
+    }
+    #endregion
+
+    #region Foot Still Gesture
+    private void RunStandStillToSplitCollapse() {
+        if (FC.TouchedObjs.Count > 1) {
+            foreach (Transform t in FC.TouchedObjs.ToList())
+            {
+                ArchiveVis(t);
+                if(interactingOBJ.Contains(t))
+                    interactingOBJ.Remove(t);
+
+                if (FC.TouchedObjs.Contains(t))
+                    FC.TouchedObjs.Remove(t);
+
+                t.SetParent(FootDashboard);
+            }
+        }
     }
     #endregion
 
@@ -306,6 +350,9 @@ public class FootGestureController : MonoBehaviour
             foreach (Transform t in interactingOBJ.ToList()) {
                 ArchiveVisToBelt(t);
                 interactingOBJ.Remove(t);
+
+                if (FC.TouchedObjs.Contains(t))
+                    FC.TouchedObjs.Remove(t);
             }
         }
         else if (blindSelection.Count > 0) {
@@ -361,10 +408,12 @@ public class FootGestureController : MonoBehaviour
 
     private void RunToeTapToSelect()
     {
-        if (FC.TouchedObj != null)
+        if (FC.TouchedObjs.Count > 0)
         {
-            if (!DeregisterInteractingOBJ(FC.TouchedObj))
-                RegisterInteractingOBJ(FC.TouchedObj);
+            foreach (Transform t in FC.TouchedObjs) {
+                if (!DeregisterInteractingOBJ(t))
+                    RegisterInteractingOBJ(t);
+            }
         }
         else {
             if (interactingOBJ.Count > 0)
@@ -453,7 +502,7 @@ public class FootGestureController : MonoBehaviour
             foreach (Transform obj in interactingOBJ)
             {
                 Vector3 resultScale = obj.localScale + d * Vector3.one * scaleFactor;
-                if (resultScale.x > 0 && resultScale.x < 2)
+                if (resultScale.x > 0.3f && resultScale.x < 2)
                     obj.localScale = resultScale;
             }
         }
@@ -462,7 +511,7 @@ public class FootGestureController : MonoBehaviour
             foreach (Transform obj in blindSelection)
             {
                 Vector3 resultScale = obj.localScale + d * Vector3.one * scaleFactor;
-                if (resultScale.x > 0 && resultScale.x < 2)
+                if (resultScale.x > 0.3f && resultScale.x < 2)
                     obj.localScale = resultScale;
             }
         }
@@ -542,6 +591,13 @@ public class FootGestureController : MonoBehaviour
         vis.transform.SetParent(WaistDashboard);
         vis.GetComponent<Vis>().OnGround = false;
         vis.GetComponent<Vis>().OnWaistDashBoard = true;
+    }
+
+    private void ArchiveVis(Transform vis)
+    {
+        DC.RemoveFromHeadDashboard(vis);
+        vis.GetComponent<Vis>().OnGround = false;
+        vis.GetComponent<Vis>().OnWaistDashBoard = false;
     }
 
     private List<Transform> CheckNearestVisOnGround() {

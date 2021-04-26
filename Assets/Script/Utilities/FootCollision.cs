@@ -5,7 +5,12 @@ using UnityEngine;
 public class FootCollision : MonoBehaviour
 {
     public DashboardController_PhysicalTouch DC;
-    public Transform TouchedObj;
+    public List<Transform> TouchedObjs;
+
+    private void Update()
+    {
+        
+    }
 
     private void OnTriggerExit(Collider other)
     {
@@ -21,7 +26,8 @@ public class FootCollision : MonoBehaviour
         }
         else {
             if (other.CompareTag("InteractableObj")) {
-                TouchedObj = null;
+                if(TouchedObjs.Contains(other.transform))
+                    TouchedObjs.Remove(other.transform);
             }
         } 
     }
@@ -41,7 +47,8 @@ public class FootCollision : MonoBehaviour
         else {
             if (other.CompareTag("InteractableObj"))
             {
-                TouchedObj = other.transform;
+                if (!TouchedObjs.Contains(other.transform))
+                    TouchedObjs.Add(other.transform);
             }
         }
     }
