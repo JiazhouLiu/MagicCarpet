@@ -49,6 +49,8 @@ public class FootGestureController : MonoBehaviour
     public bool SlideToPan = false;
     public bool SingleTap = true;
     public bool SelectToMove = false;
+    public float TapSpeed = 0.3f;
+    public float ToeSlideMoveMultiplier = 1.5f;
 
     // lists
     private List<Vector3> mainFootLocPositions;
@@ -73,7 +75,10 @@ public class FootGestureController : MonoBehaviour
     // foot tap
     private List<Transform> footTapTouchedObj;
     private float singleTapTimer = 0; // check single tap
-    private int footTapCounter = 0;
+    private float doubleTapTimer = 0; // check single tap
+    private int footTapCounter = -1;
+    private bool newToeTap = true;
+    private bool ToeOnVis = false;
 
     private List<Transform> interactingOBJ;
 
@@ -85,6 +90,7 @@ public class FootGestureController : MonoBehaviour
         eachFrameTime = new List<float>();
         staticPosCounter = GlobalStaticPosCounter;
         interactingOBJ = new List<Transform>();
+        footTapTouchedObj = new List<Transform>();
         mainFootHeight = new List<float>();
         mainFootToeHeight = new List<float>();
         mainFootHeelHeight = new List<float>();
@@ -117,18 +123,20 @@ public class FootGestureController : MonoBehaviour
         if (mainFootLocPositions.Count == windowFrames)
             GestureProcessing();
 
-        if (interactingOBJ.Count > 0) {
-            foreach (Transform t in interactingOBJ) {
-                t.SetParent(mainFoot);
-                t.transform.localPosition = new Vector3(0, 0, 0);
-                t.transform.position = new Vector3(t.transform.position.x, 0.05f, t.transform.position.z);
+        //if (interactingOBJ.Count > 0) {
+        //    foreach (Transform t in interactingOBJ) {
+        //        t.SetParent(mainFoot);
+        //        t.transform.localPosition = new Vector3(0, 0, 0);
+        //        t.transform.position = new Vector3(t.transform.position.x, 0.05f, t.transform.position.z);
 
-                t.transform.eulerAngles = new Vector3(90, t.transform.eulerAngles.y, 0);
-                t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, 90);
-            }
-        }
+        //        t.transform.eulerAngles = new Vector3(90, t.transform.eulerAngles.y, 0);
+        //        t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, 90);
+        //    }
+        //}
+
+        //Debug.Log(mainFootHeight.Max()) ;
         previousPosition = mainFoot.position;
-        previousToePosition = mainFootToe.position;
+        
     }
 
     #region Gesture Recognizer
@@ -141,6 +149,7 @@ public class FootGestureController : MonoBehaviour
             if (currentGesture != Gesture.None)
             {
                 passedWindow = true;
+                previousToePosition = mainFootToe.position;
                 // set indicator for sliding
                 if (currentGesture == Gesture.SlideToLeft || currentGesture == Gesture.SlideToRight)
                     directionIndicator.gameObject.SetActive(true);
@@ -231,6 +240,7 @@ public class FootGestureController : MonoBehaviour
             }
 
             if (currentGesture == Gesture.ToeSliding) {
+                
                 RunToeSliding();
             }
         }
@@ -273,74 +283,74 @@ public class FootGestureController : MonoBehaviour
         bool toeRaised = true;
 
         #region Sliding
-        // sliding to pan
-        if (SlideToPan)
-        {
-            //Debug.Log("moving" + (distance.Max() > 0.001f));
-            //Debug.Log("direction" + (anglesToFront.Max() - anglesToFront.Min()));
-            //Debug.Log("ground" + (footHeight.Max() < GlobalRaiseFootToCancelSliding));
-            if ((distance.Max() > 0.001f) && // moving
-                (anglesToFront.Max() - anglesToFront.Min() < GlobalAngleToCancelGes) && // keep same direction
-                (footHeight.Max() < GlobalRaiseFootToCancelSliding)){ // must remain on ground
-                currentSlidingAngles[0] = anglesToFront.Min();
-                currentSlidingAngles[1] = anglesToFront.Max();
-                return Gesture.Sliding;
-            }
-        }
-        else
-        { // sliding to zoom
-            foreach (float angle in anglesToRight.ToArray())
-            {
-                if (angle == 0 || distance[anglesToRight.IndexOf(angle)] < 0.001f) // if stationary
-                    anglesToRight.Remove(angle); // remove 0 for validation
-                else
-                {
-                    if (footHeight[anglesToRight.IndexOf(angle)] > GlobalRaiseFootToCancelSliding)
-                    {
-                        slideRight = false;
-                        slideLeft = false;
-                    }
-                    if (angle > GlobalAngleToCancelGes) // if not to right
-                        slideRight = false;
-                    if (angle < (180 - GlobalAngleToCancelGes)) // if not to left
-                        slideLeft = false;
-                }
-            }
+        //// sliding to pan
+        //if (SlideToPan)
+        //{
+        //    //Debug.Log("moving" + (distance.Max() > 0.001f));
+        //    //Debug.Log("direction" + (anglesToFront.Max() - anglesToFront.Min()));
+        //    //Debug.Log("ground" + (footHeight.Max() < GlobalRaiseFootToCancelSliding));
+        //    if ((distance.Max() > 0.001f) && // moving
+        //        (anglesToFront.Max() - anglesToFront.Min() < GlobalAngleToCancelGes) && // keep same direction
+        //        (footHeight.Max() < GlobalRaiseFootToCancelSliding)){ // must remain on ground
+        //        currentSlidingAngles[0] = anglesToFront.Min();
+        //        currentSlidingAngles[1] = anglesToFront.Max();
+        //        return Gesture.Sliding;
+        //    }
+        //}
+        //else
+        //{ // sliding to zoom
+        //    foreach (float angle in anglesToRight.ToArray())
+        //    {
+        //        if (angle == 0 || distance[anglesToRight.IndexOf(angle)] < 0.001f) // if stationary
+        //            anglesToRight.Remove(angle); // remove 0 for validation
+        //        else
+        //        {
+        //            if (footHeight[anglesToRight.IndexOf(angle)] > GlobalRaiseFootToCancelSliding)
+        //            {
+        //                slideRight = false;
+        //                slideLeft = false;
+        //            }
+        //            if (angle > GlobalAngleToCancelGes) // if not to right
+        //                slideRight = false;
+        //            if (angle < (180 - GlobalAngleToCancelGes)) // if not to left
+        //                slideLeft = false;
+        //        }
+        //    }
 
-            if (anglesToRight.Count > windowFrames / 2)
-            { // if valid angles are more than half
-                if (slideLeft && slideRight)
-                    Debug.Log("ERROR");
+        //    if (anglesToRight.Count > windowFrames / 2)
+        //    { // if valid angles are more than half
+        //        if (slideLeft && slideRight)
+        //            Debug.Log("ERROR");
 
-                if (slideLeft)
-                    return Gesture.SlideToLeft;
+        //        if (slideLeft)
+        //            return Gesture.SlideToLeft;
 
-                if (slideRight)
-                    return Gesture.SlideToRight;
-            }
-        }
+        //        if (slideRight)
+        //            return Gesture.SlideToRight;
+        //    }
+        //}
         #endregion
 
         #region Toe Touch
-        // toe touch
-        foreach (float toeHeight in footToeHeight)
-        {
-            if (!(footHeight[footToeHeight.IndexOf(toeHeight)] < 0.15f && mainFootHeel.position.y < 0.02f && toeHeight > 0.1f))
-                toeRaised = false;
-        }
+        //// toe touch
+        //foreach (float toeHeight in footToeHeight)
+        //{
+        //    if (!(footHeight[footToeHeight.IndexOf(toeHeight)] < 0.15f && mainFootHeel.position.y < 0.02f && toeHeight > 0.1f))
+        //        toeRaised = false;
+        //}
 
-        if (toeRaised)
-            return Gesture.ToeRaised;
+        //if (toeRaised)
+        //    return Gesture.ToeRaised;
         #endregion
 
         #region Kicking
-        // kicking
-        if ((distance.Max() > 0.001f) && // moving
-            (anglesToFront.Max() - anglesToFront.Min() < GlobalAngleToCancelGes) &&  // keep in a direction
-            (footHeight.Max() - footHeight.Min() > 0.1f) && // height diff
-            (footVelocity.Min() < 1) && // remove accidentally trigger
-            (footVelocity.Max() > KickVelocityRecognizer)) // detect speed
-            return Gesture.Kick;
+        //// kicking
+        //if ((distance.Max() > 0.001f) && // moving
+        //    (anglesToFront.Max() - anglesToFront.Min() < GlobalAngleToCancelGes) &&  // keep in a direction
+        //    (footHeight.Max() - footHeight.Min() > 0.1f) && // height diff
+        //    (footVelocity.Min() < 1) && // remove accidentally trigger
+        //    (footVelocity.Max() > KickVelocityRecognizer)) // detect speed
+        //    return Gesture.Kick;
         #endregion
 
         #region Shaking
@@ -350,88 +360,149 @@ public class FootGestureController : MonoBehaviour
         #endregion
 
         #region Foot Still
-        // foot still
-        if (stillTimer > 1)
-        {
-            stillTimer = 0;
-            return Gesture.Still;
-        }
-        else
-        {
-            stillTimer += Time.deltaTime;
-            //Debug.Log(Vector3.Distance(previousPosition, mainFoot.position));
-            if (Vector3.Distance(previousPosition, mainFoot.position) > 0.01f)
-                stillTimer = 0;
-        }
+        //// foot still
+        //if (stillTimer > 1)
+        //{
+        //    stillTimer = 0;
+        //    return Gesture.Still;
+        //}
+        //else
+        //{
+        //    stillTimer += Time.deltaTime;
+        //    //Debug.Log(Vector3.Distance(previousPosition, mainFoot.position));
+        //    if (Vector3.Distance(previousPosition, mainFoot.position) > 0.01f)
+        //        stillTimer = 0;
+        //}
         #endregion
 
         #region Foot Tap
         // foot tap (single, double)
         if (SingleTap)
         {
-            if (singleTapTimer > 0.5f)
-            {
-                singleTapTimer = 0;
-                return Gesture.None;
-            }
-            else
-            {
-                if (FTC.TouchedObjs.Count > 0)
+            Debug.Log(ToeOnVis + " " + singleTapTimer);
+            if (newToeTap) {
+                if (singleTapTimer > TapSpeed)
                 {
-                    singleTapTimer += Time.deltaTime;
+                    singleTapTimer = 0;
+                    footTapTouchedObj.Clear();
+                    newToeTap = false;
+                    return Gesture.None;
                 }
                 else
                 {
-                    if (singleTapTimer != 0)
+                    if (FTC.TouchedObjs.Count > 0)
                     {
-                        singleTapTimer = 0;
-                        FTC.TouchedObjs.ForEach(footTapTouchedObj.Add);
-                        return Gesture.SingleTap;
+                        singleTapTimer += Time.deltaTime;
+                        if (!ToeOnVis) {
+                            
+                            foreach (Transform t in FTC.TouchedObjs)
+                            {
+                                if (!footTapTouchedObj.Contains(t))
+                                    footTapTouchedObj.Add(t);
+                            }
+                            ToeOnVis = true;
+                        }
+                        
+                    }
+                    else
+                    {
+                        ToeOnVis = false;
+                        if (singleTapTimer != 0)
+                        {
+                            singleTapTimer = 0;
+
+                            return Gesture.SingleTap;
+                        }
                     }
                 }
             }
+
+            if(FTC.TouchedObjs.Count == 0)
+                newToeTap = true;
+
         }
         else {
-            if (footTapCounter == 0)
-            {
-                if (FTC.TouchedObjs.Count > 0)
-                {
-                    footTapCounter++;
-                    FTC.TouchedObjs.ForEach(footTapTouchedObj.Add);
-                }
-                else
-                {
-                    footTapTouchedObj.Clear();
-                }
-            }
-            else if (footTapCounter == 1)
-            {
+            Debug.Log(footTapCounter);
+            if (footTapCounter == -1) {
                 if (FTC.TouchedObjs.Count == 0)
                 {
                     footTapCounter++;
                 }
             }
-            else if (footTapCounter == 2) {
-                if (FTC.TouchedObjs.Count > 0)
+            else if (footTapCounter == 0)
+            {
+                if (doubleTapTimer > TapSpeed)
                 {
-                    List<Transform> finalList = new List<Transform>();
-                    foreach (Transform t in footTapTouchedObj)
+                    footTapTouchedObj.Clear();
+                    footTapCounter = -1;
+                    doubleTapTimer = 0;
+                }
+                else
+                {
+                    doubleTapTimer += Time.deltaTime;
+                    if (FTC.TouchedObjs.Count > 0)
                     {
-                        if (FTC.TouchedObjs.Contains(t))
-                            finalList.Add(t);
+                        footTapCounter++;
+                        doubleTapTimer = 0;
+                        foreach (Transform t in FTC.TouchedObjs)
+                        {
+                            if (!footTapTouchedObj.Contains(t))
+                                footTapTouchedObj.Add(t);
+                        }
                     }
+                }
+            }
+            else if (footTapCounter == 1)
+            {
+                if (doubleTapTimer > TapSpeed)
+                {
+                    footTapTouchedObj.Clear();
+                    footTapCounter = -1;
+                    doubleTapTimer = 0;
+                }
+                else {
+                    doubleTapTimer += Time.deltaTime;
+                    if (FTC.TouchedObjs.Count == 0)
+                    {
+                        doubleTapTimer = 0;
+                        footTapCounter++;
+                    }
+                }
+            }
+            else if (footTapCounter == 2) {
+                if (doubleTapTimer > TapSpeed)
+                {
+                    footTapTouchedObj.Clear();
+                    footTapCounter = -1;
+                    doubleTapTimer = 0;
+                }
+                else
+                {
+                    doubleTapTimer += Time.deltaTime;
+                    if (FTC.TouchedObjs.Count > 0)
+                    {
+                        List<Transform> finalList = new List<Transform>();
+                        foreach (Transform t in footTapTouchedObj)
+                        {
+                            if (FTC.TouchedObjs.Contains(t))
+                                finalList.Add(t);
+                        }
 
-                    if (finalList.Count > 0)
-                    {
-                        footTapTouchedObj = finalList;
-                        return Gesture.DoubleTap;
+                        if (finalList.Count > 0)
+                        {
+                            footTapTouchedObj = finalList;
+                            footTapCounter = -1;
+                            doubleTapTimer = 0;
+                            return Gesture.DoubleTap;
+                        }
+                        else
+                        {
+                            footTapTouchedObj.Clear();
+                            footTapCounter = -1;
+                            doubleTapTimer = 0;
+                        }
                     }
-                    else
-                    {
-                        footTapTouchedObj.Clear();
-                        footTapCounter = 0;
-                    }
-                } 
+                }
             }
         }
         #endregion
@@ -466,7 +537,7 @@ public class FootGestureController : MonoBehaviour
             if (interactingOBJ.Count > 0)
             {
                 foreach (Transform t in interactingOBJ)
-                    t.position += moveV2;
+                    t.position += moveV2 * ToeSlideMoveMultiplier;
             }
         }
         else
@@ -474,13 +545,18 @@ public class FootGestureController : MonoBehaviour
             if (FTC.TouchedObjs.Count > 0)
             {
                 foreach (Transform t in FTC.TouchedObjs)
-                    t.position += moveV2;
+                    t.position += moveV2 * ToeSlideMoveMultiplier;
             }
         }
 
         if ((distance.Max() < 0.001f) || // not moving
                 (footToeHeight.Max() > GlobalRaiseFootToCancelSliding)) // must remain on ground
+        {
             passedWindow = false;
+            //Debug.Log("!!!");
+        }
+            
+        previousToePosition = mainFootToe.position;
     }
     #endregion
 

@@ -8,7 +8,7 @@ public class FootToeCollision : MonoBehaviour
 
     private void Update()
     {
-
+        //Debug.Log(TouchedObjs.Count);
     }
 
     private void OnTriggerExit(Collider other)

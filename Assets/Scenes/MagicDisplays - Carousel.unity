@@ -1109,7 +1109,7 @@ MonoBehaviour:
   FootDashboard: {fileID: 1415399971}
   GroundMarkerParent: {fileID: 789476394}
   FC: {fileID: 3964280016841834266}
-  FTC: {fileID: 0}
+  FTC: {fileID: 3964280016841834269}
   DC: {fileID: 126790192}
   ds: {fileID: 110408697}
   mainFoot: {fileID: 195106548}
@@ -1121,12 +1121,15 @@ MonoBehaviour:
   panFactor: 0.5
   GlobalStaticPosCounter: 100
   GlobalAngleToCancelGes: 20
-  GlobalRaiseFootToCancelSliding: 0.08
+  GlobalRaiseFootToCancelSliding: 0.09
   KickVelocityRecognizer: 3
   footHoldingHeightDiff: 0.1
   BlindSelectionRange: 1
   SlideToPan: 0
   SingleTap: 1
+  SelectToMove: 0
+  DoubleTapSpeed: 0.3
+  ToeSlideMoveMultiplier: 1.5
 --- !u!4 &583742129
 Transform:
   m_ObjectHideFlags: 0
@@ -3185,7 +3188,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.276
+      value: 1.136
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3195,7 +3198,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.082
+      value: 0.262
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3205,7 +3208,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3215,7 +3218,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3230,7 +3233,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -4025,6 +4028,26 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6724503238726737222, guid: 2007d0aedaa0c59468a9e378617041e1,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.1289
+      objectReference: {fileID: 0}
+    - target: {fileID: 6724503238726737222, guid: 2007d0aedaa0c59468a9e378617041e1,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0246
+      objectReference: {fileID: 0}
+    - target: {fileID: 6724503238726737222, guid: 2007d0aedaa0c59468a9e378617041e1,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.0146
+      objectReference: {fileID: 0}
+    - target: {fileID: 6724503238726737222, guid: 2007d0aedaa0c59468a9e378617041e1,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5863
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2007d0aedaa0c59468a9e378617041e1, type: 3}
 --- !u!4 &3964280016841834261 stripped
@@ -4114,7 +4137,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3964280016841834268}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.05, y: 0.05, z: 0.05}
