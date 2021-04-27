@@ -12,6 +12,9 @@ enum Gesture
     Shake,
     Sliding,
     Still,
+    SingleTap,
+    DoubleTap,
+    ToeSliding,
     None
 }
 
@@ -23,6 +26,7 @@ public class FootGestureController : MonoBehaviour
     public Transform FootDashboard;
     public Transform GroundMarkerParent;
     public FootCollision FC;
+    public FootToeCollision FTC;
     public DashboardController DC;
     public DisplaySurface ds;
 
@@ -43,6 +47,8 @@ public class FootGestureController : MonoBehaviour
     public float footHoldingHeightDiff = 0.1f; // foot height difference during window frames, max - min 
     public float BlindSelectionRange = 1f;
     public bool SlideToPan = false;
+    public bool SingleTap = true;
+    public bool SelectToMove = false;
 
     // lists
     private List<Vector3> mainFootLocPositions;
@@ -60,6 +66,14 @@ public class FootGestureController : MonoBehaviour
 
     private float stillTimer = 0; // check foot is still
     private Vector3 previousPosition;
+
+    // toe sliding
+    private Vector3 previousToePosition;
+
+    // foot tap
+    private List<Transform> footTapTouchedObj;
+    private float singleTapTimer = 0; // check single tap
+    private int footTapCounter = 0;
 
     private List<Transform> interactingOBJ;
 
@@ -114,6 +128,7 @@ public class FootGestureController : MonoBehaviour
             }
         }
         previousPosition = mainFoot.position;
+        previousToePosition = mainFootToe.position;
     }
 
     #region Gesture Recognizer
@@ -126,6 +141,7 @@ public class FootGestureController : MonoBehaviour
             if (currentGesture != Gesture.None)
             {
                 passedWindow = true;
+                // set indicator for sliding
                 if (currentGesture == Gesture.SlideToLeft || currentGesture == Gesture.SlideToRight)
                     directionIndicator.gameObject.SetActive(true);
             }
@@ -136,62 +152,87 @@ public class FootGestureController : MonoBehaviour
         {
             Debug.Log(currentGesture.ToString());
 
-            if (currentGesture == Gesture.Sliding)
-            {
-                if (!SlideGestureCheck(currentGesture))
-                {
-                    passedWindow = false;
-                    ResetIndicator();
-                }
-            }
 
-            if (currentGesture == Gesture.SlideToLeft)
-            {
-                SetGestureIndicator(directionIndicator.Find("ArrowLeft"));
-                if (!SlideGestureCheck(currentGesture))
-                {
-                    passedWindow = false;
-                    ResetIndicator();
-                }
-            }
+            //if (currentGesture == Gesture.Sliding)
+            //{
+            //    if (!SlideGestureCheck(currentGesture))
+            //    {
+            //        passedWindow = false;
+            //        ResetIndicator();
+            //    }
+            //}
 
-            if (currentGesture == Gesture.SlideToRight)
-            {
-                SetGestureIndicator(directionIndicator.Find("ArrowRight"));
-                if (!SlideGestureCheck(currentGesture))
-                {
-                    passedWindow = false;
-                    ResetIndicator();
-                }
-            }
+            //if (currentGesture == Gesture.SlideToLeft)
+            //{
+            //    SetGestureIndicator(directionIndicator.Find("ArrowLeft"));
+            //    if (!SlideGestureCheck(currentGesture))
+            //    {
+            //        passedWindow = false;
+            //        ResetIndicator();
+            //    }
+            //}
 
-            if (currentGesture == Gesture.ToeRaised)
-            {
-                SetGestureIndicator(mainFootToeComponent);
-                if (ToeTapGestureCheck())
-                {
-                    RunToeTapToSelect();
-                    passedWindow = false;
-                    ResetIndicator();
-                }
-            }
+            //if (currentGesture == Gesture.SlideToRight)
+            //{
+            //    SetGestureIndicator(directionIndicator.Find("ArrowRight"));
+            //    if (!SlideGestureCheck(currentGesture))
+            //    {
+            //        passedWindow = false;
+            //        ResetIndicator();
+            //    }
+            //}
 
-            if (currentGesture == Gesture.Kick)
-            {
-                RunFootKickToArchive();
-                passedWindow = false;
-            }
+            //if (currentGesture == Gesture.ToeRaised)
+            //{
+            //    SetGestureIndicator(mainFootToeComponent);
+            //    if (ToeTapGestureCheck())
+            //    {
+            //        RunToeTapToSelect();
+            //        passedWindow = false;
+            //        ResetIndicator();
+            //    }
+            //}
 
-            if (currentGesture == Gesture.Still)
-            {
-                RunStandStillToSplitCollapse();
-                passedWindow = false;
-            }
+            //if (currentGesture == Gesture.Kick)
+            //{
+            //    RunFootKickToArchive();
+            //    passedWindow = false;
+            //}
+
+            //if (currentGesture == Gesture.Still)
+            //{
+            //    RunStandStillToSplitCollapse();
+            //    passedWindow = false;
+            //}
 
             //if (currentGesture == Gesture.Shake) {
             //    RunFootShakeToArchive();
             //    passedWindow = false;
             //}
+
+            if (SingleTap) {
+                if (currentGesture == Gesture.SingleTap)
+                {
+                    RunTapToSelect();
+                    passedWindow = false;
+                }
+                else {
+                    passedWindow = false;
+                }
+            } else {
+                if (currentGesture == Gesture.DoubleTap)
+                {
+                    RunTapToSelect();
+                    passedWindow = false;
+                }
+                else {
+                    passedWindow = false;
+                }
+            }
+
+            if (currentGesture == Gesture.ToeSliding) {
+                RunToeSliding();
+            }
         }
     }
 
@@ -231,6 +272,7 @@ public class FootGestureController : MonoBehaviour
         bool slideRight = true;
         bool toeRaised = true;
 
+        #region Sliding
         // sliding to pan
         if (SlideToPan)
         {
@@ -277,7 +319,9 @@ public class FootGestureController : MonoBehaviour
                     return Gesture.SlideToRight;
             }
         }
-        
+        #endregion
+
+        #region Toe Touch
         // toe touch
         foreach (float toeHeight in footToeHeight)
         {
@@ -287,20 +331,26 @@ public class FootGestureController : MonoBehaviour
 
         if (toeRaised)
             return Gesture.ToeRaised;
+        #endregion
 
+        #region Kicking
         // kicking
-        //Debug.Log(distance.Max() + " " + (anglesToFront.Max() - anglesToFront.Min()) + " " + (footHeight.Max() - footHeight.Min()) + " " + footVelocity.Min() + " " + footVelocity.Max());
         if ((distance.Max() > 0.001f) && // moving
             (anglesToFront.Max() - anglesToFront.Min() < GlobalAngleToCancelGes) &&  // keep in a direction
             (footHeight.Max() - footHeight.Min() > 0.1f) && // height diff
             (footVelocity.Min() < 1) && // remove accidentally trigger
             (footVelocity.Max() > KickVelocityRecognizer)) // detect speed
             return Gesture.Kick;
+        #endregion
 
+        #region Shaking
         //// shaking
         //if (footHeight.Max() - footHeight.Min() < footHoldingHeightDiff && footHeight.Min() > 0.2f && footToeVelocity.Max() > 1)
         //    return Gesture.Shake;
+        #endregion
 
+        #region Foot Still
+        // foot still
         if (stillTimer > 1)
         {
             stillTimer = 0;
@@ -313,9 +363,138 @@ public class FootGestureController : MonoBehaviour
             if (Vector3.Distance(previousPosition, mainFoot.position) > 0.01f)
                 stillTimer = 0;
         }
+        #endregion
 
+        #region Foot Tap
+        // foot tap (single, double)
+        if (SingleTap)
+        {
+            if (singleTapTimer > 0.5f)
+            {
+                singleTapTimer = 0;
+                return Gesture.None;
+            }
+            else
+            {
+                if (FTC.TouchedObjs.Count > 0)
+                {
+                    singleTapTimer += Time.deltaTime;
+                }
+                else
+                {
+                    if (singleTapTimer != 0)
+                    {
+                        singleTapTimer = 0;
+                        FTC.TouchedObjs.ForEach(footTapTouchedObj.Add);
+                        return Gesture.SingleTap;
+                    }
+                }
+            }
+        }
+        else {
+            if (footTapCounter == 0)
+            {
+                if (FTC.TouchedObjs.Count > 0)
+                {
+                    footTapCounter++;
+                    FTC.TouchedObjs.ForEach(footTapTouchedObj.Add);
+                }
+                else
+                {
+                    footTapTouchedObj.Clear();
+                }
+            }
+            else if (footTapCounter == 1)
+            {
+                if (FTC.TouchedObjs.Count == 0)
+                {
+                    footTapCounter++;
+                }
+            }
+            else if (footTapCounter == 2) {
+                if (FTC.TouchedObjs.Count > 0)
+                {
+                    List<Transform> finalList = new List<Transform>();
+                    foreach (Transform t in footTapTouchedObj)
+                    {
+                        if (FTC.TouchedObjs.Contains(t))
+                            finalList.Add(t);
+                    }
+
+                    if (finalList.Count > 0)
+                    {
+                        footTapTouchedObj = finalList;
+                        return Gesture.DoubleTap;
+                    }
+                    else
+                    {
+                        footTapTouchedObj.Clear();
+                        footTapCounter = 0;
+                    }
+                } 
+            }
+        }
+        #endregion
+
+        #region Foot Toe Sliding
+        if ((distance.Max() > 0.001f) && // moving
+                (footToeHeight.Max() < GlobalRaiseFootToCancelSliding)) // must remain on ground
+        { 
+            return Gesture.ToeSliding;
+        }
+        #endregion
 
         return Gesture.None;
+    }
+    #endregion
+
+    #region Foot Toe Sliding
+    private void RunToeSliding() {
+        Vector3 moveV3 = mainFootToe.position - previousToePosition;
+        Vector3 moveV2 = new Vector3(moveV3.x, 0, moveV3.z);
+        List<float> footToeHeight = new List<float>();
+        List<float> distance = new List<float>();
+
+        for (int i = 0; i < windowFrames; i++)
+            footToeHeight.Add(mainFootToeHeight[i]); // foot toe height change
+
+        for (int i = 0; i < windowFrames - 1; i++)
+            distance.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]));  // distance foot moved
+
+        if (SelectToMove)
+        {
+            if (interactingOBJ.Count > 0)
+            {
+                foreach (Transform t in interactingOBJ)
+                    t.position += moveV2;
+            }
+        }
+        else
+        {
+            if (FTC.TouchedObjs.Count > 0)
+            {
+                foreach (Transform t in FTC.TouchedObjs)
+                    t.position += moveV2;
+            }
+        }
+
+        if ((distance.Max() < 0.001f) || // not moving
+                (footToeHeight.Max() > GlobalRaiseFootToCancelSliding)) // must remain on ground
+            passedWindow = false;
+    }
+    #endregion
+
+    #region Foot Tap Gesture
+    private void RunTapToSelect()
+    {
+        if (footTapTouchedObj.Count > 0) {
+            foreach (Transform t in footTapTouchedObj.ToList()) {
+                if (!DeregisterInteractingOBJ(t))
+                    RegisterInteractingOBJ(t);
+
+                footTapTouchedObj.Remove(t);
+            }
+        }
     }
     #endregion
 
@@ -362,7 +541,7 @@ public class FootGestureController : MonoBehaviour
     }
     #endregion
 
-    //#region Foot Shake Gesture
+    #region Foot Shake Gesture
     //private void RunFootShakeToArchive() {
     //    List<Transform> blindSelection = CheckNearestVisOnGround();
     //    if (interactingOBJ.Count > 0)
@@ -379,7 +558,7 @@ public class FootGestureController : MonoBehaviour
     //            ArchiveVisToBelt(t);
     //    }
     //}
-    //#endregion
+    #endregion
 
     #region Foot Toe Tap Gesture
     private bool ToeTapGestureCheck()
@@ -538,9 +717,9 @@ public class FootGestureController : MonoBehaviour
         highlighter.color = Color.blue;
         highlighter.intensity = 50;
 
-        DC.RemoveFromHeadDashboard(t);
-        t.GetComponent<Vis>().OnGround = false;
-        t.GetComponent<Vis>().OnWaistDashBoard = true;
+        //DC.RemoveFromHeadDashboard(t);
+        //t.GetComponent<Vis>().OnGround = false;
+        //t.GetComponent<Vis>().OnWaistDashBoard = true;
     }
 
     private bool DeregisterInteractingOBJ(Transform t)
@@ -553,7 +732,7 @@ public class FootGestureController : MonoBehaviour
             Light highlighter = t.GetChild(2).GetComponent<Light>();
             highlighter.intensity = 0;
 
-            t.GetComponent<VisController>().AttachToDisplayScreen(ds);
+            //t.GetComponent<VisController>().AttachToDisplayScreen(ds);
 
             return true;
         }

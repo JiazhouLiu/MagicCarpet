@@ -1109,6 +1109,7 @@ MonoBehaviour:
   FootDashboard: {fileID: 1415399971}
   GroundMarkerParent: {fileID: 789476394}
   FC: {fileID: 3964280016841834266}
+  FTC: {fileID: 0}
   DC: {fileID: 126790192}
   ds: {fileID: 110408697}
   mainFoot: {fileID: 195106548}
@@ -1125,6 +1126,7 @@ MonoBehaviour:
   footHoldingHeightDiff: 0.1
   BlindSelectionRange: 1
   SlideToPan: 0
+  SingleTap: 1
 --- !u!4 &583742129
 Transform:
   m_ObjectHideFlags: 0
@@ -4085,3 +4087,35 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &3964280016841834268 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8622932463951941282, guid: 2007d0aedaa0c59468a9e378617041e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3964280016841834260}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3964280016841834269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3964280016841834268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2766b14b5fd62a4e80805443ec3b831, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TouchedObjs: []
+--- !u!65 &3964280016841834270
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3964280016841834268}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.05, y: 0.05, z: 0.05}
+  m_Center: {x: 0, y: 0, z: 0}
