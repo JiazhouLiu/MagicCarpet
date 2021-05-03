@@ -379,7 +379,7 @@ public class FootGestureController : MonoBehaviour
         // foot tap (single, double)
         if (SingleTap)
         {
-            Debug.Log(ToeOnVis + " " + singleTapTimer);
+            //Debug.Log(ToeOnVis + " " + singleTapTimer);
             if (newToeTap) {
                 if (singleTapTimer > TapSpeed)
                 {
@@ -422,7 +422,7 @@ public class FootGestureController : MonoBehaviour
 
         }
         else {
-            Debug.Log(footTapCounter);
+            //Debug.Log(footTapCounter);
             if (footTapCounter == -1) {
                 if (FTC.TouchedObjs.Count == 0)
                 {
