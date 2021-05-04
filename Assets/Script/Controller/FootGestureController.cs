@@ -15,6 +15,7 @@ enum Gesture
     SingleTap,
     DoubleTap,
     ToeSliding,
+    ToeRotation,
     None
 }
 
@@ -29,6 +30,7 @@ public class FootGestureController : MonoBehaviour
     public FootToeCollision FTC;
     public DashboardController DC;
     public DisplaySurface ds;
+    public Transform testCube;
 
     [Header("Main Foot")]
     public Transform mainFoot;
@@ -55,6 +57,8 @@ public class FootGestureController : MonoBehaviour
     // lists
     private List<Vector3> mainFootLocPositions;
     private List<Vector3> mainFootToePositions;
+    private List<Vector3> mainFootHeelPositions;
+    private List<Vector3> mainFootRotation;
 
     private List<float> mainFootHeight;
     private List<float> mainFootToeHeight;
@@ -68,6 +72,7 @@ public class FootGestureController : MonoBehaviour
 
     private float stillTimer = 0; // check foot is still
     private Vector3 previousPosition;
+    private Vector3 previousRotation;
 
     // toe sliding
     private Vector3 previousToePosition;
@@ -87,6 +92,9 @@ public class FootGestureController : MonoBehaviour
     {
         mainFootLocPositions = new List<Vector3>();
         mainFootToePositions = new List<Vector3>();
+        mainFootHeelPositions = new List<Vector3>();
+        mainFootRotation = new List<Vector3>();
+
         eachFrameTime = new List<float>();
         staticPosCounter = GlobalStaticPosCounter;
         interactingOBJ = new List<Transform>();
@@ -102,6 +110,8 @@ public class FootGestureController : MonoBehaviour
     {
         mainFootLocPositions.Add(mainFoot.localPosition);
         mainFootToePositions.Add(mainFootToe.position);
+        mainFootHeelPositions.Add(mainFootHeel.position);
+        mainFootRotation.Add(mainFoot.localEulerAngles);
         mainFootHeight.Add(mainFoot.position.y);
         mainFootToeHeight.Add(mainFootToe.position.y);
         mainFootHeelHeight.Add(mainFootHeel.position.y);
@@ -111,6 +121,10 @@ public class FootGestureController : MonoBehaviour
             mainFootLocPositions.RemoveAt(0);
         if (mainFootToePositions.Count > windowFrames)
             mainFootToePositions.RemoveAt(0);
+        if (mainFootHeelPositions.Count > windowFrames)
+            mainFootHeelPositions.RemoveAt(0);
+        if (mainFootRotation.Count > windowFrames)
+            mainFootRotation.RemoveAt(0);
         if (mainFootHeight.Count > windowFrames)
             mainFootHeight.RemoveAt(0);
         if (mainFootToeHeight.Count > windowFrames)
@@ -134,9 +148,16 @@ public class FootGestureController : MonoBehaviour
         //    }
         //}
 
-        //Debug.Log(mainFootHeight.Max()) ;
+        Debug.Log(mainFoot.eulerAngles);
+        //RunToeRotation();
         previousPosition = mainFoot.position;
-        
+
+        Vector3 rotationV3 = mainFoot.eulerAngles - previousRotation;
+        Vector3 rotationV2 = new Vector3(0, rotationV3.y, 0);
+
+        testCube.eulerAngles += rotationV3;
+        //testCube.localEulerAngles = new Vector3(0, testCube.localEulerAngles.y, 0);
+        previousRotation = mainFoot.eulerAngles;
     }
 
     #region Gesture Recognizer
@@ -150,6 +171,7 @@ public class FootGestureController : MonoBehaviour
             {
                 passedWindow = true;
                 previousToePosition = mainFootToe.position;
+                previousRotation = mainFoot.localEulerAngles;
                 // set indicator for sliding
                 if (currentGesture == Gesture.SlideToLeft || currentGesture == Gesture.SlideToRight)
                     directionIndicator.gameObject.SetActive(true);
@@ -262,6 +284,8 @@ public class FootGestureController : MonoBehaviour
         List<float> footVelocity = new List<float>();
         List<float> footToeVelocity = new List<float>();
 
+        List<float> footRotation = new List<float>();
+
         for (int i = 0; i < windowFrames - 1; i++)
         {
             anglesToRight.Add(Vector3.Angle(mainFootLocPositions[i + 1] - mainFootLocPositions[i], mainFoot.up)); // angles between right direction of right foot
@@ -270,6 +294,8 @@ public class FootGestureController : MonoBehaviour
 
             footVelocity.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]) / eachFrameTime[i]); // footVelocity calculation
             footToeVelocity.Add(Vector3.Distance(mainFootToePositions[i + 1], mainFootToePositions[i]) / eachFrameTime[i]); // footVelocity calculation
+
+            footRotation.Add((mainFootRotation[i + 1] - mainFootRotation[i]).y);
         }
         for (int i = 0; i < windowFrames; i++)
         {
@@ -506,12 +532,22 @@ public class FootGestureController : MonoBehaviour
             }
         }
         #endregion
+        
 
         #region Foot Toe Sliding
-        if ((distance.Max() > 0.001f) && // moving
+        if ((distance.Max() > 0.003f) && // moving
                 (footToeHeight.Max() < GlobalRaiseFootToCancelSliding)) // must remain on ground
         { 
             return Gesture.ToeSliding;
+        }
+        #endregion
+
+        //Debug.Log(footRotation.Max());
+        #region Foot Toe Rotation
+        if ((distance.Max() > 0.003f) && // moving
+                (footToeHeight.Max() < GlobalRaiseFootToCancelSliding)) // must remain on ground
+        {
+            //return Gesture.ToeRotation;
         }
         #endregion
 
@@ -519,6 +555,52 @@ public class FootGestureController : MonoBehaviour
     }
     #endregion
 
+    #region Foot Rotation
+    private void RunToeRotation() {
+        Vector3 rotationV3 = mainFoot.localEulerAngles - previousRotation;
+        Vector3 rotationV2 = new Vector3(0, rotationV3.y, 0);
+        List<float> footToeHeight = new List<float>();
+        List<float> distance = new List<float>();
+
+        for (int i = 0; i < windowFrames; i++)
+            footToeHeight.Add(mainFootToeHeight[i]); // foot toe height change
+
+        for (int i = 0; i < windowFrames - 1; i++)
+            distance.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]));  // distance foot moved
+
+        testCube.localEulerAngles += rotationV3;
+        //testCube.localEulerAngles = new Vector3(0, testCube.localEulerAngles.y, 0);
+
+        if (SelectToMove)
+        {
+            if (interactingOBJ.Count > 0)
+            {
+                foreach (Transform t in interactingOBJ)
+                    t.localEulerAngles += rotationV2;
+            }
+        }
+        else
+        {
+            if (FTC.TouchedObjs.Count > 0)
+            {
+                foreach (Transform t in FTC.TouchedObjs)
+                    t.localEulerAngles += rotationV2;
+            }
+        }
+
+        if ((distance.Max() < 0.001f) || // not moving
+                (footToeHeight.Max() > GlobalRaiseFootToCancelSliding)) // must remain on ground
+        {
+            passedWindow = false;
+            //Debug.Log("!!!");
+        }
+
+        previousRotation = mainFoot.localEulerAngles;
+        
+    }
+    
+
+        #endregion
     #region Foot Toe Sliding
     private void RunToeSliding() {
         Vector3 moveV3 = mainFootToe.position - previousToePosition;
