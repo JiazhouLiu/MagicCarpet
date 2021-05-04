@@ -142,8 +142,11 @@ public class DashBoard_New : MonoBehaviour
 
             // configure vis scale based on position
             if (transform.childCount > 0)
-                UpdateVisScale();
-            else {
+            {
+                //UpdateVisScale();
+            }
+            else
+            {
                 foreach (Transform t in transform)
                     t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
             }
@@ -151,13 +154,13 @@ public class DashBoard_New : MonoBehaviour
         }
 
         if (display == DisplayDashboard.GroundMarkers && CameraTransform != null) {
-            foreach (Transform chart in transform) {
-                if (Vector3.Distance(new Vector3(chart.position.x, 0, chart.position.z), new Vector3(Camera.main.transform.position.x, 0, Camera.main.transform.position.z)) > 0.3f) { // north pole issue
-                    chart.LookAt(Camera.main.transform);
-                    chart.localEulerAngles = new Vector3(chart.localEulerAngles.x, chart.localEulerAngles.y + 180, chart.localEulerAngles.z);
-                    chart.localEulerAngles = new Vector3(90, chart.localEulerAngles.y, chart.localEulerAngles.z);
-                }
-            }
+            //foreach (Transform chart in transform) {
+            //    if (Vector3.Distance(new Vector3(chart.position.x, 0, chart.position.z), new Vector3(Camera.main.transform.position.x, 0, Camera.main.transform.position.z)) > 0.3f) { // north pole issue
+            //        chart.LookAt(Camera.main.transform);
+            //        chart.localEulerAngles = new Vector3(chart.localEulerAngles.x, chart.localEulerAngles.y + 180, chart.localEulerAngles.z);
+            //        chart.localEulerAngles = new Vector3(90, chart.localEulerAngles.y, chart.localEulerAngles.z);
+            //    }
+            //}
         }
 
         if (display == DisplayDashboard.FootDisplay)

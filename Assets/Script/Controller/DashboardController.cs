@@ -4,6 +4,21 @@ using Habrador_Computational_Geometry;
 using System.Linq;
 using VRTK;
 
+public enum DisplayDashboard // your custom enumeration
+{
+    HeadDisplay,
+    WaistDisplay,
+    GroundMarkers,
+    FootDisplay
+};
+
+public enum ReferenceFrames // your custom enumeration
+{
+    Body,
+    Floor,
+    Shelves
+};
+
 public class DashboardController : MonoBehaviour
 {
     public GameObject linePrefab;
@@ -40,6 +55,7 @@ public class DashboardController : MonoBehaviour
 
     [Header("Footmenu")]
     public bool footMenu = false;
+    public bool ProxemicsToChangeSize = true;
 
     private Transform CameraTransform;
     //The mesh so we can generate when we press a button and display it in DrawGizmos

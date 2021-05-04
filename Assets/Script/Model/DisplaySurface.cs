@@ -17,8 +17,8 @@ public class DisplaySurface : MonoBehaviour {
         // Rotate the chart such that it aligns against the wall nicely
         float angle = Vector3.Angle(chart.transform.forward, Camera.main.transform.forward);
 
-        //chart.transform.rotation = transform.rotation;
-        //rot = transform.rotation;
+        chart.transform.rotation = transform.rotation;
+        rot = transform.rotation;
         chart.transform.LookAt(Camera.main.transform);
         chart.transform.localEulerAngles = new Vector3(chart.transform.localEulerAngles.x, chart.transform.localEulerAngles.y + 180, chart.transform.localEulerAngles.z);
         chart.transform.localEulerAngles = new Vector3(90, chart.transform.localEulerAngles.y, chart.transform.localEulerAngles.z);

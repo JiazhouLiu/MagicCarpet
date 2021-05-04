@@ -2,14 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DisplayDashboard // your custom enumeration
-{
-    HeadDisplay,
-    WaistDisplay,
-    GroundMarkers,
-    FootDisplay
-};
-
 [RequireComponent(typeof(LineRenderer))]
 public class Circle : MonoBehaviour
 {
