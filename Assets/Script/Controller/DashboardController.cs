@@ -35,7 +35,14 @@ public class DashboardController : MonoBehaviour
     public Transform WaistDashboard;
     public Transform GroundVisParent;
 
+    [Header("Experiment Setup")]
+    public ReferenceFrames landmark;
+    public ReferenceFrames displayView;
+
     [Header("Delaunay")]
+    public bool Delaunay = true;
+    public bool ShowColor = false;
+    public bool ShowEdge = false;
     public int seed = 0;
     public float halfMapSize = 1f;
     public int numberOfPoints = 20;
@@ -45,9 +52,6 @@ public class DashboardController : MonoBehaviour
     public List<Vector3> constraints;
 
     [Header("Variables")]
-    public bool Delaunay = true;
-    public bool ShowColor = false;
-    public bool ShowEdge = false;
     public float Show3VisDelta = 0.5f;
     public float speed = 3;
     public float filterFrequency = 120f;
@@ -55,7 +59,6 @@ public class DashboardController : MonoBehaviour
 
     [Header("Footmenu")]
     public bool footMenu = false;
-    public bool ProxemicsToChangeSize = true;
 
     private Transform CameraTransform;
     //The mesh so we can generate when we press a button and display it in DrawGizmos
@@ -89,6 +92,7 @@ public class DashboardController : MonoBehaviour
 
     private bool DemoFlagLeft = true;
     private bool DemoFlagRight = true;
+    private bool DemoFlag = true;
     private bool isThrowing = false;
 
     private float deletionTimer = 0;
@@ -103,6 +107,9 @@ public class DashboardController : MonoBehaviour
     private Vector3 filteredRightFootPosition;
     private Vector3 filteredRightFootRotation;
     private OneEuroFilter<Vector3> vector3Filter;
+
+    // experiment use
+    private List<Transform> currentLandmarks;
 
     private void Awake()
     {
@@ -133,6 +140,13 @@ public class DashboardController : MonoBehaviour
 
         if (GroundVisParent.childCount > 2)
             GenerateTriangulation();
+
+        if (landmark == ReferenceFrames.Floor) {
+            foreach (Transform t in GroundVisParent) {
+                currentLandmarks.Add(t);
+            }
+            
+        }
     }
 
     private void Update()
@@ -156,39 +170,52 @@ public class DashboardController : MonoBehaviour
 
         //if (!footMenu) {
         // detect ground marker change
-        if (CheckMarkerMoving(GroundVisParent))
+        if (Delaunay)
         {
-            if (GroundVisParent.childCount > 0)
-                GenerateTriangulation();
+            if (CheckMarkerMoving(GroundVisParent))
+            {
+                if (GroundVisParent.childCount > 0)
+                    GenerateTriangulation();
+            }
+
+            // check vis triggered from left foot
+            if (CheckHumanFeetMoving("left") || DemoFlagLeft)
+            {
+                DemoFlagLeft = false;
+                if (CurrentTriangles.faces.Count > 0)
+                    selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
+                else
+                    selectedVisFromLeft = new List<Transform>();
+
+                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
+
+            // check vis triggered from right foot
+            if (CheckHumanFeetMoving("right") || DemoFlagRight)
+            {
+                DemoFlagRight = false;
+                if (CurrentTriangles.faces.Count > 0)
+                    selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
+                else
+                    selectedVisFromRight = new List<Transform>();
+
+                selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
         }
+        else {
+            if (CheckHumanWaistMoving() || DemoFlag) {
+                DemoFlag = false;
+                selectedVis = GetVisFromWaistPosition();
 
-        // check vis triggered from left foot
-        if (CheckHumanFeetMoving("left") || DemoFlagLeft)
-        {
-            DemoFlagLeft = false;
-            if (CurrentTriangles.faces.Count > 0)
-                selectedVisFromLeft = SetUpDashBoardScale(LeftFoot); // returned multiple vis from left foot
-            else
-                selectedVisFromLeft = new List<Transform>();
-
-            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-            if (selectedVis.Count > 0)
-                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+                if (selectedVis.Count > 0)
+                    currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
+            }
         }
-
-        // check vis triggered from right foot
-        if (CheckHumanFeetMoving("right") || DemoFlagRight)
-        {
-            DemoFlagRight = false;
-            if (CurrentTriangles.faces.Count > 0)
-                selectedVisFromRight = SetUpDashBoardScale(RightFoot); // returned multiple vis from left foot
-            else
-                selectedVisFromRight = new List<Transform>();
-
-            selectedVis = CombineFeetVisAndRemoveOld(selectedVisFromLeft, selectedVisFromRight);
-            if (selectedVis.Count > 0)
-                currentVisOnHeadDashboard = RearrangeVisOnDashBoard(selectedVis, currentVisOnHeadDashboard);
-        }
+        
 
         // highlight selected Vis
         foreach (Transform groundVis in GroundVisParent)
@@ -224,19 +251,6 @@ public class DashboardController : MonoBehaviour
             }
 
         }
-        //}
-
-
-        //// testing
-        //if (Input.GetKeyDown("z")) {
-        //    string firstKey = currentVisOnWaistDashboard.Keys.ToList()[0];
-        //    Transform firstTransform = currentVisOnWaistDashboard.Values.ToList()[0];
-        //    firstTransform.SetParent(GroundVisParent);
-        //    currentVisOnWaistDashboard.Remove(firstKey);
-        //    firstTransform.position = new Vector3(HumanWaist.position.x, 0.1f, HumanWaist.position.z);
-        //    firstTransform.localScale = Vector3.one;
-        //    firstTransform.localEulerAngles = new Vector3(90, HumanWaist.localEulerAngles.y, 0);
-        //}
     }
 
     public void PinToGround(Transform t)
@@ -470,7 +484,51 @@ public class DashboardController : MonoBehaviour
             return new List<Transform>();
     }
 
-    private List<Transform> GetNearestVis(Transform foot)
+    // Tracking waist to determine what to display, can return no more than 3 vis
+    private List<Transform> GetVisFromWaistPosition()
+    {
+        List<Transform> showOnDashboard = new List<Transform>();
+        List<Transform> previousSelectedVis = new List<Transform>();
+
+        foreach (Transform t in currentLandmarks) {
+            if (t.GetComponent<Vis>().Selected) {
+                previousSelectedVis.Add(t);
+            }
+        }
+
+        if (previousSelectedVis.Count > 3)
+            Debug.LogError("Too many manually selected VIS!!!");
+
+        List<Transform> nearestVisAndSelected = GetNearestVis(HumanWaist, previousSelectedVis);
+
+        foreach (Transform t in nearestVisAndSelected)
+            showOnDashboard.Add(t);
+
+        // if some vis to show
+        if (showOnDashboard.Count > 0)
+        {
+            // remove duplicates
+            showOnDashboard = showOnDashboard.Distinct().ToList();
+
+            // list to dictionary
+            Dictionary<string, Transform> newVisDict = new Dictionary<string, Transform>();
+            foreach (Transform t in showOnDashboard)
+            {
+                if (t != null)
+                    newVisDict.Add(t.name, t);
+            }
+
+            // check duplicates with current dashboard
+            CheckSameVisOnDashboard(newVisDict, currentVisOnHeadDashboard); // check if vis is already on dashboard
+
+            showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+            return showOnDashboard;
+        }
+        else
+            return new List<Transform>();
+    }
+
+    private List<Transform> GetNearestVis(Transform reference)
     {
         List<Transform> finalList = new List<Transform>();
         List<Transform> originalList = new List<Transform>();
@@ -488,9 +546,9 @@ public class DashboardController : MonoBehaviour
                 Transform nearestOne = null;
                 foreach (Transform t in originalList)
                 {
-                    if (Vector3.Distance(t.position, foot.position) < minDis)
+                    if (Vector3.Distance(t.position, reference.position) < minDis)
                     {
-                        minDis = Vector3.Distance(t.position, foot.position);
+                        minDis = Vector3.Distance(t.position, reference.position);
                         nearestOne = t;
                     }
                 }
@@ -505,9 +563,9 @@ public class DashboardController : MonoBehaviour
             }
 
             // check three nearest vis position
-            Vector3 vectorToFirst = nearest3List[0].position - foot.position;
-            Vector3 vectorToSecond = nearest3List[1].position - foot.position;
-            Vector3 vectorToThird = nearest3List[2].position - foot.position;
+            Vector3 vectorToFirst = nearest3List[0].position - reference.position;
+            Vector3 vectorToSecond = nearest3List[1].position - reference.position;
+            Vector3 vectorToThird = nearest3List[2].position - reference.position;
 
             if (Vector3.Angle(vectorToFirst, vectorToSecond) > 90)
             {
@@ -535,6 +593,78 @@ public class DashboardController : MonoBehaviour
         }
 
         return finalList;
+    }
+
+    private List<Transform> GetNearestVis(Transform reference, List<Transform> previousSelectedVis)
+    {
+        //List<Transform> finalList = new List<Transform>();
+        List<Transform> originalList = new List<Transform>();
+        List<Transform> nearestList = new List<Transform>();
+        // load original list
+        foreach (Transform t in currentLandmarks)
+            originalList.Add(t);
+
+        if (originalList.Count > 2 && previousSelectedVis.Count < 3)
+        {
+            // get nearest vis
+            for (int i = 0; i < 3 - previousSelectedVis.Count; i++)
+            {
+                float minDis = 10000;
+                Transform nearestOne = null;
+                foreach (Transform t in originalList)
+                {
+                    if (Vector3.Distance(t.position, reference.position) < minDis)
+                    {
+                        minDis = Vector3.Distance(t.position, reference.position);
+                        nearestOne = t;
+                    }
+                }
+
+                if (nearestOne != null)
+                {
+                    nearestList.Add(nearestOne);
+                    originalList.Remove(nearestOne);
+                }
+                else
+                    Debug.Log("Error");
+            }
+
+            foreach (Transform t in previousSelectedVis) {
+                nearestList.Add(t);
+            }
+
+            //// check three nearest vis position to see if user is in the middle of 3 vis
+            //Vector3 vectorToFirst = nearestList[0].position - reference.position;
+            //Vector3 vectorToSecond = nearestList[1].position - reference.position;
+            //Vector3 vectorToThird = nearestList[2].position - reference.position;
+
+            //if (Vector3.Angle(vectorToFirst, vectorToSecond) > 90)
+            //{
+            //    if (!finalList.Contains(nearestList[0]))
+            //        finalList.Add(nearestList[0]);
+            //    if (!finalList.Contains(nearestList[1]))
+            //        finalList.Add(nearestList[1]);
+            //}
+
+            //if (Vector3.Angle(vectorToThird, vectorToSecond) > 90)
+            //{
+            //    if (!finalList.Contains(nearestList[2]))
+            //        finalList.Add(nearestList[2]);
+            //    if (!finalList.Contains(nearestList[1]))
+            //        finalList.Add(nearestList[1]);
+            //}
+
+            //if (Vector3.Angle(vectorToFirst, vectorToThird) > 90)
+            //{
+            //    if (!finalList.Contains(nearestList[0]))
+            //        finalList.Add(nearestList[0]);
+            //    if (!finalList.Contains(nearestList[2]))
+            //        finalList.Add(nearestList[2]);
+            //}
+        }
+        //return finalList;
+
+        return nearestList;
     }
 
     private void CheckSameVisOnDashboard(Dictionary<string, Transform> newVis, Dictionary<string, Transform> oldVis)
@@ -683,6 +813,16 @@ public class DashboardController : MonoBehaviour
         if (currentWaistRotation == previousHumanWaistRotation)
             return false;
         previousHumanWaistRotation = currentWaistRotation;
+        return true;
+    }
+
+    // BODY-TRACKING: check if waist is moving
+    private bool CheckHumanWaistMoving()
+    {
+        Vector3 currentWaistPosition = filteredWaistPosition;
+        if (currentWaistPosition == previousHumanWaistPosition)
+            return false;
+        previousHumanWaistPosition = currentWaistPosition;
         return true;
     }
 

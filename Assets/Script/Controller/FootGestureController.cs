@@ -53,6 +53,7 @@ public class FootGestureController : MonoBehaviour
     public bool SelectToMove = false;
     public float TapSpeed = 0.3f;
     public float ToeSlideMoveMultiplier = 1.5f;
+    public float filterFrequency = 120f;
 
     // lists
     private List<Vector3> mainFootLocPositions;
@@ -86,6 +87,11 @@ public class FootGestureController : MonoBehaviour
     private bool ToeOnVis = false;
 
     private List<Transform> interactingOBJ;
+    private List<Transform> currentSelectedVis;
+
+    // one euro filter
+    private Vector3 filteredFootRotation;
+    private OneEuroFilter<Vector3> vector3Filter;
 
     // Start is called before the first frame update
     void Start()
@@ -103,11 +109,16 @@ public class FootGestureController : MonoBehaviour
         mainFootToeHeight = new List<float>();
         mainFootHeelHeight = new List<float>();
         currentSlidingAngles = new float[2];
+
+        vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
     }
 
     // Update is called once per frame
     void Update()
     {
+        // one euro filter
+        filteredFootRotation = vector3Filter.Filter(mainFoot.eulerAngles);
+
         mainFootLocPositions.Add(mainFoot.localPosition);
         mainFootToePositions.Add(mainFootToe.position);
         mainFootHeelPositions.Add(mainFootHeel.position);
@@ -148,16 +159,16 @@ public class FootGestureController : MonoBehaviour
         //    }
         //}
 
-        Debug.Log(mainFoot.eulerAngles);
+        //Debug.Log(mainFoot.eulerAngles);
         //RunToeRotation();
         previousPosition = mainFoot.position;
 
-        Vector3 rotationV3 = mainFoot.eulerAngles - previousRotation;
+        Vector3 rotationV3 = filteredFootRotation - previousRotation;
         Vector3 rotationV2 = new Vector3(0, rotationV3.y, 0);
 
         testCube.eulerAngles += rotationV3;
         //testCube.localEulerAngles = new Vector3(0, testCube.localEulerAngles.y, 0);
-        previousRotation = mainFoot.eulerAngles;
+        previousRotation = filteredFootRotation;
     }
 
     #region Gesture Recognizer
@@ -601,6 +612,7 @@ public class FootGestureController : MonoBehaviour
     
 
         #endregion
+
     #region Foot Toe Sliding
     private void RunToeSliding() {
         Vector3 moveV3 = mainFootToe.position - previousToePosition;
@@ -642,7 +654,7 @@ public class FootGestureController : MonoBehaviour
     }
     #endregion
 
-    #region Foot Tap Gesture
+    #region New Foot Tap Gesture
     private void RunTapToSelect()
     {
         if (footTapTouchedObj.Count > 0) {
@@ -868,8 +880,15 @@ public class FootGestureController : MonoBehaviour
     private void RegisterInteractingOBJ(Transform t)
     {
         interactingOBJ.Add(t);
-        if (t.GetComponent<Vis>() != null)
+        if (t.GetComponent<Vis>() != null) {
             t.GetComponent<Vis>().Selected = true;
+            currentSelectedVis.Add(t);
+            if (currentSelectedVis.Count > 3) {
+                DeregisterInteractingOBJ(currentSelectedVis.First());
+            }
+
+        }
+            
 
         Light highlighter = t.GetChild(2).GetComponent<Light>();
         highlighter.color = Color.blue;
@@ -883,8 +902,12 @@ public class FootGestureController : MonoBehaviour
     private bool DeregisterInteractingOBJ(Transform t)
     {
         if (interactingOBJ.Contains(t)) {
-            if (t.GetComponent<Vis>() != null)
+            if (t.GetComponent<Vis>() != null) {
+                if(currentSelectedVis.Contains(t))
+                    currentSelectedVis.Remove(t);
                 t.GetComponent<Vis>().Selected = false;
+            }
+                
             interactingOBJ.Remove(t);
 
             Light highlighter = t.GetChild(2).GetComponent<Light>();

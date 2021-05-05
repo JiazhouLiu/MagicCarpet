@@ -24,9 +24,9 @@ public class ShoeRecieve : MonoBehaviour
         //ReadThread = new Thread(new ThreadStart(ReadSerial));
         //ReadThread.Start();
         sp = new SerialPort(COM, 115200);
-        sp.ReadTimeout = 2000;
-        sp.WriteTimeout = 2000;
-        sp.WriteTimeout = 2000;
+        sp.ReadTimeout = 3000;
+        sp.WriteTimeout = 3000;
+        sp.WriteTimeout = 3000;
         sp.Parity = Parity.None;
         sp.DataBits = 8;
         sp.StopBits = StopBits.One;
@@ -103,7 +103,7 @@ public class ShoeRecieve : MonoBehaviour
 
                    string indata = sp.ReadLine();
 
-                   print(indata);
+                   //print(indata);
                    value = indata;
                    
                 }

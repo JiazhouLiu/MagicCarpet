@@ -143,7 +143,7 @@ public class DashBoard_New : MonoBehaviour
             // configure vis scale based on position
             if (transform.childCount > 0)
             {
-                //UpdateVisScale();
+                UpdateVisScale();
             }
             else
             {
@@ -243,7 +243,6 @@ public class DashBoard_New : MonoBehaviour
     private void UpdateVisScale() {
         if (transform.childCount > 1)
         {
-            Dictionary<string, float> calculatedRatio = new Dictionary<string, float>();
             List<Transform> selectedGroundChildren = new List<Transform>();
 
             List<string> dashBoardChildrenNames = new List<string>();
@@ -252,27 +251,39 @@ public class DashBoard_New : MonoBehaviour
 
             foreach (Transform groundVis in GroundVisParent)
             {
-                if (dashBoardChildrenNames.Contains(groundVis.name)) {
+                if (dashBoardChildrenNames.Contains(groundVis.name))
+                {
                     //Debug.Log(groundVis.name);
                     selectedGroundChildren.Add(groundVis);
                 }
-                    
             }
 
             if (selectedGroundChildren.Count != transform.childCount)
                 Debug.Log("ERRORRRR");
 
-            for (int i = 0; i < selectedGroundChildren.Count; i++)
-                calculatedRatio.Add(selectedGroundChildren[i].name, 1 / CalculateProportionalScale(WaistTransform, selectedGroundChildren[i], selectedGroundChildren));
-
-            // update VIS model scale
+            #region size won't change when proximics change
             for (int i = 0; i < transform.childCount; i++)
             {
-                transform.GetChild(i).GetComponent<Vis>().HeadDashboardScale =
-                    (calculatedRatio[transform.GetChild(i).name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
-                selectedGroundChildren[i].GetComponent<Vis>().HeadDashboardScale =
-                    (calculatedRatio[selectedGroundChildren[i].name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
+                transform.GetChild(i).GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
+                selectedGroundChildren[i].GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
             }
+            #endregion
+
+            #region size will change when proximics change
+            //Dictionary<string, float> calculatedRatio = new Dictionary<string, float>();
+
+            //for (int i = 0; i < selectedGroundChildren.Count; i++)
+            //    calculatedRatio.Add(selectedGroundChildren[i].name, 1 / CalculateProportionalScale(WaistTransform, selectedGroundChildren[i], selectedGroundChildren));
+
+            //// update VIS model scale
+            //for (int i = 0; i < transform.childCount; i++)
+            //{
+            //    transform.GetChild(i).GetComponent<Vis>().HeadDashboardScale =
+            //        (calculatedRatio[transform.GetChild(i).name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
+            //    selectedGroundChildren[i].GetComponent<Vis>().HeadDashboardScale =
+            //        (calculatedRatio[selectedGroundChildren[i].name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
+            //}
+            #endregion
         }
         else
         {// show 1 vis
