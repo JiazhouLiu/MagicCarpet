@@ -111,7 +111,8 @@ public class ShoeRecieve : MonoBehaviour
             catch (SystemException f)
             {
                 print(f);
-                ReadThread.Abort();
+                continue;
+                //ReadThread.Abort();
             }
             //Thread.Sleep(100);
         }
@@ -124,7 +125,8 @@ public class ShoeRecieve : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        ReadThread.Abort();
+        if(ReadThread != null)
+            ReadThread.Abort();
     }
 
     public void AbortThread()
@@ -134,6 +136,7 @@ public class ShoeRecieve : MonoBehaviour
 
     private void OnDestroy()
     {
-        ReadThread.Abort();
+        if (ReadThread != null)
+            ReadThread.Abort();
     }
 }

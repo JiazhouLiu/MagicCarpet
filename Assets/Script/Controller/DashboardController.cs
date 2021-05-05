@@ -25,12 +25,15 @@ public class DashboardController : MonoBehaviour
     public GameObject colorFillPrefab;
     public Transform EdgeParent;
     private VRTK_InteractableObject interactableObject;
+    public Transform originalVisParent;
 
+    // body tracking
     public Transform HumanWaist;
     public Transform MainFoot;
     public Transform LeftFoot;
     public Transform RightFoot;
 
+    // dashboards
     public Transform HeadDashboard;
     public Transform WaistDashboard;
     public Transform GroundVisParent;
@@ -38,6 +41,7 @@ public class DashboardController : MonoBehaviour
     [Header("Experiment Setup")]
     public ReferenceFrames landmark;
     public ReferenceFrames displayView;
+    public float LandmarkSize = 0.5f;
 
     [Header("Delaunay")]
     public bool Delaunay = true;
@@ -56,6 +60,7 @@ public class DashboardController : MonoBehaviour
     public float speed = 3;
     public float filterFrequency = 120f;
     public float betweenVisDelta = 0.05f;
+    public int VisNumber = 6;
 
     [Header("Footmenu")]
     public bool footMenu = false;
@@ -109,18 +114,34 @@ public class DashboardController : MonoBehaviour
     private OneEuroFilter<Vector3> vector3Filter;
 
     // experiment use
+    private List<Transform> visParentList;
+    private List<Transform> originalLandmarks;
     private List<Transform> currentLandmarks;
 
     private void Awake()
     {
+        // landmarks
+        originalLandmarks = new List<Transform>();
+        currentLandmarks = new List<Transform>();
+        visParentList = new List<Transform>();
+
+        foreach (Transform t in originalVisParent) {
+            visParentList.Add(t);
+        }
+
+        // dashboard use list
         currentVisOnHeadDashboard = new Dictionary<string, Transform>();
         currentVisOnWaistDashboard = new Dictionary<string, Transform>();
         selectedVis = new List<Transform>();
+
+        // vis triggered by feet
         selectedVisFromLeft = new List<Transform>();
         selectedVisFromRight = new List<Transform>();
-        //currentVisFromLeftFootPhysical = new List<Transform>();
-        //currentVisFromRightFootPhysical = new List<Transform>();
+
+        // one euro filter
         vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
+
+        // delauney
         CurrentTriangles = new HalfEdgeData2();
 
         // initiate vis model
@@ -132,6 +153,7 @@ public class DashboardController : MonoBehaviour
             currentVisOnWaistDashboard.Add(t.name, t);
         }
 
+        // delaunay
         if (EdgeParent.childCount > 0)
         {
             foreach (Transform t in EdgeParent)
@@ -141,12 +163,9 @@ public class DashboardController : MonoBehaviour
         if (GroundVisParent.childCount > 2)
             GenerateTriangulation();
 
-        if (landmark == ReferenceFrames.Floor) {
-            foreach (Transform t in GroundVisParent) {
-                currentLandmarks.Add(t);
-            }
-            
-        }
+        // initiate landmarks
+        originalLandmarks = GetRandomItemsFromList(visParentList, VisNumber);
+        PositionLandmarks(landmark, originalLandmarks);
     }
 
     private void Update()
@@ -167,9 +186,6 @@ public class DashboardController : MonoBehaviour
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
 
-
-        //if (!footMenu) {
-        // detect ground marker change
         if (Delaunay)
         {
             if (CheckMarkerMoving(GroundVisParent))
@@ -218,22 +234,22 @@ public class DashboardController : MonoBehaviour
         
 
         // highlight selected Vis
-        foreach (Transform groundVis in GroundVisParent)
+        foreach (Transform landmark in currentLandmarks)
         {
-            Light highlighter = groundVis.GetChild(2).GetComponent<Light>();
-            if (groundVis.GetComponent<Vis>().Selected)
+            Light highlighter = landmark.GetChild(2).GetComponent<Light>();
+            if (landmark.GetComponent<Vis>().Selected)
             {
                 highlighter.color = Color.blue;
                 highlighter.intensity = 50;
-            } else if (selectedVis.Contains(groundVis))  {
+            } else if (selectedVis.Contains(landmark))  {
                 highlighter.color = Color.green;
-                groundVis.GetComponent<Vis>().Highlighted = true;
+                landmark.GetComponent<Vis>().Highlighted = true;
                 highlighter.intensity = 50;
             }
             else
             {
                 highlighter.color = Color.green;
-                groundVis.GetComponent<Vis>().Highlighted = false;
+                landmark.GetComponent<Vis>().Highlighted = false;
                 highlighter.intensity = 0;
             }
         }
@@ -253,6 +269,39 @@ public class DashboardController : MonoBehaviour
         }
     }
 
+    #region Experiment Use
+    private void PositionLandmarks(ReferenceFrames landmark, List<Transform> originalLandmarks) {
+        List<Vector3> landmarkPositions = new List<Vector3>();
+        if (landmark == ReferenceFrames.Floor) {
+            foreach (Transform t in originalLandmarks) {
+                Vector3 newPosition = GetAvaiablePosition(landmarkPositions);
+                landmarkPositions.Add(newPosition);
+
+                GameObject newLandmark = Instantiate(t.gameObject, newPosition, Quaternion.identity, GroundVisParent);
+                newLandmark.transform.localScale = new Vector3(LandmarkSize, LandmarkSize, LandmarkSize);
+                newLandmark.transform.localEulerAngles = new Vector3(90, 0, 0);
+                currentLandmarks.Add(newLandmark.transform);
+            }
+        }
+    }
+
+    private Vector3 GetAvaiablePosition(List<Vector3> currentList) {
+        Vector3 tmpPosition = new Vector3(Random.Range(-1.75f, 1.75f), 0.05f, Random.Range(-1.75f, 1.75f));
+        if (currentList.Count > 0)
+        {
+            foreach (Vector3 v in currentList)
+            {
+                if (Vector3.Distance(v, tmpPosition) < 0.5f) {
+                    tmpPosition = GetAvaiablePosition(currentList);
+                }
+            }
+        }
+
+        return tmpPosition;
+    }
+    #endregion
+
+    #region Useful Functions
     public void PinToGround(Transform t)
     {
         GameObject visOnGround = Instantiate(t.gameObject, GroundVisParent);
@@ -332,6 +381,25 @@ public class DashboardController : MonoBehaviour
         if (HeadDashboard.Find(vis.name))
             Destroy(HeadDashboard.Find(vis.name).gameObject);
     }
+
+    public static List<Transform> GetRandomItemsFromList(List<Transform> list, int number)
+    {
+        // this is the list we're going to remove picked items from
+        List<Transform> tmpList = new List<Transform>(list);
+        // this is the list we're going to move items to
+        List<Transform> newList = new List<Transform>();
+
+        // make sure tmpList isn't already empty
+        while (newList.Count < number && tmpList.Count > 0)
+        {
+            int index = Random.Range(0, tmpList.Count);
+            newList.Add(tmpList[index]);
+            tmpList.RemoveAt(index);
+        }
+
+        return newList;
+    }
+    #endregion
 
     #region VIS management
 

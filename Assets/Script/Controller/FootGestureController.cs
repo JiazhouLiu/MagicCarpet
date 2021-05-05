@@ -30,6 +30,7 @@ public class FootGestureController : MonoBehaviour
     public FootToeCollision FTC;
     public DashboardController DC;
     public DisplaySurface ds;
+    public ShoeRecieve SR;
     public Transform testCube;
 
     [Header("Main Foot")]
@@ -85,6 +86,10 @@ public class FootGestureController : MonoBehaviour
     private int footTapCounter = -1;
     private bool newToeTap = true;
     private bool ToeOnVis = false;
+
+    // pressure sensor
+    private bool physicalPressFlag = false;
+    private bool holdingFlag = false;
 
     private List<Transform> interactingOBJ;
     private List<Transform> currentSelectedVis;
@@ -145,8 +150,8 @@ public class FootGestureController : MonoBehaviour
         if (eachFrameTime.Count > windowFrames)
             eachFrameTime.RemoveAt(0);
 
-        if (mainFootLocPositions.Count == windowFrames)
-            GestureProcessing();
+        //if (mainFootLocPositions.Count == windowFrames)
+            //GestureProcessing();
 
         //if (interactingOBJ.Count > 0) {
         //    foreach (Transform t in interactingOBJ) {
@@ -161,7 +166,7 @@ public class FootGestureController : MonoBehaviour
 
         //Debug.Log(mainFoot.eulerAngles);
         //RunToeRotation();
-        previousPosition = mainFoot.position;
+        
 
         Vector3 rotationV3 = filteredFootRotation - previousRotation;
         Vector3 rotationV2 = new Vector3(0, rotationV3.y, 0);
@@ -169,6 +174,28 @@ public class FootGestureController : MonoBehaviour
         testCube.eulerAngles += rotationV3;
         //testCube.localEulerAngles = new Vector3(0, testCube.localEulerAngles.y, 0);
         previousRotation = filteredFootRotation;
+
+        // pressure sensor
+        if (SR.value.Length > 0 && int.Parse(SR.value) < 3700 && !physicalPressFlag) {
+            physicalPressFlag = true;
+            Debug.Log("Press");
+            RunToeTapToSelect();
+        }
+        if (physicalPressFlag && SR.value.Length > 0 && int.Parse(SR.value) > 3900) {
+            physicalPressFlag = false;
+        }
+
+        if (SR.value.Length > 0 && int.Parse(SR.value) < 3700)
+            holdingFlag = true;
+        if (SR.value.Length > 0 && int.Parse(SR.value) > 3900)
+            holdingFlag = false;
+
+        if (holdingFlag) {
+            Debug.Log("Holding");
+            RunToeSliding();
+        }
+
+        previousPosition = mainFoot.position;
     }
 
     #region Gesture Recognizer
