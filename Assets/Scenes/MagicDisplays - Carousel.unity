@@ -288,6 +288,7 @@ MonoBehaviour:
   colorFillPrefab: {fileID: 7378102030593583176, guid: 5a340d2c85f0f494881269d41924f7f2,
     type: 3}
   EdgeParent: {fileID: 1229654871}
+  originalVisParent: {fileID: 0}
   HumanWaist: {fileID: 1929076752}
   MainFoot: {fileID: 195106548}
   LeftFoot: {fileID: 1768383984}
@@ -295,19 +296,22 @@ MonoBehaviour:
   HeadDashboard: {fileID: 197005175}
   WaistDashboard: {fileID: 943662730}
   GroundVisParent: {fileID: 789476394}
+  landmark: 0
+  displayView: 0
+  LandmarkSize: 0.5
+  Delaunay: 0
+  ShowColor: 0
+  ShowEdge: 0
   seed: 17
   halfMapSize: 1
   numberOfPoints: 20
   constraints: []
-  Delaunay: 0
-  ShowColor: 0
-  ShowEdge: 0
   Show3VisDelta: 0.5
   speed: 3
   filterFrequency: 120
   betweenVisDelta: 0.1
+  VisNumber: 6
   footMenu: 0
-  ProxemicsToChangeSize: 1
 --- !u!1001 &165897121
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1168,6 +1172,7 @@ MonoBehaviour:
   FTC: {fileID: 3964280016841834269}
   DC: {fileID: 126790192}
   ds: {fileID: 6777234}
+  SR: {fileID: 3964280016841834271}
   testCube: {fileID: 594809943}
   mainFoot: {fileID: 195106548}
   mainFootToe: {fileID: 3964280016841834262}
@@ -1187,6 +1192,7 @@ MonoBehaviour:
   SelectToMove: 0
   TapSpeed: 0.3
   ToeSlideMoveMultiplier: 1.5
+  filterFrequency: 120
 --- !u!4 &583742129
 Transform:
   m_ObjectHideFlags: 0

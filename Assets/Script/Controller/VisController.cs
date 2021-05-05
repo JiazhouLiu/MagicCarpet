@@ -44,7 +44,7 @@ public class VisController : MonoBehaviour
     private void Update()
     {
         if (visualisation.OnGround && !visualisation.Highlighted && !visualisation.Selected) {
-            backgroundMR.material.SetColor("_BaseColor", new Color(1, 1, 1, 0.5f));
+            backgroundMR.material.SetColor("_BaseColor", new Color(1, 1, 1, 1));
         }
         else if (visualisation.OnGround || interactableObject.IsGrabbed() || visualisation.Selected)
             backgroundMR.material.SetColor("_BaseColor", Color.white);

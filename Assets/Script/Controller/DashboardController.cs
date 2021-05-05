@@ -3,6 +3,7 @@ using UnityEngine;
 using Habrador_Computational_Geometry;
 using System.Linq;
 using VRTK;
+using UnityEngine.Rendering.HighDefinition;
 
 public enum DisplayDashboard // your custom enumeration
 {
@@ -240,19 +241,25 @@ public class DashboardController : MonoBehaviour
             if (landmark.GetComponent<Vis>().Selected)
             {
                 highlighter.color = Color.blue;
-                highlighter.intensity = 50;
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
             } else if (selectedVis.Contains(landmark))  {
+                
                 highlighter.color = Color.green;
                 landmark.GetComponent<Vis>().Highlighted = true;
-                highlighter.intensity = 50;
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
             }
             else
             {
-                highlighter.color = Color.green;
+                highlighter.color = Color.white;
                 landmark.GetComponent<Vis>().Highlighted = false;
-                highlighter.intensity = 0;
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(0);
             }
         }
+
+        foreach (Transform focusView in currentVisOnHeadDashboard.Values.ToList()) {
+            focusView.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(0);
+        }
+
 
         // reorder vis on dashboard based on angle to the waist
         if (CheckHumanWaistRotating())
@@ -280,6 +287,7 @@ public class DashboardController : MonoBehaviour
                 GameObject newLandmark = Instantiate(t.gameObject, newPosition, Quaternion.identity, GroundVisParent);
                 newLandmark.transform.localScale = new Vector3(LandmarkSize, LandmarkSize, LandmarkSize);
                 newLandmark.transform.localEulerAngles = new Vector3(90, 0, 0);
+                newLandmark.GetComponent<Vis>().OnGround = true;
                 currentLandmarks.Add(newLandmark.transform);
             }
         }
@@ -665,72 +673,50 @@ public class DashboardController : MonoBehaviour
 
     private List<Transform> GetNearestVis(Transform reference, List<Transform> previousSelectedVis)
     {
-        //List<Transform> finalList = new List<Transform>();
         List<Transform> originalList = new List<Transform>();
         List<Transform> nearestList = new List<Transform>();
         // load original list
-        foreach (Transform t in currentLandmarks)
-            originalList.Add(t);
-
-        if (originalList.Count > 2 && previousSelectedVis.Count < 3)
-        {
-            // get nearest vis
-            for (int i = 0; i < 3 - previousSelectedVis.Count; i++)
-            {
-                float minDis = 10000;
-                Transform nearestOne = null;
-                foreach (Transform t in originalList)
-                {
-                    if (Vector3.Distance(t.position, reference.position) < minDis)
-                    {
-                        minDis = Vector3.Distance(t.position, reference.position);
-                        nearestOne = t;
-                    }
-                }
-
-                if (nearestOne != null)
-                {
-                    nearestList.Add(nearestOne);
-                    originalList.Remove(nearestOne);
-                }
-                else
-                    Debug.Log("Error");
-            }
-
-            foreach (Transform t in previousSelectedVis) {
-                nearestList.Add(t);
-            }
-
-            //// check three nearest vis position to see if user is in the middle of 3 vis
-            //Vector3 vectorToFirst = nearestList[0].position - reference.position;
-            //Vector3 vectorToSecond = nearestList[1].position - reference.position;
-            //Vector3 vectorToThird = nearestList[2].position - reference.position;
-
-            //if (Vector3.Angle(vectorToFirst, vectorToSecond) > 90)
-            //{
-            //    if (!finalList.Contains(nearestList[0]))
-            //        finalList.Add(nearestList[0]);
-            //    if (!finalList.Contains(nearestList[1]))
-            //        finalList.Add(nearestList[1]);
-            //}
-
-            //if (Vector3.Angle(vectorToThird, vectorToSecond) > 90)
-            //{
-            //    if (!finalList.Contains(nearestList[2]))
-            //        finalList.Add(nearestList[2]);
-            //    if (!finalList.Contains(nearestList[1]))
-            //        finalList.Add(nearestList[1]);
-            //}
-
-            //if (Vector3.Angle(vectorToFirst, vectorToThird) > 90)
-            //{
-            //    if (!finalList.Contains(nearestList[0]))
-            //        finalList.Add(nearestList[0]);
-            //    if (!finalList.Contains(nearestList[2]))
-            //        finalList.Add(nearestList[2]);
-            //}
+        foreach (Transform t in currentLandmarks) {
+            if(!previousSelectedVis.Contains(t))
+                originalList.Add(t);
         }
-        //return finalList;
+
+        if (previousSelectedVis.Count < 3)
+        {
+            if (originalList.Count > 2)
+            {
+                // get nearest vis
+                for (int i = 0; i < 3 - previousSelectedVis.Count; i++)
+                {
+                    float minDis = 10000;
+                    Transform nearestOne = null;
+                    foreach (Transform t in originalList)
+                    {
+                        if (Vector3.Distance(t.position, reference.position) < minDis)
+                        {
+                            minDis = Vector3.Distance(t.position, reference.position);
+                            nearestOne = t;
+                        }
+                    }
+
+                    if (nearestOne != null)
+                    {
+                        nearestList.Add(nearestOne);
+                        originalList.Remove(nearestOne);
+                    }
+                    else
+                        Debug.Log("Error");
+                }
+
+                foreach (Transform t in previousSelectedVis)
+                {
+                    nearestList.Add(t);
+                }
+            }
+        }
+        else {
+            nearestList = previousSelectedVis;
+        }
 
         return nearestList;
     }
@@ -768,6 +754,16 @@ public class DashboardController : MonoBehaviour
                     visOnDashBoard.name = t.name;
 
                     currentVisOnHeadDashboard.Add(t.name, visOnDashBoard.transform);
+                }
+            }
+
+            foreach (Transform t in oldVis.Values.ToList())
+            {
+                if (!newVis.Keys.Contains(t.name))
+                {
+                    string removedName = t.name;
+                    Destroy(t.gameObject);
+                    currentVisOnHeadDashboard.Remove(removedName);
                 }
             }
         }

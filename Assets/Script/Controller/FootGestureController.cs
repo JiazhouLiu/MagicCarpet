@@ -115,6 +115,8 @@ public class FootGestureController : MonoBehaviour
         mainFootHeelHeight = new List<float>();
         currentSlidingAngles = new float[2];
 
+        currentSelectedVis = new List<Transform>();
+
         vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
     }
 
@@ -179,20 +181,20 @@ public class FootGestureController : MonoBehaviour
         if (SR.value.Length > 0 && int.Parse(SR.value) < 3700 && !physicalPressFlag) {
             physicalPressFlag = true;
             Debug.Log("Press");
-            RunToeTapToSelect();
+            RunPressToSelect();
         }
-        if (physicalPressFlag && SR.value.Length > 0 && int.Parse(SR.value) > 3900) {
+        if (physicalPressFlag && SR.value.Length > 0 && int.Parse(SR.value) > 4000) {
             physicalPressFlag = false;
         }
 
         if (SR.value.Length > 0 && int.Parse(SR.value) < 3700)
             holdingFlag = true;
-        if (SR.value.Length > 0 && int.Parse(SR.value) > 3900)
+        if (SR.value.Length > 0 && int.Parse(SR.value) > 4000)
             holdingFlag = false;
 
         if (holdingFlag) {
             Debug.Log("Holding");
-            RunToeSliding();
+            //RunToeSliding();
         }
 
         previousPosition = mainFoot.position;
@@ -593,6 +595,24 @@ public class FootGestureController : MonoBehaviour
     }
     #endregion
 
+    #region Foot Press using pressure sensor
+    private void RunPressToSelect() {
+        if (FTC.TouchedObjs.Count > 0)
+        {
+            foreach (Transform t in FTC.TouchedObjs)
+            {
+                if (!DeregisterInteractingOBJ(t))
+                    RegisterInteractingOBJ(t);
+            }
+        }
+        else
+        {
+            if (interactingOBJ.Count > 0)
+                DeregisterInteractingOBJ();
+        }
+    }
+    #endregion
+
     #region Foot Rotation
     private void RunToeRotation() {
         Vector3 rotationV3 = mainFoot.localEulerAngles - previousRotation;
@@ -647,8 +667,10 @@ public class FootGestureController : MonoBehaviour
         List<float> footToeHeight = new List<float>();
         List<float> distance = new List<float>();
 
-        for (int i = 0; i < windowFrames; i++)
-            footToeHeight.Add(mainFootToeHeight[i]); // foot toe height change
+        if (mainFootToeHeight.Count == windowFrames) {
+            for (int i = 0; i < windowFrames; i++)
+                footToeHeight.Add(mainFootToeHeight[i]); // foot toe height change
+        }
 
         for (int i = 0; i < windowFrames - 1; i++)
             distance.Add(Vector3.Distance(mainFootLocPositions[i + 1], mainFootLocPositions[i]));  // distance foot moved
@@ -917,9 +939,9 @@ public class FootGestureController : MonoBehaviour
         }
             
 
-        Light highlighter = t.GetChild(2).GetComponent<Light>();
-        highlighter.color = Color.blue;
-        highlighter.intensity = 50;
+        //Light highlighter = t.GetChild(2).GetComponent<Light>();
+        //highlighter.color = Color.blue;
+        //highlighter.intensity = 50;
 
         //DC.RemoveFromHeadDashboard(t);
         //t.GetComponent<Vis>().OnGround = false;
@@ -937,8 +959,8 @@ public class FootGestureController : MonoBehaviour
                 
             interactingOBJ.Remove(t);
 
-            Light highlighter = t.GetChild(2).GetComponent<Light>();
-            highlighter.intensity = 0;
+            //Light highlighter = t.GetChild(2).GetComponent<Light>();
+            //highlighter.intensity = 0;
 
             //t.GetComponent<VisController>().AttachToDisplayScreen(ds);
 
@@ -951,12 +973,17 @@ public class FootGestureController : MonoBehaviour
     private void DeregisterInteractingOBJ() {
         foreach (Transform t in interactingOBJ.ToList()) {
             if (t.GetComponent<Vis>() != null)
+            {
+                if (currentSelectedVis.Contains(t))
+                    currentSelectedVis.Remove(t);
                 t.GetComponent<Vis>().Selected = false;
+            }
+
             interactingOBJ.Remove(t);
 
-            Light highlighter = t.GetChild(2).GetComponent<Light>();
-            highlighter.intensity = 0;
-            t.GetComponent<VisController>().AttachToDisplayScreen(ds);
+            //Light highlighter = t.GetChild(2).GetComponent<Light>();
+            //highlighter.intensity = 0;
+            //t.GetComponent<VisController>().AttachToDisplayScreen(ds);
         }
     }
 
