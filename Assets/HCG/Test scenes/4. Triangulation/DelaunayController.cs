@@ -343,7 +343,7 @@ public class DelaunayController : MonoBehaviour
             {
                 if (GroundVisParent.Find(t.name) != null)
                 {
-                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnHeadDashBoard = false;
+                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnHead = false;
                     Destroy(currentVisOnDashboard[t.name].gameObject);
                     currentVisOnDashboard.Remove(t.name);
                 }
@@ -364,7 +364,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visNameFromRight.Contains(s))
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHead = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
                     }
@@ -390,7 +390,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visNameFromLeft.Contains(s) && GroundVisParent.Find(s) != null)
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHead = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
                     }
@@ -461,7 +461,7 @@ public class DelaunayController : MonoBehaviour
                 {
                     if (!visName.Contains(s))
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHead = false;
                         Destroy(currentVisOnDashboard[s].gameObject);
                         currentVisOnDashboard.Remove(s);
                     }
@@ -770,7 +770,7 @@ public class DelaunayController : MonoBehaviour
         if (oldVis.Count == 0) {
             foreach (Transform t in newVis.Values.ToList())
             {
-                t.GetComponent<Vis>().OnHeadDashBoard = true;
+                t.GetComponent<Vis>().OnHead = true;
                 GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
                 visOnDashBoard.transform.position = t.position;
                 visOnDashBoard.transform.localEulerAngles = Vector3.zero;
@@ -793,7 +793,7 @@ public class DelaunayController : MonoBehaviour
                 }
                 else
                 {
-                    t.GetComponent<Vis>().OnHeadDashBoard = true;
+                    t.GetComponent<Vis>().OnHead = true;
                     GameObject visOnDashBoard = Instantiate(t.gameObject, DashBoard);
                     visOnDashBoard.transform.position = t.position;
                     visOnDashBoard.transform.localEulerAngles = Vector3.zero;
@@ -1089,7 +1089,7 @@ public class DelaunayController : MonoBehaviour
         visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
         visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
         visOnGround.transform.localScale = t.GetComponent<Vis>().GroundScale;
-        visOnGround.GetComponent<Vis>().showOnWaistDashBoard = false;
+        visOnGround.GetComponent<Vis>().showOnWaist = false;
         visOnGround.name = t.name;
 
         currentPinnedOnDashboard.Remove(t.name);
@@ -1104,7 +1104,7 @@ public class DelaunayController : MonoBehaviour
             Destroy(groundOriginal.gameObject);
             t.SetParent(PinnedDashBoard);
             currentPinnedOnDashboard.Add(t.name, t);
-            t.GetComponent<Vis>().showOnWaistDashBoard = true;
+            t.GetComponent<Vis>().showOnWaist = true;
             t.GetComponent<Vis>().HeadDashboardScale = Vector3.one * 0.33f;
         }
     }

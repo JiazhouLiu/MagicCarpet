@@ -104,7 +104,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
         foreach (Transform t in WaistDashboard)
         {
             Vis newVis = new Vis(t.name);
-            newVis.OnWaistDashBoard = true;
+            newVis.OnWaist = true;
             t.GetComponent<Vis>().CopyEntity(newVis);
             currentVisOnWaistDashboard.Add(t.name, t);
         }
@@ -233,7 +233,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
         visOnGround.GetComponent<Vis>().GroundPosition = visOnGround.transform.position;
         visOnGround.transform.localEulerAngles = new Vector3(90, 0, 0);
         visOnGround.transform.localScale = t.GetComponent<Vis>().GroundScale;
-        visOnGround.GetComponent<Vis>().showOnWaistDashBoard = false;
+        visOnGround.GetComponent<Vis>().showOnWaist = false;
         visOnGround.name = t.name;
 
         currentVisOnWaistDashboard.Remove(t.name);
@@ -248,7 +248,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
             Destroy(groundOriginal.gameObject);
             t.SetParent(WaistDashboard);
             currentVisOnWaistDashboard.Add(t.name, t);
-            t.GetComponent<Vis>().showOnWaistDashBoard = true;
+            t.GetComponent<Vis>().showOnWaist = true;
             t.GetComponent<Vis>().HeadDashboardScale = Vector3.one * 0.33f;
         }
     }
@@ -275,7 +275,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
             {
                 if (GroundVisParent.Find(t.name) != null)
                 {
-                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnHeadDashBoard = false;
+                    GroundVisParent.Find(t.name).GetComponent<Vis>().OnHead = false;
                     Destroy(currentVisOnHeadDashboard[t.name].gameObject);
                     currentVisOnHeadDashboard.Remove(t.name);
                 }
@@ -295,7 +295,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                 {
                     if (!visNameFromRight.Contains(s))
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHead = false;
                         Destroy(currentVisOnHeadDashboard[s].gameObject);
                         currentVisOnHeadDashboard.Remove(s);
                     }
@@ -317,7 +317,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                 {
                     if (!visNameFromLeft.Contains(s) && GroundVisParent.Find(s) != null)
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHead = false;
                         Destroy(currentVisOnHeadDashboard[s].gameObject);
                         currentVisOnHeadDashboard.Remove(s);
                     }
@@ -351,7 +351,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                 {
                     if (!visName.Contains(s))
                     {
-                        GroundVisParent.Find(s).GetComponent<Vis>().OnHeadDashBoard = false;
+                        GroundVisParent.Find(s).GetComponent<Vis>().OnHead = false;
                         Destroy(currentVisOnHeadDashboard[s].gameObject);
                         currentVisOnHeadDashboard.Remove(s);
                     }
@@ -505,7 +505,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
         {
             foreach (Transform t in newVis.Values.ToList())
             {
-                t.GetComponent<Vis>().OnHeadDashBoard = true;
+                t.GetComponent<Vis>().OnHead = true;
                 GameObject visOnDashBoard = Instantiate(t.gameObject, HeadDashboard);
                 visOnDashBoard.transform.position = t.position;
                 visOnDashBoard.transform.localEulerAngles = Vector3.zero;
@@ -529,7 +529,7 @@ public class DashboardController_PhysicalTouch : MonoBehaviour
                 }
                 else
                 {
-                    t.GetComponent<Vis>().OnHeadDashBoard = true;
+                    t.GetComponent<Vis>().OnHead = true;
                     GameObject visOnDashBoard = Instantiate(t.gameObject, HeadDashboard);
                     visOnDashBoard.transform.position = t.position;
                     visOnDashBoard.transform.localEulerAngles = Vector3.zero;

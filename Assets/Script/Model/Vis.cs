@@ -10,9 +10,10 @@ public class Vis : MonoBehaviour
     public Vector3 showHeadDashboardPosition;
     public Vector3 showGroundScale;
     public Vector3 showHeadDashboardScale;
-    public bool showOnHeadDashBoard;
-    public bool showOnWaistDashBoard;
+    public bool showOnHead;
+    public bool showOnWaist;
     public bool showOnGround;
+    public bool showOnShelves;
     public bool showHighlighted;
     public bool showSelected;
     public bool testingOnGround;
@@ -22,9 +23,10 @@ public class Vis : MonoBehaviour
     public Vector3 HeadDashboardPosition { get; set; }
     public Vector3 GroundScale { get; set; }
     public Vector3 HeadDashboardScale { get; set; }
-    public bool OnHeadDashBoard { get; set; }
-    public bool OnWaistDashBoard { get; set; }
+    public bool OnHead { get; set; }
+    public bool OnWaist { get; set; }
     public bool OnGround { get; set; }
+    public bool OnShelves { get; set; }
     public bool Highlighted { get; set; }
     public bool Selected { get; set; }
 
@@ -63,9 +65,10 @@ public class Vis : MonoBehaviour
         HeadDashboardPosition = v.HeadDashboardPosition;
         GroundScale = v.GroundScale;
         HeadDashboardScale = v.HeadDashboardScale;
-        OnHeadDashBoard = v.OnHeadDashBoard;
-        OnWaistDashBoard = v.OnWaistDashBoard;
+        OnHead = v.OnHead;
+        OnWaist = v.OnWaist;
         OnGround = v.OnGround;
+        OnShelves = v.OnShelves;
         Highlighted = v.Highlighted;
         Selected = v.Selected;
 
@@ -74,9 +77,10 @@ public class Vis : MonoBehaviour
         showHeadDashboardPosition = HeadDashboardPosition;
         showGroundScale = GroundScale;
         showHeadDashboardScale = HeadDashboardScale;
-        showOnHeadDashBoard = OnHeadDashBoard;
-        showOnWaistDashBoard = OnWaistDashBoard;
+        showOnHead = OnHead;
+        showOnWaist = OnWaist;
         showOnGround = OnGround;
+        showOnShelves = OnShelves;
         showHighlighted = Highlighted;
         showSelected = Selected;
     }
@@ -88,9 +92,10 @@ public class Vis : MonoBehaviour
         showHeadDashboardPosition = HeadDashboardPosition;
         showGroundScale = GroundScale;
         showHeadDashboardScale = HeadDashboardScale;
-        showOnHeadDashBoard = OnHeadDashBoard;
-        showOnWaistDashBoard = OnWaistDashBoard;
+        showOnHead = OnHead;
+        showOnWaist = OnWaist;
         showOnGround = OnGround;
+        showOnShelves = OnShelves;
         showHighlighted = Highlighted;
         showSelected = Selected;
     }

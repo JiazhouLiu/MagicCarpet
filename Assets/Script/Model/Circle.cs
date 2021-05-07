@@ -48,18 +48,6 @@ public class Circle : MonoBehaviour
                     vertexCount = WaistDashboard.childCount * 2 - 2;
                 }
             }
-            else if (display == DisplayDashboard.FootDisplay)
-            {
-                if (FootDashboard.GetComponent<DashBoard_New>() != null)
-                    radius = FootDashboard.GetComponent<DashBoard_New>().ForwardParameter;
-                else
-                    radius = FootDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
-
-                if (FootDashboard.childCount > 1)
-                {
-                    vertexCount = FootDashboard.childCount * 2 - 2;
-                }
-            }
         }
 
         prevVertexCount = vertexCount;
@@ -95,18 +83,6 @@ public class Circle : MonoBehaviour
                 if (WaistDashboard.childCount > 1)
                 {
                     vertexCount = WaistDashboard.transform.childCount * 2 - 2;
-                }
-            }
-            else if (display == DisplayDashboard.FootDisplay)
-            {
-                if (FootDashboard.GetComponent<DashBoard_New>() != null)
-                    radius = FootDashboard.GetComponent<DashBoard_New>().ForwardParameter;
-                else
-                    radius = FootDashboard.GetComponent<DashBoard_PhysicalTouch>().ForwardParameter;
-
-                if (FootDashboard.childCount > 1)
-                {
-                    vertexCount = FootDashboard.transform.childCount * 2 - 2;
                 }
             }
         }

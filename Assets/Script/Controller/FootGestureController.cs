@@ -56,6 +56,10 @@ public class FootGestureController : MonoBehaviour
     public float ToeSlideMoveMultiplier = 1.5f;
     public float filterFrequency = 120f;
 
+    [Header("PressureSensor")]
+    public int pressThreshold = 3700;
+    public int holdThreshold = 4000;
+
     // lists
     private List<Vector3> mainFootLocPositions;
     private List<Vector3> mainFootToePositions;
@@ -153,22 +157,11 @@ public class FootGestureController : MonoBehaviour
             eachFrameTime.RemoveAt(0);
 
         //if (mainFootLocPositions.Count == windowFrames)
-            //GestureProcessing();
+        //GestureProcessing();
+        PressureSensorDetector();
 
-        //if (interactingOBJ.Count > 0) {
-        //    foreach (Transform t in interactingOBJ) {
-        //        t.SetParent(mainFoot);
-        //        t.transform.localPosition = new Vector3(0, 0, 0);
-        //        t.transform.position = new Vector3(t.transform.position.x, 0.05f, t.transform.position.z);
-
-        //        t.transform.eulerAngles = new Vector3(90, t.transform.eulerAngles.y, 0);
-        //        t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, 90);
-        //    }
-        //}
-
+        // testing rotation with cube
         //Debug.Log(mainFoot.eulerAngles);
-        //RunToeRotation();
-        
 
         Vector3 rotationV3 = filteredFootRotation - previousRotation;
         Vector3 rotationV2 = new Vector3(0, rotationV3.y, 0);
@@ -177,26 +170,7 @@ public class FootGestureController : MonoBehaviour
         //testCube.localEulerAngles = new Vector3(0, testCube.localEulerAngles.y, 0);
         previousRotation = filteredFootRotation;
 
-        // pressure sensor
-        if (SR.value.Length > 0 && int.Parse(SR.value) < 3700 && !physicalPressFlag) {
-            physicalPressFlag = true;
-            Debug.Log("Press");
-            RunPressToSelect();
-        }
-        if (physicalPressFlag && SR.value.Length > 0 && int.Parse(SR.value) > 4000) {
-            physicalPressFlag = false;
-        }
-
-        if (SR.value.Length > 0 && int.Parse(SR.value) < 3700)
-            holdingFlag = true;
-        if (SR.value.Length > 0 && int.Parse(SR.value) > 4000)
-            holdingFlag = false;
-
-        if (holdingFlag) {
-            Debug.Log("Holding");
-            //RunToeSliding();
-        }
-
+       
         previousPosition = mainFoot.position;
     }
 
@@ -595,6 +569,37 @@ public class FootGestureController : MonoBehaviour
     }
     #endregion
 
+    #region Pressure Sensor Detection
+    private void PressureSensorDetector() {
+        // pressure sensor
+        if (SR.value.Length > 0 && int.Parse(SR.value) < pressThreshold && !physicalPressFlag)
+        {
+            physicalPressFlag = true;
+            Debug.Log("Press");
+            RunPressToSelect();
+        }
+        if (physicalPressFlag && SR.value.Length > 0 && int.Parse(SR.value) > holdThreshold)
+        {
+            physicalPressFlag = false;
+        }
+        if (SR.value.Length > 0)
+        {
+            if (int.Parse(SR.value) < holdThreshold)
+                holdingFlag = true;
+            else
+                holdingFlag = false;
+        }
+
+        if (holdingFlag)
+        {
+            Debug.Log("Holding");
+            previousToePosition = mainFootToe.position;
+            RunPressToMove();
+        }
+    }
+    #endregion
+
+
     #region Foot Press using pressure sensor
     private void RunPressToSelect() {
         if (FTC.TouchedObjs.Count > 0)
@@ -610,6 +615,37 @@ public class FootGestureController : MonoBehaviour
             if (interactingOBJ.Count > 0)
                 DeregisterInteractingOBJ();
         }
+    }
+
+    private void RunPressToMove() {
+        Vector3 moveV3 = mainFootToe.position - previousToePosition;
+        Vector3 moveV2 = new Vector3(moveV3.x, 0, moveV3.z);
+        List<float> footToeHeight = new List<float>();
+        List<float> distance = new List<float>();
+
+        if (SelectToMove)
+        {
+            if (interactingOBJ.Count > 0)
+            {
+                foreach (Transform t in interactingOBJ)
+                    t.position += moveV2 * ToeSlideMoveMultiplier;
+            }
+        }
+        else
+        {
+            if (FTC.TouchedObjs.Count > 0)
+            {
+                foreach (Transform t in FTC.TouchedObjs)
+                    t.position += moveV2 * ToeSlideMoveMultiplier;
+            }
+        }
+
+        previousToePosition = mainFootToe.position;
+    }
+
+    private void RunPressToRotate()
+    {
+        
     }
     #endregion
 
@@ -937,11 +973,6 @@ public class FootGestureController : MonoBehaviour
             }
 
         }
-            
-
-        //Light highlighter = t.GetChild(2).GetComponent<Light>();
-        //highlighter.color = Color.blue;
-        //highlighter.intensity = 50;
 
         //DC.RemoveFromHeadDashboard(t);
         //t.GetComponent<Vis>().OnGround = false;
@@ -1004,14 +1035,14 @@ public class FootGestureController : MonoBehaviour
         DC.RemoveFromHeadDashboard(vis);
         vis.transform.SetParent(WaistDashboard);
         vis.GetComponent<Vis>().OnGround = false;
-        vis.GetComponent<Vis>().OnWaistDashBoard = true;
+        vis.GetComponent<Vis>().OnWaist = true;
     }
 
     private void ArchiveVis(Transform vis)
     {
         DC.RemoveFromHeadDashboard(vis);
         vis.GetComponent<Vis>().OnGround = false;
-        vis.GetComponent<Vis>().OnWaistDashBoard = false;
+        vis.GetComponent<Vis>().OnWaist = false;
     }
 
     private List<Transform> CheckNearestVisOnGround() {

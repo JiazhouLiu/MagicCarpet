@@ -58,17 +58,17 @@ public class VisController : MonoBehaviour
             transform.localEulerAngles = Vector3.zero;
 
             // Check if the vis is being pulled from the waist Dashboard
-            if (visualisation.OnWaistDashBoard)
+            if (visualisation.OnWaist)
             {
-                visualisation.OnWaistDashBoard = false;
+                visualisation.OnWaist = false;
 
                 //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Created", ID);
             }
             // Check if the chart is being pulled from the head Dashboard
-            else if (visualisation.OnHeadDashBoard || visualisation.OnGround)
+            else if (visualisation.OnHead || visualisation.OnGround)
             {
                
-                visualisation.OnHeadDashBoard = false;
+                visualisation.OnHead = false;
                 visualisation.OnGround = false;
 
                 //remove vis from ground parent
@@ -204,8 +204,8 @@ public class VisController : MonoBehaviour
         transform.SetParent(DC.GroundVisParent);
         transform.localScale = Vector3.one;
         visualisation.OnGround = true;
-        visualisation.OnWaistDashBoard = false;
-        visualisation.OnHeadDashBoard = false;
+        visualisation.OnWaist = false;
+        visualisation.OnHead = false;
 
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
     }
@@ -229,8 +229,8 @@ public class VisController : MonoBehaviour
         transform.SetParent(DC.GroundVisParent);
         transform.localScale = Vector3.one;
         GetComponent<Vis>().OnGround = true;
-        GetComponent<Vis>().OnWaistDashBoard = false;
-        GetComponent<Vis>().OnHeadDashBoard = false;
+        GetComponent<Vis>().OnWaist = false;
+        GetComponent<Vis>().OnHead = false;
 
         //DataLogger.Instance.LogActionData(this, OriginalOwner, photonView.Owner, "Vis Attached to Wall", ID);
     }
