@@ -157,6 +157,7 @@ public class DashboardController_UserStudy : MonoBehaviour
 
                 // Instantiate game object
                 GameObject newLandmark = Instantiate(t.gameObject, newPosition, Quaternion.identity, GroundDisplay);
+                newLandmark.name = t.name;
 
                 // setup transform
                 newLandmark.transform.localScale = new Vector3(LandmarkSizeOnGround, LandmarkSizeOnGround, LandmarkSizeOnGround);

@@ -163,36 +163,6 @@ public class DashBoard_New : MonoBehaviour
             //    }
             //}
         }
-
-        if (display == DisplayDashboard.FootDisplay)
-        {// script for foot-level dashboard
-
-            // configure curved display (vis)
-            if (curved)
-            {
-                // configure dashboard position (foot position)
-                if (lerp) transform.position = Vector3.Lerp(transform.position, MainFootTransform.position,
-                    Time.deltaTime * animationSpeed);
-                else transform.position = SmoothChangingVector3(MainFootTransform.position, 2);
-
-                // configure dashboard rotation (foot-fixed)
-                transform.localEulerAngles = SmoothChangingVector3(MainFootTransform.localEulerAngles, 0);
-                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-
-                foreach (Transform t in transform)
-                {
-                    UpdateVisPosition(t);
-
-                    t.localPosition += Vector3.up * 0.1f;
-
-                    t.localScale = Vector3.one * 1f;
-
-                    t.LookAt(MainFootTransform);
-                    t.transform.eulerAngles = new Vector3(90, t.transform.eulerAngles.y, -90);
-                    t.transform.localEulerAngles = new Vector3(t.transform.localEulerAngles.x, t.transform.localEulerAngles.y, -90);
-                }
-            }
-        }
     }
 
     /// <summary>

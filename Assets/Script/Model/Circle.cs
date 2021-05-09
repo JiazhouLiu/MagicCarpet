@@ -7,7 +7,6 @@ public class Circle : MonoBehaviour
 {
     public Transform HeadDashboard;
     public Transform WaistDashboard;
-    public Transform FootDashboard;
     public int vertexCount = 100;
     public float lineWidth = 0.2f;
     public DisplayDashboard display = new DisplayDashboard();

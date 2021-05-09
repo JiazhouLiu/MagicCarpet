@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1558849707420706165}
   - component: {fileID: 1558849707420706167}
-  - component: {fileID: 1558849707420706164}
+  - component: {fileID: 2284868548036248910}
   m_Layer: 0
   m_Name: CircleDisplay
   m_TagString: Untagged
@@ -129,7 +129,7 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &1558849707420706164
+--- !u!114 &2284868548036248910
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,9 +138,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1558849707420706162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f6ec8becfd4c954f9fc570e13481af3, type: 3}
+  m_Script: {fileID: 11500000, guid: 71404e30ce3c73641840cf6f95aa8a04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HeadDashboard: {fileID: 0}
+  WaistDashboard: {fileID: 0}
   vertexCount: 1000
-  lineWidth: 0.1
-  display: 1
+  lineWidth: 0
+  display: 0
