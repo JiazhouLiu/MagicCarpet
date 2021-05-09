@@ -7,7 +7,6 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
 {
     [Header("Prefabs")]
     public DashboardController_UserStudy DC_UserStudy;
-    public Transform GroundVisParent;
 
     [Header("Circle")]
     public LineRenderer circle;
@@ -133,28 +132,8 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
                 }
             }
 
-            // configure vis scale based on position
-            if (transform.childCount > 0)
-            {
-                UpdateVisScale();
-            }
-            else
-            {
-                foreach (Transform t in transform)
-                    t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
-            }
-
-        }
-
-        if (display == DisplayDashboard.GroundMarkers && CameraTransform != null)
-        {
-            //foreach (Transform chart in transform) {
-            //    if (Vector3.Distance(new Vector3(chart.position.x, 0, chart.position.z), new Vector3(Camera.main.transform.position.x, 0, Camera.main.transform.position.z)) > 0.3f) { // north pole issue
-            //        chart.LookAt(Camera.main.transform);
-            //        chart.localEulerAngles = new Vector3(chart.localEulerAngles.x, chart.localEulerAngles.y + 180, chart.localEulerAngles.z);
-            //        chart.localEulerAngles = new Vector3(90, chart.localEulerAngles.y, chart.localEulerAngles.z);
-            //    }
-            //}
+            foreach (Transform t in transform)
+                t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
         }
     }
 
@@ -213,102 +192,5 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             vis.localPosition = Vector3.Lerp(vis.localPosition, new Vector3(0, 0, ForwardParameter / VisSize), Time.deltaTime * animationSpeed);
         }
 
-    }
-
-    /// <summary>
-    /// update vis scale based on waist position
-    /// </summary>
-    /// <param name="vis">single vis attached to this transform</param>
-    private void UpdateVisScale()
-    {
-        if (transform.childCount > 1)
-        {
-            List<Transform> selectedGroundChildren = new List<Transform>();
-
-            List<string> dashBoardChildrenNames = new List<string>();
-            foreach (Transform t in transform)
-                dashBoardChildrenNames.Add(t.name);
-
-            foreach (Transform groundVis in GroundVisParent)
-            {
-                if (dashBoardChildrenNames.Contains(groundVis.name))
-                {
-                    //Debug.Log(groundVis.name);
-                    selectedGroundChildren.Add(groundVis);
-                }
-            }
-
-            if (selectedGroundChildren.Count != transform.childCount)
-                Debug.Log("ERRORRRR");
-
-            #region VisSize won't change when proximics change
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                transform.GetChild(i).GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
-                selectedGroundChildren[i].GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
-            }
-            #endregion
-
-            #region VisSize will change when proximics change
-            //Dictionary<string, float> calculatedRatio = new Dictionary<string, float>();
-
-            //for (int i = 0; i < selectedGroundChildren.Count; i++)
-            //    calculatedRatio.Add(selectedGroundChildren[i].name, 1 / CalculateProportionalScale(WaistTransform, selectedGroundChildren[i], selectedGroundChildren));
-
-            //// update VIS model scale
-            //for (int i = 0; i < transform.childCount; i++)
-            //{
-            //    transform.GetChild(i).GetComponent<Vis>().HeadDashboardScale =
-            //        (calculatedRatio[transform.GetChild(i).name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
-            //    selectedGroundChildren[i].GetComponent<Vis>().HeadDashboardScale =
-            //        (calculatedRatio[selectedGroundChildren[i].name] / calculatedRatio.Values.Sum()) * Vector3.one * headDashboardSizeMagnifier;
-            //}
-            #endregion
-        }
-        else
-        {// show 1 vis
-            // update VIS model scale
-            transform.GetChild(0).GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
-            GroundVisParent.Find(transform.GetChild(0).name).GetComponent<Vis>().HeadDashboardScale = Vector3.one * headDashboardSizeMagnifier;
-        }
-
-        foreach (Transform vis in transform)
-            vis.localScale = Vector3.Lerp(vis.localScale,
-                vis.GetComponent<Vis>().HeadDashboardScale, Time.deltaTime * animationSpeed);
-    }
-
-    private float CalculateProportionalScale(Transform waist, Transform targetVis, List<Transform> visList)
-    {
-        List<Transform> copyList = visList.ToList();
-        copyList.Remove(targetVis);
-        float edgeLengthSum = 0;
-
-        float waistToTarget = Vector3.Distance(waist.position, targetVis.position);
-        foreach (Transform t in copyList)
-            edgeLengthSum += Vector3.Distance(targetVis.position, t.position);
-
-        return copyList.Count * waistToTarget / edgeLengthSum;
-    }
-
-    private Vector3 SmoothChangingVector3(Vector3 origin, int decimalPoint)
-    {
-        float newX = 0;
-        float newY = 0;
-        float newZ = 0;
-
-        if (decimalPoint == 0)
-        {
-            newX = float.Parse(origin.x.ToString("F0"));
-            newY = float.Parse(origin.y.ToString("F0"));
-            newZ = float.Parse(origin.z.ToString("F0"));
-        }
-        else if (decimalPoint == 2)
-        {
-            newX = float.Parse(origin.x.ToString("F2"));
-            newY = float.Parse(origin.y.ToString("F2"));
-            newZ = float.Parse(origin.z.ToString("F2"));
-        }
-
-        return new Vector3(newX, newY, newZ);
     }
 }

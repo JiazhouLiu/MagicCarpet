@@ -26,9 +26,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
     public Transform mainFootToe;
 
     [Header("Variable")]
-    public int windowFrames = 10;    // buff frames before detecting sliding
-    public float BlindSelectionRange = 1f;
-    public float filterFrequency = 120f;
     public RepositionMethod moveMethod;
     public RotationMethod rotationMethod;
 
@@ -51,10 +48,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
     private List<Transform> movingOBJ;
     private List<Transform> currentSelectedVis;
 
-    // one euro filter
-    private Vector3 filteredFootRotation;
-    private OneEuroFilter<Vector3> vector3Filter;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -62,18 +55,18 @@ public class FootGestureController_UserStudy : MonoBehaviour
         movingOBJ = new List<Transform>();
         currentSelectedVis = new List<Transform>();
         previousFromCenterToFoot = new Dictionary<string, Vector3>();
-
-        vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // one euro filter
-        filteredFootRotation = vector3Filter.Filter(mainFoot.eulerAngles);
-
         PressureSensorDetector();
 
+        VisRotation();
+    }
+
+    #region Vis Rotation
+    private void VisRotation() {
         if (rotationMethod == RotationMethod.SpinFoot)
         {
             if (FTC.TouchedObjs.Count > 0)
@@ -89,7 +82,8 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
             previousDirection = mainFootToe.position - mainFoot.position;
         }
-        else {
+        else
+        {
             if (FTC.TouchedObjs.Count > 0)
             {
                 foreach (Transform t in FTC.TouchedObjs)
@@ -103,18 +97,19 @@ public class FootGestureController_UserStudy : MonoBehaviour
             }
         }
 
-        foreach (Transform t in GroundLandmarks) {
+        foreach (Transform t in GroundLandmarks)
+        {
             if (!previousFromCenterToFoot.ContainsKey(t.name))
             {
                 previousFromCenterToFoot.Add(t.name, mainFoot.position - t.position);
             }
-            else {
+            else
+            {
                 previousFromCenterToFoot[t.name] = mainFoot.position - t.position;
             }
         }
-        
     }
-
+    #endregion
 
     #region Pressure Sensor Detection
     private void PressureSensorDetector()
@@ -159,6 +154,11 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
                 RunPressToSlide();
             }
+            else {
+                foreach (Transform t in GroundLandmarks) {
+                    t.GetComponent<Vis>().Moving = false;
+                }
+            }
         }
         else if(moveMethod == RepositionMethod.DragAndDrop)
         {
@@ -183,8 +183,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 }
                     
                 Debug.Log("Firm Press");
-
-                
             }
 
             if (SR.value.Length > 0 && int.Parse(SR.value) > firmPressThreashold && firmPressFlag)
@@ -192,11 +190,16 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
             if (dragAndDropFlag)
                 RunPressToDragAndDrop();
+            else {
+                foreach (Transform t in GroundLandmarks)
+                {
+                    t.GetComponent<Vis>().Moving = false;
+                }
+            }
         }
         
     }
     #endregion
-
 
     #region Foot Press using pressure sensor
     private void RunPressToSelect()
@@ -223,8 +226,11 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
         if (FTC.TouchedObjs.Count > 0)
         {
-            foreach (Transform t in FTC.TouchedObjs)
+            foreach (Transform t in FTC.TouchedObjs) {
                 t.position += moveV2;
+                t.GetComponent<Vis>().Moving = true;
+            }
+                
         }
 
 
@@ -239,6 +245,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 Vector3 footForward = mainFoot.position + mainFoot.right * t.localScale.x;
                 Vector3 footForwardV2 = new Vector3(footForward.x, 0.05f, footForward.z);
                 t.position = footForwardV2;
+                t.GetComponent<Vis>().Moving = true;
             }
                 
         }
@@ -264,10 +271,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
             }
 
         }
-
-        //DC.RemoveFromHeadDashboard(t);
-        //t.GetComponent<Vis>().OnGround = false;
-        //t.GetComponent<Vis>().OnWaistDashBoard = true;
     }
 
     private bool DeregisterInteractingOBJ(Transform t)
@@ -282,12 +285,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
             }
 
             interactingOBJ.Remove(t);
-
-            //Light highlighter = t.GetChild(2).GetComponent<Light>();
-            //highlighter.intensity = 0;
-
-            //t.GetComponent<VisController>().AttachToDisplayScreen(ds);
-
             return true;
         }
         else
@@ -306,25 +303,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
             }
 
             interactingOBJ.Remove(t);
-
-            //Light highlighter = t.GetChild(2).GetComponent<Light>();
-            //highlighter.intensity = 0;
-            //t.GetComponent<VisController>().AttachToDisplayScreen(ds);
         }
-    }
-
-    private List<Transform> CheckNearestVisOnGround()
-    {
-        List<Transform> rangeSelected = new List<Transform>();
-
-        foreach (Transform t in GroundLandmarks)
-        {
-            Vector3 CameraPosition2D = new Vector3(Camera.main.transform.position.x, 0, Camera.main.transform.position.z);
-            Vector3 VisPosition2D = new Vector3(t.position.x, 0, t.position.z);
-            if (Vector3.Distance(CameraPosition2D, VisPosition2D) < BlindSelectionRange)
-                rangeSelected.Add(t);
-        }
-        return rangeSelected;
     }
     #endregion
 }

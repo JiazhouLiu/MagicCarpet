@@ -16,7 +16,7 @@ public class Vis : MonoBehaviour
     public bool showOnShelves;
     public bool showHighlighted;
     public bool showSelected;
-    public bool testingOnGround;
+    public bool showMoving;
 
     public string VisName { get; set; }
     public Vector3 GroundPosition { get; set; }
@@ -29,12 +29,7 @@ public class Vis : MonoBehaviour
     public bool OnShelves { get; set; }
     public bool Highlighted { get; set; }
     public bool Selected { get; set; }
-
-    private void Awake()
-    {
-        if (testingOnGround)
-            OnGround = true;
-    }
+    public bool Moving { get; set; }
 
     public Vis() { }
 
@@ -71,6 +66,7 @@ public class Vis : MonoBehaviour
         OnShelves = v.OnShelves;
         Highlighted = v.Highlighted;
         Selected = v.Selected;
+        Moving = v.Moving;
 
         showName = VisName;
         showGroundPosition = GroundPosition;
@@ -83,6 +79,7 @@ public class Vis : MonoBehaviour
         showOnShelves = OnShelves;
         showHighlighted = Highlighted;
         showSelected = Selected;
+        showMoving = Moving;
     }
 
     public void Update()
@@ -98,5 +95,6 @@ public class Vis : MonoBehaviour
         showOnShelves = OnShelves;
         showHighlighted = Highlighted;
         showSelected = Selected;
+        showMoving = Moving;
     }
 }

@@ -2,17 +2,22 @@
 using System.Collections;
 using UnityEditor;
 
-[CustomEditor(typeof(ShoeRecieve))]
+[CustomEditor(typeof(DashboardController_UserStudy))]
 public class CustomButton : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        ShoeRecieve myScript = (ShoeRecieve)target;
-        if (GUILayout.Button("Abort Thread"))
+        DashboardController_UserStudy myScript = (DashboardController_UserStudy)target;
+        if (GUILayout.Button("Get Shoulder Position"))
         {
-            myScript.AbortThread();
+            myScript.GetShoulderPosition();
+        }
+
+        if (GUILayout.Button("Get Arm Length"))
+        {
+            myScript.GetArmLength();
         }
     }
 

@@ -8,6 +8,7 @@ using UnityEngine.Rendering.HighDefinition;
 public class DashboardController_UserStudy : MonoBehaviour
 {
     public Transform OriginalVisParent;
+    public Transform Shoulder;
 
     // body tracking
     public Transform HumanWaist;
@@ -24,6 +25,8 @@ public class DashboardController_UserStudy : MonoBehaviour
     public float speed = 3;
     public float filterFrequency = 120f;
     public float betweenVisDelta = 0.05f;
+    public Vector3 shoulderPosition;
+    public float armLength = 0.6f;
 
     [Header("Experiment Setup")]
     public int VisNumber = 6;
@@ -101,6 +104,8 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
         else if (Landmark == ReferenceFrames.Body) // vis on body as landmarks
         {
+
+
             // update vis to show
             if (CheckHumanHandMoving() || DemoFlag)
             {
@@ -236,7 +241,12 @@ public class DashboardController_UserStudy : MonoBehaviour
         foreach (Transform landmark in currentLandmarks.Values)
         {
             Light highlighter = landmark.GetChild(2).GetComponent<Light>();
-            if (landmark.GetComponent<Vis>().Selected)
+            if (landmark.GetComponent<Vis>().Moving)
+            {
+                highlighter.color = Color.yellow;
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
+            }
+            else if (landmark.GetComponent<Vis>().Selected)
             {
                 highlighter.color = Color.blue;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
@@ -466,6 +476,16 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
 
         return newList;
+    }
+
+    public void GetShoulderPosition() {
+        shoulderPosition = MainHand.position;
+        Shoulder.position = shoulderPosition;
+    }
+
+    public void GetArmLength() {
+        armLength = Vector3.Distance(shoulderPosition, MainHand.position);
+        Shoulder.GetChild(0).localScale = Vector3.one * armLength * 2;
     }
     #endregion
 
