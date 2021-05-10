@@ -9,6 +9,7 @@ public class DashboardController_UserStudy : MonoBehaviour
 {
     public Transform OriginalVisParent;
     public Transform Shoulder;
+    public Transform Shelves;
 
     // body tracking
     public Transform HumanWaist;
@@ -60,6 +61,31 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     private void Awake()
     {
+        // enable landmarks and detailed views based on configuration 
+        switch (Landmark) {
+            case ReferenceFrames.Body:
+                Shoulder.gameObject.SetActive(true);
+                WaistLevelDisplay.gameObject.SetActive(true);
+                break;
+            case ReferenceFrames.Floor:
+                GroundDisplay.gameObject.SetActive(true);
+                break;
+            case ReferenceFrames.Shelves:
+                Shelves.gameObject.SetActive(true);
+                ShelvesDisplay.gameObject.SetActive(true);
+                break;
+        }
+
+        switch (DetailedView) {
+            case ReferenceFrames.Body:
+                HeadLevelDisplay.gameObject.SetActive(true);
+                break;
+            case ReferenceFrames.Shelves:
+                Shelves.gameObject.SetActive(true);
+                ShelvesDisplay.gameObject.SetActive(true);
+                break;
+        }
+
         // landmarks
         visParentList = new List<Transform>();
         originalLandmarks = new List<Transform>();
