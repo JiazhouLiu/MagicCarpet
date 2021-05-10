@@ -10,6 +10,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     public Transform OriginalVisParent;
     public Transform Shoulder;
     public Transform Shelves;
+    public Transform FloorSurface;
 
     // body tracking
     public Transform HumanWaist;
@@ -59,6 +60,8 @@ public class DashboardController_UserStudy : MonoBehaviour
     private Dictionary<string, Transform> currentLandmarks;
     private Dictionary<string, Transform> currentDetailedViews;
 
+    private int highlighterIntensity = 0;
+
     private void Awake()
     {
         // enable landmarks and detailed views based on configuration 
@@ -69,10 +72,13 @@ public class DashboardController_UserStudy : MonoBehaviour
                 break;
             case ReferenceFrames.Floor:
                 GroundDisplay.gameObject.SetActive(true);
+                FloorSurface.gameObject.SetActive(true);
+                highlighterIntensity = 50;
                 break;
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
                 ShelvesDisplay.gameObject.SetActive(true);
+                highlighterIntensity = 1;
                 break;
         }
 
@@ -83,6 +89,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
                 ShelvesDisplay.gameObject.SetActive(true);
+                ShelvesDisplay.GetChild(6).gameObject.SetActive(true);
+                ShelvesDisplay.GetChild(7).gameObject.SetActive(true);
                 break;
         }
 
@@ -146,9 +154,11 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     #region Experiment Use
     #region Generate Function
-    private void GenerateDetailedView(Transform t)
+    private Transform GenerateDetailedView(Transform t)
     {
         GameObject visOnDetailedView = Instantiate(t.gameObject);
+        visOnDetailedView.GetComponent<Rigidbody>().isKinematic = true;
+        visOnDetailedView.GetComponent<BoxCollider>().enabled = false;
         visOnDetailedView.transform.position = t.position;
         visOnDetailedView.name = t.name;
         visOnDetailedView.transform.localEulerAngles = Vector3.zero;
@@ -174,20 +184,18 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
 
         currentDetailedViews.Add(visOnDetailedView.name, visOnDetailedView.transform);
+
+        return visOnDetailedView.transform;
     }
 
     private void PositionLandmarks(ReferenceFrames landmark, List<Transform> originalLandmarks)
     {
-        List<Vector3> landmarkPositions = new List<Vector3>();
         if (landmark == ReferenceFrames.Floor) // landmarks on floor
         {
             foreach (Transform t in originalLandmarks)
             {
-                Vector3 newPosition = GetAvaiablePosition(landmarkPositions, ReferenceFrames.Floor);
-                landmarkPositions.Add(newPosition);
-
                 // Instantiate game object
-                GameObject newLandmark = Instantiate(t.gameObject, newPosition, Quaternion.identity, GroundDisplay);
+                GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity);
                 newLandmark.name = t.name;
 
                 // setup transform
@@ -203,17 +211,18 @@ public class DashboardController_UserStudy : MonoBehaviour
 
                 currentLandmarks.Add(newLandmark.name, newLandmark.transform);
             }
+            GroundDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), landmark);
         }
         else if (landmark == ReferenceFrames.Body) // landmarks on waist level display
         {
             foreach (Transform t in originalLandmarks)
             {
                 // Instantiate game object
-                GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity, WaistLevelDisplay);
+                GameObject newLandmark = Instantiate(t.gameObject, Shoulder.transform.position, Quaternion.identity, WaistLevelDisplay);
+                newLandmark.name = t.name;
 
                 // setup transform
                 newLandmark.transform.localScale = new Vector3(LandmarkSizeOnBody, LandmarkSizeOnBody, LandmarkSizeOnBody);
-                // TODO sphere
 
                 // setup vis model
                 Vis newVis = new Vis(newLandmark.name)
@@ -224,20 +233,19 @@ public class DashboardController_UserStudy : MonoBehaviour
 
                 currentLandmarks.Add(newLandmark.name, newLandmark.transform);
             }
+            WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), landmark);
         }
         else if (landmark == ReferenceFrames.Shelves) // landmarks on shelves
         {
             foreach (Transform t in originalLandmarks)
             {
-                Vector3 newPosition = GetAvaiablePosition(landmarkPositions, ReferenceFrames.Shelves);
-                landmarkPositions.Add(newPosition);
-
                 // Instantiate game object
-                GameObject newLandmark = Instantiate(t.gameObject, newPosition, Quaternion.identity, ShelvesDisplay);
+                GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity, ShelvesDisplay);
+                newLandmark.name = t.name;
 
                 // setup transform
                 newLandmark.transform.localScale = new Vector3(LandmarkSizeOnShelves, LandmarkSizeOnShelves, LandmarkSizeOnShelves);
-                newLandmark.transform.localEulerAngles = new Vector3(90, 0, 0); // UPDATE
+                newLandmark.transform.localEulerAngles = new Vector3(0, 0, 0); 
 
                 // setup vis model
                 Vis newVis = new Vis(newLandmark.name)
@@ -248,7 +256,9 @@ public class DashboardController_UserStudy : MonoBehaviour
 
                 currentLandmarks.Add(newLandmark.name, newLandmark.transform);
             }
+            ShelvesDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), landmark);
         }
+
     }
     #endregion
 
@@ -270,19 +280,19 @@ public class DashboardController_UserStudy : MonoBehaviour
             if (landmark.GetComponent<Vis>().Moving)
             {
                 highlighter.color = Color.yellow;
-                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
             }
             else if (landmark.GetComponent<Vis>().Selected)
             {
                 highlighter.color = Color.blue;
-                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
             }
             else if (selectedVis.Contains(landmark))
             {
 
                 highlighter.color = Color.green;
                 landmark.GetComponent<Vis>().Highlighted = true;
-                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(50);
+                landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
             }
             else
             {
@@ -302,16 +312,18 @@ public class DashboardController_UserStudy : MonoBehaviour
     {
         if (oldVis.Count == 0)
         {
-            foreach (Transform t in newVis.Values.ToList())
+            foreach (Transform t in newVis.Values.ToList()) {
                 GenerateDetailedView(t);
+            }
         }
         else
         {
             // add new vis
             foreach (Transform t in newVis.Values.ToList())
             {
-                if (!oldVis.Keys.Contains(t.name))
+                if (!oldVis.Keys.Contains(t.name)) {
                     GenerateDetailedView(t);
+                }
             }
 
             foreach (Transform t in oldVis.Values.ToList())
@@ -454,36 +466,6 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
 
         return nearestList;
-    }
-
-    private Vector3 GetAvaiablePosition(List<Vector3> currentList, ReferenceFrames currentRF)
-    {
-        Vector3 tmpPosition = Vector3.zero;
-        float landmarkSize = 0;
-
-        if (currentRF == ReferenceFrames.Floor)
-        {
-            landmarkSize = LandmarkSizeOnGround;
-            tmpPosition = new Vector3(Random.Range(-1.75f, 1.75f), 0.05f, Random.Range(-1.75f, 1.75f));
-        }
-        else if (currentRF == ReferenceFrames.Shelves)
-        {
-            landmarkSize = LandmarkSizeOnShelves;
-            tmpPosition = Vector3.zero; // TODO: UPDATE!!!
-        }
-
-        if (currentList.Count > 0)
-        {
-            foreach (Vector3 v in currentList)
-            {
-                if (Vector3.Distance(v, tmpPosition) < landmarkSize)
-                {
-                    tmpPosition = GetAvaiablePosition(currentList, currentRF);
-                }
-            }
-        }
-
-        return tmpPosition;
     }
 
     public static List<Transform> GetRandomItemsFromList(List<Transform> list, int number)

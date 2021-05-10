@@ -89,10 +89,12 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 foreach (Transform t in FTC.TouchedObjs)
                 {
                     Vector3 currentFromCenterToFoot = mainFoot.position - t.position;
+                    if (previousFromCenterToFoot.Count > 0) {
+                        float angle = Vector3.SignedAngle(currentFromCenterToFoot, previousFromCenterToFoot[t.name], Vector3.up);
 
-                    float angle = Vector3.SignedAngle(currentFromCenterToFoot, previousFromCenterToFoot[t.name], Vector3.up);
-
-                    t.RotateAround(t.position, Vector3.up, -angle);
+                        t.RotateAround(t.position, Vector3.up, -angle);
+                    }
+                    
                 }
             }
         }
