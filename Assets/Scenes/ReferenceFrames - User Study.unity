@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -488,9 +488,9 @@ MonoBehaviour:
   armLength: 0
   VisNumber: 6
   Landmark: 0
-  DetailedView: 0
+  DetailedView: 2
   LandmarkSizeOnGround: 0.5
-  LandmarkSizeOnBody: 0.3
+  LandmarkSizeOnBody: 0.2
   LandmarkSizeOnShelves: 0.3
 --- !u!4 &126790191
 Transform:
@@ -769,7 +769,6 @@ MonoBehaviour:
   mappedTransform: {fileID: 528842827}
   circle: {fileID: 863267461}
   display3VisAngle: 30
-  currentReferenceFrame: 0
   display: 0
   Curved: 1
   ForwardParameter: 1
@@ -789,7 +788,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &226439756 stripped
 GameObject:
@@ -1741,7 +1740,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &789476395
 MonoBehaviour:
@@ -1759,7 +1758,6 @@ MonoBehaviour:
   mappedTransform: {fileID: 134848114}
   circle: {fileID: 0}
   display3VisAngle: 30
-  currentReferenceFrame: 0
   display: 2
   Curved: 0
   ForwardParameter: 0
@@ -1994,7 +1992,6 @@ MonoBehaviour:
   mappedTransform: {fileID: 4491443}
   circle: {fileID: 1899046902}
   display3VisAngle: 30
-  currentReferenceFrame: 0
   display: 1
   Curved: 1
   ForwardParameter: 0.5
@@ -2014,7 +2011,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &958101902
 PrefabInstance:
@@ -2619,12 +2616,11 @@ MonoBehaviour:
   mappedTransform: {fileID: 1489775097}
   circle: {fileID: 0}
   display3VisAngle: 30
-  currentReferenceFrame: 0
   display: 3
-  Curved: 1
+  Curved: 0
   ForwardParameter: 0
-  VisSize: 0
-  HSpacing: 0.3
+  VisSize: 0.8
+  HSpacing: 0.25
   animationSpeed: 3
   headDashboardSizeMagnifier: 1
 --- !u!4 &1526751939
@@ -2639,7 +2635,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1575845931 stripped
 GameObject:

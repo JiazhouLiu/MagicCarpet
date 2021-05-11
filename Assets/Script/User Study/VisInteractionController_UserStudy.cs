@@ -29,6 +29,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Vector3 previousRotation;
     private Vector3 previousScale;
 
+    private bool bodyLandmarkReachDest = false;
+
     private void Awake()
     {
         // Subscribe to events
@@ -54,6 +56,13 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         //    GetComponent<Rigidbody>().useGravity = false;
         //    GetComponent<Rigidbody>().isKinematic = true;
         //}
+
+        if (DC.Landmark == ReferenceFrames.Body && transform.parent.name == "Body Reference Frame - Waist Level Display"
+            && !bodyLandmarkReachDest)
+        {
+            transform.LookAt(DC.Shoulder);
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
+        }
     }
 
     private void VisGrabbed(object sender, InteractableObjectEventArgs e)
@@ -106,6 +115,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             touchingDisplaySurface = null;
         }
         else if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body) {
+            bodyLandmarkReachDest = true;
+
             isTouchingDisplaySurface = true;
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
             currentRigidbody.isKinematic = true;
@@ -129,7 +140,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         Vector3 pos;
         Quaternion rot;
         touchingDisplaySurface.CalculatePositionOnScreen(this, out pos, out rot, DC.Landmark);
-        AnimateTowards(pos, rot, 0f);
+        //AnimateTowards(pos, rot, 0f);
 
         isTouchingDisplaySurface = false;
         touchingDisplaySurface = null;
@@ -154,10 +165,21 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     {
         ColliderActiveState = false;
 
-        transform.DOLocalMove(targetPos, duration).SetEase(Ease.OutQuint).OnComplete(() =>
+
+        if (DC.Landmark == ReferenceFrames.Body)
         {
-            ColliderActiveState = true;
-        });
+            transform.DOMove(targetPos, duration).SetEase(Ease.OutQuint).OnComplete(() =>
+            {
+                ColliderActiveState = true;
+            });
+        }
+        else {
+            transform.DOLocalMove(targetPos, duration).SetEase(Ease.OutQuint).OnComplete(() =>
+            {
+                ColliderActiveState = true;
+            });
+        }
+        
 
         transform.DOLocalRotate(targetRot.eulerAngles, duration).SetEase(Ease.OutQuint);
     }

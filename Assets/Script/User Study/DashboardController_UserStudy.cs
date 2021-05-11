@@ -89,8 +89,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
                 ShelvesDisplay.gameObject.SetActive(true);
-                ShelvesDisplay.GetChild(6).gameObject.SetActive(true);
-                ShelvesDisplay.GetChild(7).gameObject.SetActive(true);
+                Shelves.GetChild(6).gameObject.SetActive(true);
+                Shelves.GetChild(7).gameObject.SetActive(true);
                 break;
         }
 
@@ -110,6 +110,9 @@ public class DashboardController_UserStudy : MonoBehaviour
 
         // one euro filter
         vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
+
+        if (Landmark == ReferenceFrames.Body) // vis on body as landmarks
+            WaistLevelDisplay.position = Shoulder.position;
 
         // initiate landmarks
         originalLandmarks = GetRandomItemsFromList(visParentList, VisNumber);
@@ -138,7 +141,8 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
         else if (Landmark == ReferenceFrames.Body) // vis on body as landmarks
         {
-
+            WaistLevelDisplay.position = Shoulder.position;
+            WaistLevelDisplay.rotation = Shoulder.rotation;
 
             // update vis to show
             if (CheckHumanHandMoving() || DemoFlag)

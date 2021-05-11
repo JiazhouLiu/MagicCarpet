@@ -14,7 +14,6 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
     public float display3VisAngle = 30;
 
     [Header("Variables")]
-    public ReferenceFrames currentReferenceFrame = new ReferenceFrames();
     public DisplayDashboard display = new DisplayDashboard();
     public bool Curved;
     public float ForwardParameter;
@@ -40,61 +39,8 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
-        if (display == DisplayDashboard.WaistDisplay) {
-            foreach (Transform t in transform) {
-                t.transform.LookAt(mappedTransform);
-                //t.transform.localEulerAngles = new Vector3(t.localEulerAngles.x, t.transform.localEulerAngles.y + 180, t.transform.localEulerAngles.z);
-            }
-        }
-
-
-        //if (display == DisplayDashboard.WaistDisplay)
-        //{ // script for waist-level dashboard
-        //    // configure curved display (vis)
-        //    foreach (Transform t in transform)
-        //        t.localScale = Vector3.Lerp(t.localScale, Vector3.one, Time.deltaTime * animationSpeed);
-
-        //    if (Curved)
-        //    {
-        //        // configure dashboard position
-        //        transform.position = Vector3.Lerp(transform.position, WaistTransform.position,
-        //            Time.deltaTime * animationSpeed);
-
-        //        foreach (Transform t in transform)
-        //        {
-        //            UpdateVisPosition(t);
-
-        //            t.LookAt(CameraTransform);
-        //            t.localEulerAngles = new Vector3(-t.localEulerAngles.x, t.localEulerAngles.y + 180, 0);
-        //        }
-
-        //        // configure dashboard rotation (body-fixed)
-        //        transform.localEulerAngles = WaistTransform.localEulerAngles;
-        //    }
-        //    else
-        //    {
-        //        Vector3 forward = WaistTransform.forward;
-
-        //        // configure dashboard position
-        //        transform.position = WaistTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
-
-        //        // configure dashboard rotation
-        //        transform.LookAt(WaistTransform);
-        //        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + 180, 0);
-
-        //        // configure waist vis positions
-        //        int i = 0;
-        //        foreach (Transform t in transform)
-        //        {
-        //            float n = ((transform.childCount - 1) / 2f);
-        //            t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
-        //            t.localEulerAngles = new Vector3(0, 0, 0);
-        //            i++;
-        //        }
-        //    }
-        //}
-
-        if (display == DisplayDashboard.HeadDisplay && CameraTransform != null)
+        if (DC_UserStudy.DetailedView == ReferenceFrames.Body && 
+            display == DisplayDashboard.HeadDisplay && CameraTransform != null)
         {// script for head-level dashboard
 
             // configure curved display (vis)
@@ -143,7 +89,34 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             }
 
             foreach (Transform t in transform)
-                t.localScale = Vector3.Lerp(t.localScale, Vector3.one * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
+                t.localScale = Vector3.Lerp(t.localScale, Vector3.one * VisSize * headDashboardSizeMagnifier, Time.deltaTime * animationSpeed);
+        }
+
+        if (DC_UserStudy.DetailedView == ReferenceFrames.Shelves &&
+            display == DisplayDashboard.Shelves) {
+            // configure curved display (vis)
+            if (Curved)
+            {
+                //TODO
+            }
+            else
+            {
+                // configure dashboard position 
+                transform.position = mappedTransform.position;
+
+                // configure vis positions
+                int i = 0;
+                foreach (Transform t in transform)
+                {
+                    float n = ((transform.childCount - 1) / 2f);
+                    t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
+                    t.localEulerAngles = new Vector3(0, 0, 0);
+                    i++;
+                }
+            }
+
+            foreach (Transform t in transform)
+                t.localScale = Vector3.Lerp(t.localScale, Vector3.one * VisSize, Time.deltaTime * animationSpeed);
         }
     }
 
@@ -227,12 +200,12 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             {
                 // get random available positions and assign it to landmarks
                 Vector3 newPosition = GetAvaiableRandomPosition(landmarkPositions, ReferenceFrames.Body);
-                //landmarkPositions.Add(newPosition);
+                landmarkPositions.Add(newPosition);
 
                 t.position = mappedTransform.position;
 
                 t.GetComponent<Rigidbody>().isKinematic = false;
-                t.GetComponent<Rigidbody>().AddForce(newPosition * 10, ForceMode.Force);
+                t.GetComponent<Rigidbody>().AddForce(newPosition * 50, ForceMode.Force);
             }
         }
         else if (currentRF == ReferenceFrames.Shelves) // landmarks on shelves
@@ -270,6 +243,17 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         {
             //landmarkSize = DC_UserStudy.LandmarkSizeOnBody;
             tmpPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1, 1f), Random.Range(0, 1f));
+
+            if (currentList.Count > 0)
+            {
+                foreach (Vector3 v in currentList)
+                {
+                    if (Vector3.Angle(tmpPosition, v) < 30)
+                    {
+                        tmpPosition = GetAvaiableRandomPosition(currentList, currentRF);
+                    }
+                }
+            }
 
             return tmpPosition;
         }

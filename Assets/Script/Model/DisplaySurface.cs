@@ -68,39 +68,12 @@ public class DisplaySurface : MonoBehaviour {
         Vector3 oldPos = chart.transform.position;
         Quaternion oldRot = chart.transform.rotation;
 
-        // Rotate the chart such that it aligns against the wall nicely
-        chart.transform.rotation = transform.rotation;
-        rot = transform.rotation;
-        //float angle = Vector3.Angle(chart.transform.forward, Camera.main.transform.forward);
-
-        //chart.transform.rotation = transform.rotation;
-        //rot = transform.rotation;
-        //chart.transform.LookAt(Camera.main.transform);
-        //chart.transform.localEulerAngles = new Vector3(chart.transform.localEulerAngles.x, chart.transform.localEulerAngles.y + 180, chart.transform.localEulerAngles.z);
-        //chart.transform.localEulerAngles = new Vector3(90, chart.transform.localEulerAngles.y, chart.transform.localEulerAngles.z);
-        //rot = chart.transform.rotation;
-
-        // For each of the 8 vertices, calculate how much to move the position of the chart such that it fits "inside" of the wall
         BoxCollider b = chart.GetComponent<BoxCollider>();
 
-        //Vector3 v1 = chart.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v1);
-        //Vector3 v2 = chart.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, -b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v2);
-        //Vector3 v3 = chart.transform.TransformPoint(b.center + new Vector3(b.size.x, -b.size.y, b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v3);
-        //Vector3 v4 = chart.transform.TransformPoint(b.center + new Vector3(b.size.x, -b.size.y, -b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v4);
-        //Vector3 v5 = chart.transform.TransformPoint(b.center + new Vector3(-b.size.x, b.size.y, b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v5);
-        //Vector3 v6 = chart.transform.TransformPoint(b.center + new Vector3(-b.size.x, b.size.y, -b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v6);
-        //Vector3 v7 = chart.transform.TransformPoint(b.center + new Vector3(-b.size.x, -b.size.y, b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v7);
-        //Vector3 v8 = chart.transform.TransformPoint(b.center + new Vector3(-b.size.x, -b.size.y, -b.size.z) * 0.5f);
-        //chart.transform.position = MovePositionInsideScreen(chart.transform.position, v8);
-
+        chart.transform.rotation = transform.rotation;
         pos = chart.transform.position;
+
+        rot = transform.rotation;
 
         //pos = transform.InverseTransformPoint(pos);
         if (rf == ReferenceFrames.Floor)
@@ -109,7 +82,10 @@ public class DisplaySurface : MonoBehaviour {
         }
         else if (rf == ReferenceFrames.Body)
         {
-            
+            Vector3 centerPoint = mappedReferenceFrame.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position;
+            chart.transform.LookAt(centerPoint);
+            chart.transform.localEulerAngles = new Vector3(chart.transform.localEulerAngles.x + 180, chart.transform.localEulerAngles.y, chart.transform.localEulerAngles.z + 180);
+            rot = chart.transform.rotation;
         }
         else if (rf == ReferenceFrames.Shelves)
         {
