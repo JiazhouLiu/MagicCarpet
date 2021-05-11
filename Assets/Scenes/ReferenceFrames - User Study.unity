@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -177,6 +177,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 40490997}
   currentRigidbody: {fileID: 40490996}
   backgroundMR: {fileID: 1874525224}
+  isGrabbing: 0
 --- !u!114 &40490995 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -487,8 +488,8 @@ MonoBehaviour:
   shoulderPosition: {x: 0, y: 0, z: 0}
   armLength: 0
   VisNumber: 6
-  Landmark: 0
-  DetailedView: 2
+  Landmark: 2
+  DetailedView: 0
   LandmarkSizeOnGround: 0.5
   LandmarkSizeOnBody: 0.2
   LandmarkSizeOnShelves: 0.3
@@ -2193,6 +2194,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1226946141}
   currentRigidbody: {fileID: 1226946140}
   backgroundMR: {fileID: 2012593854}
+  isGrabbing: 0
 --- !u!114 &1226946139 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -2253,6 +2255,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1259734809}
   currentRigidbody: {fileID: 1259734808}
   backgroundMR: {fileID: 66436940}
+  isGrabbing: 0
 --- !u!114 &1259734807 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -2392,6 +2395,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1349247180}
   currentRigidbody: {fileID: 1349247179}
   backgroundMR: {fileID: 1600130737}
+  isGrabbing: 0
 --- !u!114 &1349247178 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -2452,6 +2456,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1376603607}
   currentRigidbody: {fileID: 1376603606}
   backgroundMR: {fileID: 2033735486}
+  isGrabbing: 0
 --- !u!114 &1376603605 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -2535,7 +2540,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1489775095
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2662,6 +2667,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1575845936}
   currentRigidbody: {fileID: 1575845935}
   backgroundMR: {fileID: 639451656}
+  isGrabbing: 0
 --- !u!114 &1575845934 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -3116,6 +3122,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1936395933}
   currentRigidbody: {fileID: 1936395932}
   backgroundMR: {fileID: 755824173}
+  isGrabbing: 0
 --- !u!114 &1936395931 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,
@@ -3398,6 +3405,7 @@ MonoBehaviour:
   currentBoxCollider: {fileID: 1989503959}
   currentRigidbody: {fileID: 1989503958}
   backgroundMR: {fileID: 71228814}
+  isGrabbing: 0
 --- !u!114 &1989503957 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4075761802996858419, guid: d0ec64514bcdbd24f8de3c29aab87db4,

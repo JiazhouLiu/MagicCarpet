@@ -21,7 +21,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     [SerializeField]
     private MeshRenderer backgroundMR;
 
-    private bool isGrabbing = false;
+    public bool isGrabbing = false;
     private bool startOfExp = true;
     private bool isTouchingDisplaySurface = false;
     private DisplaySurface touchingDisplaySurface;
@@ -31,6 +31,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Vector3 previousRotation;
     private Vector3 previousScale;
 
+    private Vis beforeGrabbing;
+
     private void Awake()
     {
         // Subscribe to events
@@ -38,24 +40,16 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         interactableObject.InteractableObjectUngrabbed += VisUngrabbed;
 
         interactableObject.InteractableObjectUsed += VisUsed;
+
+        beforeGrabbing = new Vis();
     }
 
     private void Update()
     {
         if (interactableObject.IsGrabbed())
         {
-            isGrabbing = true;
             transform.localScale = Vector3.one * 0.5f;
             transform.localEulerAngles = Vector3.zero;
-
-            // Check if the vis is being pulled from the waist Dashboard
-            if (visualisation.OnWaist)
-            {
-                visualisation.OnWaist = false;
-            }
-        }
-        else {
-            isGrabbing = false;
         }
 
         if (DC.Landmark == ReferenceFrames.Body && transform.parent.name == "Body Reference Frame - Waist Level Display")
@@ -63,19 +57,67 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             transform.LookAt(DC.Shoulder);
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
         }
+
+        if (DC.Landmark == ReferenceFrames.Floor)
+        {
+            if (transform.localPosition.x < -1.75f) // too far to the left
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x > 1.75f) // too far to the right
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.z < -1.75f)// too far to the back
+            {  
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, -1.75f), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.z > 1.75f) // too far to the front
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, 1.75f), 10 * Time.deltaTime);
+            }
+        }
+        else if (DC.Landmark == ReferenceFrames.Shelves) {
+            if (transform.localPosition.y < 0.15f) {  // too far to the bottom
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.15f, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if(transform.localPosition.y > 0.85f) // too far to the top
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.85f, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x < -1.3f) // too far to the left
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x > 1.3f) // too far to the right
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+        }
     }
 
     private void VisGrabbed(object sender, InteractableObjectEventArgs e)
     {
+        isGrabbing = true;
         previousParent = transform.parent;
         previousPosition = transform.localPosition;
         previousRotation = transform.localEulerAngles;
         previousScale = transform.localScale;
+        beforeGrabbing.CopyEntity(GetComponent<Vis>());
+        GetComponent<Vis>().OnGround = false;
+        GetComponent<Vis>().OnWaist = false;
+        GetComponent<Vis>().OnShelves = false;
+        GetComponent<Vis>().Selected = false;
+        GetComponent<Vis>().showHighlighted = false;
+        GetComponent<Vis>().Moving = true;
     }
 
     private void VisUngrabbed(object sender, InteractableObjectEventArgs e)
     {
+        isGrabbing = false;
         transform.SetParent(null);
+        GetComponent<Vis>().Moving = false;
+        GetComponent<Vis>().CopyEntity(beforeGrabbing);
 
         if (isTouchingDisplaySurface)
             AttachToDisplayScreen();
@@ -127,6 +169,16 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("InteractableObj") && !isGrabbing && !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && transform.parent.name != "Original Visualisation List")
+        {
+            other.GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<Rigidbody>().AddForce((transform.position - other.transform.position) * 100, ForceMode.Force);
+        }
+    }
+
     private void OnTriggerExit(Collider other)
     {
 
@@ -143,6 +195,12 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
             if (!isGrabbing)
                 AttachToDisplayScreen();
+        }
+
+        if (other.CompareTag("InteractableObj") && !isGrabbing && !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && transform.parent.name != "Original Visualisation List")
+        {
+            other.GetComponent<Rigidbody>().isKinematic = true;
+            GetComponent<Rigidbody>().isKinematic = true;
         }
     }
 
@@ -205,6 +263,42 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         
 
         transform.DOLocalRotate(targetRot.eulerAngles, duration).SetEase(Ease.OutQuint);
+    }
+
+    private Vector3 MovePositionInsideScreen(Vector3 localPos, Vector3 localVertex)
+    {
+        // Case 1: vertex is too far to the left
+        if (localVertex.x <= -0.5f)
+        {
+            float delta = Mathf.Abs(-0.5f - localVertex.x);
+            localPos.x += delta;
+        }
+        // Case 2: vertex is too far to the right
+        else if (0.5f <= localVertex.x)
+        {
+            float delta = localVertex.x - 0.5f;
+            localPos.x -= delta;
+        }
+        // Case 3: vertex is too far to the top
+        if (0.5f <= localVertex.y)
+        {
+            float delta = localVertex.y - 0.5f;
+            localPos.y -= delta;
+        }
+        // Case 4: vertex is too far to the bottom
+        else if (localVertex.y <= -0.5f)
+        {
+            float delta = Mathf.Abs(-0.5f - localVertex.y);
+            localPos.y += delta;
+        }
+        // Case 5: vertex is behind the screen
+        if (0f <= localVertex.z)
+        {
+            float delta = localVertex.z;
+            localPos.z -= delta;
+        }
+
+        return localPos;
     }
 
     public bool ColliderActiveState
