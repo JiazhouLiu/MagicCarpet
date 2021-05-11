@@ -52,6 +52,7 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     // experiment use
     private bool DemoFlag = true;
+    private bool ShelvesPositionConfirmed = false;
     private List<Transform> visParentList;
     private List<Transform> originalLandmarks;
 
@@ -80,6 +81,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 break;
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
+                Shelves.position = new Vector3(0, 0.5f, 1.65f);
                 ShelvesDisplay.gameObject.SetActive(true);
                 highlighterIntensity = 0.5f;
                 break;
@@ -91,10 +93,6 @@ public class DashboardController_UserStudy : MonoBehaviour
                 break;
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
-                if (Camera.main != null) {
-                    if (Camera.main.transform.position.y > 1.5f)
-                        Shelves.position = new Vector3(0, Camera.main.transform.position.y, 1.65f);
-                }
                 ShelvesDisplay.gameObject.SetActive(true);
                 ShelvesDisplay.position = Shelves.position;
                 Shelves.GetChild(6).gameObject.SetActive(true);
@@ -147,6 +145,26 @@ public class DashboardController_UserStudy : MonoBehaviour
 
                 UpdateVisFromPositionChange(HumanWaist.transform);
             }
+
+            if (CheckHumanWaistRotating())
+            {
+                selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
+                currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
+                if (DetailedView == ReferenceFrames.Body)
+                {
+                    HeadLevelDisplay.DetachChildren();
+                    for (int i = 0; i < currentDetailedViews.Count; i++)
+                    {
+                        currentDetailedViews.Values.ToList()[currentDetailedViews.Count - i - 1].SetParent(HeadLevelDisplay);
+                    }
+                } else if (DetailedView == ReferenceFrames.Shelves) {
+                    ShelvesDisplay.DetachChildren();
+                    for (int i = 0; i < currentDetailedViews.Count; i++)
+                    {
+                        currentDetailedViews.Values.ToList()[currentDetailedViews.Count - i - 1].SetParent(ShelvesDisplay);
+                    }
+                }
+            }
         }
         else if (Landmark == ReferenceFrames.Body || Landmark == ReferenceFrames.Shelves) // vis on body as landmarks
         {
@@ -159,6 +177,13 @@ public class DashboardController_UserStudy : MonoBehaviour
                 DemoFlag = false;
 
                 UpdateVisFromPositionChange(MainHand.transform);
+            }
+        }
+
+        if (DetailedView == ReferenceFrames.Shelves && !ShelvesPositionConfirmed && Camera.main != null) {
+            if (Camera.main.transform.position.y > 1.3f) {
+                Shelves.position = new Vector3(0, Camera.main.transform.position.y, 1.65f);
+                ShelvesPositionConfirmed = true;
             }
         }
 
@@ -531,6 +556,16 @@ public class DashboardController_UserStudy : MonoBehaviour
         if (currentWaistPosition == previousHumanWaistPosition)
             return false;
         previousHumanWaistPosition = currentWaistPosition;
+        return true;
+    }
+
+    // BODY-TRACKING: check if waist is rotating
+    private bool CheckHumanWaistRotating()
+    {
+        Vector3 currentWaistRotation = filteredWaistRotation;
+        if (currentWaistRotation == previousHumanWaistRotation)
+            return false;
+        previousHumanWaistRotation = currentWaistRotation;
         return true;
     }
 

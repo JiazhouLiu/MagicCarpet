@@ -36,7 +36,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
     void Update()
     {
         // main camera setup
-        if (Camera.main != null && CameraTransform == null)
+        if (Camera.main != null)
             CameraTransform = Camera.main.transform;
 
         if (DC_UserStudy.DetailedView == ReferenceFrames.Body && 
@@ -140,11 +140,11 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             {
                 Vector3 nextPos = Vector3.zero;
                 if (vis.GetSiblingIndex() == 0)
-                    nextPos = new Vector3((ForwardParameter * Mathf.Cos(display3VisAngle * Mathf.Deg2Rad) / VisSize), Camera.main.transform.position.y, ForwardParameter * Mathf.Sin(display3VisAngle * Mathf.Deg2Rad) / VisSize);
+                    nextPos = new Vector3((ForwardParameter * Mathf.Cos(display3VisAngle * Mathf.Deg2Rad) / VisSize), 0, ForwardParameter * Mathf.Sin(display3VisAngle * Mathf.Deg2Rad) / VisSize);
                 else if (vis.GetSiblingIndex() == 1)
-                    nextPos = new Vector3(0, Camera.main.transform.position.y, ForwardParameter / VisSize);
+                    nextPos = new Vector3(0, 0, ForwardParameter / VisSize);
                 else
-                    nextPos = new Vector3((-ForwardParameter * Mathf.Cos(display3VisAngle * Mathf.Deg2Rad) / VisSize), Camera.main.transform.position.y, ForwardParameter * Mathf.Sin(display3VisAngle * Mathf.Deg2Rad) / VisSize);
+                    nextPos = new Vector3((-ForwardParameter * Mathf.Cos(display3VisAngle * Mathf.Deg2Rad) / VisSize), 0, ForwardParameter * Mathf.Sin(display3VisAngle * Mathf.Deg2Rad) / VisSize);
                 vis.localPosition = Vector3.Lerp(vis.localPosition, nextPos, Time.deltaTime * animationSpeed);
             }
             else

@@ -210,9 +210,9 @@ public class FootGestureController_UserStudy : MonoBehaviour
             foreach (Transform t in FTC.TouchedObjs)
             {
                 if (t.GetComponent<Vis>().Selected)
-                    DC.RemoveExplicitSelection(transform);
+                    DC.RemoveExplicitSelection(t);
                 else
-                    DC.AddExplicitSelection(transform);
+                    DC.AddExplicitSelection(t);
             }
         }
         //else
