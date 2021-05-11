@@ -21,6 +21,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     [SerializeField]
     private MeshRenderer backgroundMR;
 
+    private bool isGrabbing = false;
+    private bool startOfExp = true;
     private bool isTouchingDisplaySurface = false;
     private DisplaySurface touchingDisplaySurface;
 
@@ -29,19 +31,20 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Vector3 previousRotation;
     private Vector3 previousScale;
 
-    private bool bodyLandmarkReachDest = false;
-
     private void Awake()
     {
         // Subscribe to events
         interactableObject.InteractableObjectGrabbed += VisGrabbed;
         interactableObject.InteractableObjectUngrabbed += VisUngrabbed;
+
+        interactableObject.InteractableObjectUsed += VisUsed;
     }
 
     private void Update()
     {
         if (interactableObject.IsGrabbed())
         {
+            isGrabbing = true;
             transform.localScale = Vector3.one * 0.5f;
             transform.localEulerAngles = Vector3.zero;
 
@@ -51,14 +54,11 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                 visualisation.OnWaist = false;
             }
         }
-        //else
-        //{
-        //    GetComponent<Rigidbody>().useGravity = false;
-        //    GetComponent<Rigidbody>().isKinematic = true;
-        //}
+        else {
+            isGrabbing = false;
+        }
 
-        if (DC.Landmark == ReferenceFrames.Body && transform.parent.name == "Body Reference Frame - Waist Level Display"
-            && !bodyLandmarkReachDest)
+        if (DC.Landmark == ReferenceFrames.Body && transform.parent.name == "Body Reference Frame - Waist Level Display")
         {
             transform.LookAt(DC.Shoulder);
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
@@ -83,11 +83,20 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             ReturnToLastState();
     }
 
+    private void VisUsed(object sender, InteractableObjectEventArgs e)
+    {
+        if (GetComponent<Vis>().Selected)
+            DC.RemoveExplicitSelection(transform);
+        else
+            DC.AddExplicitSelection(transform);
+    }
+
     private void OnDestroy()
     {
         //Unsubscribe to events
         interactableObject.InteractableObjectGrabbed -= VisGrabbed;
         interactableObject.InteractableObjectUngrabbed -= VisUngrabbed;
+        interactableObject.InteractableObjectUsed -= VisUsed;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -98,30 +107,42 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
             currentRigidbody.isKinematic = true;
 
-            AttachToDisplayScreen();
+            if(!isGrabbing)
+                AttachToDisplayScreen();
         }
         else if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body)
         {
-            isTouchingDisplaySurface = false;
-            touchingDisplaySurface = null;
+            if (!isGrabbing)
+            {
+                isTouchingDisplaySurface = false;
+                touchingDisplaySurface = null;
+            }
+
+            if (isGrabbing) {
+                isTouchingDisplaySurface = true;
+                touchingDisplaySurface = other.GetComponent<DisplaySurface>();
+                currentRigidbody.isKinematic = true;
+            }
+                
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
+
         if (other.CompareTag("DisplaySurface") && (DC.Landmark == ReferenceFrames.Shelves || DC.Landmark == ReferenceFrames.Floor))
         {
             isTouchingDisplaySurface = false;
             touchingDisplaySurface = null;
         }
-        else if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body) {
-            bodyLandmarkReachDest = true;
-
+        else if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body)
+        {
             isTouchingDisplaySurface = true;
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
             currentRigidbody.isKinematic = true;
 
-            AttachToDisplayScreen();
+            if (!isGrabbing)
+                AttachToDisplayScreen();
         }
     }
 
@@ -140,7 +161,9 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         Vector3 pos;
         Quaternion rot;
         touchingDisplaySurface.CalculatePositionOnScreen(this, out pos, out rot, DC.Landmark);
-        //AnimateTowards(pos, rot, 0f);
+        if (DC.Landmark != ReferenceFrames.Body) {
+            AnimateTowards(pos, rot, 0f);
+        }
 
         isTouchingDisplaySurface = false;
         touchingDisplaySurface = null;

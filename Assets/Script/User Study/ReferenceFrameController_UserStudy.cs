@@ -101,16 +101,14 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             }
             else
             {
-                // configure dashboard position 
-                transform.position = mappedTransform.position;
-
                 // configure vis positions
                 int i = 0;
                 foreach (Transform t in transform)
                 {
+                    Vector3 landmarkPosition = t.GetComponent<Vis>().GroundPosition;
                     float n = ((transform.childCount - 1) / 2f);
-                    t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
-                    t.localEulerAngles = new Vector3(0, 0, 0);
+                    t.transform.localPosition = Vector3.Lerp(t.transform.localPosition, new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0), animationSpeed * Time.deltaTime);
+                    t.localEulerAngles = Vector3.Lerp(t.localEulerAngles, new Vector3(0, 0, 0), animationSpeed * Time.deltaTime * 10);
                     i++;
                 }
             }

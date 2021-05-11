@@ -17,6 +17,7 @@ public enum RotationMethod
 public class FootGestureController_UserStudy : MonoBehaviour
 {
     [Header("Prefabs or OBJ in Scene")]
+    public DashboardController_UserStudy DC;
     public Transform GroundLandmarks;
     public FootToeCollision FTC;
     public ShoeRecieve SR;
@@ -46,14 +47,12 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
     private List<Transform> interactingOBJ;
     private List<Transform> movingOBJ;
-    private List<Transform> currentSelectedVis;
 
     // Start is called before the first frame update
     void Start()
     {
         interactingOBJ = new List<Transform>();
         movingOBJ = new List<Transform>();
-        currentSelectedVis = new List<Transform>();
         previousFromCenterToFoot = new Dictionary<string, Vector3>();
     }
 
@@ -210,15 +209,17 @@ public class FootGestureController_UserStudy : MonoBehaviour
         {
             foreach (Transform t in FTC.TouchedObjs)
             {
-                if (!DeregisterInteractingOBJ(t))
-                    RegisterInteractingOBJ(t);
+                if (t.GetComponent<Vis>().Selected)
+                    DC.RemoveExplicitSelection(transform);
+                else
+                    DC.AddExplicitSelection(transform);
             }
         }
-        else
-        {
-            if (interactingOBJ.Count > 0)
-                DeregisterInteractingOBJ();
-        }
+        //else
+        //{
+        //    if (interactingOBJ.Count > 0)
+        //        DeregisterInteractingOBJ();
+        //}
     }
 
     private void RunPressToSlide()
@@ -266,12 +267,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
         if (t.GetComponent<Vis>() != null)
         {
             t.GetComponent<Vis>().Selected = true;
-            currentSelectedVis.Add(t);
-            if (currentSelectedVis.Count > 3)
-            {
-                DeregisterInteractingOBJ(currentSelectedVis.First());
-            }
-
         }
     }
 
@@ -279,13 +274,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
     {
         if (interactingOBJ.Contains(t))
         {
-            if (t.GetComponent<Vis>() != null)
-            {
-                if (currentSelectedVis.Contains(t))
-                    currentSelectedVis.Remove(t);
-                t.GetComponent<Vis>().Selected = false;
-            }
-
             interactingOBJ.Remove(t);
             return true;
         }
@@ -297,13 +285,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
     {
         foreach (Transform t in interactingOBJ.ToList())
         {
-            if (t.GetComponent<Vis>() != null)
-            {
-                if (currentSelectedVis.Contains(t))
-                    currentSelectedVis.Remove(t);
-                t.GetComponent<Vis>().Selected = false;
-            }
-
             interactingOBJ.Remove(t);
         }
     }

@@ -56,11 +56,13 @@ public class DashboardController_UserStudy : MonoBehaviour
     private List<Transform> originalLandmarks;
 
     private List<Transform> selectedVis;
+    private List<Transform> explicitlySelectedVis;
 
     private Dictionary<string, Transform> currentLandmarks;
     private Dictionary<string, Transform> currentDetailedViews;
 
-    private int highlighterIntensity = 0;
+    private float highlighterIntensity = 0;
+
 
     private void Awake()
     {
@@ -69,16 +71,17 @@ public class DashboardController_UserStudy : MonoBehaviour
             case ReferenceFrames.Body:
                 Shoulder.gameObject.SetActive(true);
                 WaistLevelDisplay.gameObject.SetActive(true);
+                highlighterIntensity = 10;
                 break;
             case ReferenceFrames.Floor:
                 GroundDisplay.gameObject.SetActive(true);
                 FloorSurface.gameObject.SetActive(true);
-                highlighterIntensity = 50;
+                highlighterIntensity = 10;
                 break;
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
                 ShelvesDisplay.gameObject.SetActive(true);
-                highlighterIntensity = 1;
+                highlighterIntensity = 0.5f;
                 break;
         }
 
@@ -88,7 +91,12 @@ public class DashboardController_UserStudy : MonoBehaviour
                 break;
             case ReferenceFrames.Shelves:
                 Shelves.gameObject.SetActive(true);
+                if (Camera.main != null) {
+                    if (Camera.main.transform.position.y > 1.5f)
+                        Shelves.position = new Vector3(0, Camera.main.transform.position.y, 1.65f);
+                }
                 ShelvesDisplay.gameObject.SetActive(true);
+                ShelvesDisplay.position = Shelves.position;
                 Shelves.GetChild(6).gameObject.SetActive(true);
                 Shelves.GetChild(7).gameObject.SetActive(true);
                 break;
@@ -99,6 +107,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         originalLandmarks = new List<Transform>();
 
         selectedVis = new List<Transform>();
+        explicitlySelectedVis = new List<Transform>();
 
         currentLandmarks = new Dictionary<string, Transform>();
         currentDetailedViews = new Dictionary<string, Transform>();
@@ -129,7 +138,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
         filteredHandPosition = vector3Filter.Filter(MainHand.position);
 
-        if (Landmark == ReferenceFrames.Floor || Landmark == ReferenceFrames.Shelves) // vis on floor/shelves as landmarks
+        if (Landmark == ReferenceFrames.Floor) // vis on floor/shelves as landmarks
         {
             // update vis to show
             if (CheckHumanWaistMoving() || DemoFlag)
@@ -139,7 +148,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 UpdateVisFromPositionChange(HumanWaist.transform);
             }
         }
-        else if (Landmark == ReferenceFrames.Body) // vis on body as landmarks
+        else if (Landmark == ReferenceFrames.Body || Landmark == ReferenceFrames.Shelves) // vis on body as landmarks
         {
             WaistLevelDisplay.position = Shoulder.position;
             WaistLevelDisplay.rotation = Shoulder.rotation;
@@ -161,12 +170,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     private Transform GenerateDetailedView(Transform t)
     {
         GameObject visOnDetailedView = Instantiate(t.gameObject);
-        visOnDetailedView.GetComponent<Rigidbody>().isKinematic = true;
-        visOnDetailedView.GetComponent<BoxCollider>().enabled = false;
-        visOnDetailedView.transform.position = t.position;
         visOnDetailedView.name = t.name;
-        visOnDetailedView.transform.localEulerAngles = Vector3.zero;
-        visOnDetailedView.transform.localScale = Vector3.one * 0.1f;
 
         if (DetailedView == ReferenceFrames.Body)
         {
@@ -181,11 +185,22 @@ public class DashboardController_UserStudy : MonoBehaviour
         {
             visOnDetailedView.transform.SetParent(ShelvesDisplay);
             visOnDetailedView.GetComponent<Vis>().OnShelves = true;
+            visOnDetailedView.GetComponent<Vis>().GroundPosition = t.position;
             if (Landmark == ReferenceFrames.Floor)
                 visOnDetailedView.GetComponent<Vis>().OnGround = false;
             if (Landmark == ReferenceFrames.Body)
                 visOnDetailedView.GetComponent<Vis>().OnWaist = false;
         }
+
+        // setup transform
+        visOnDetailedView.transform.position = t.position;
+        visOnDetailedView.transform.rotation = t.rotation;
+        visOnDetailedView.transform.localScale = Vector3.one * 0.1f;
+
+        // setup components
+        visOnDetailedView.GetComponent<Rigidbody>().isKinematic = true;
+        visOnDetailedView.GetComponent<BoxCollider>().enabled = false;
+        visOnDetailedView.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.white);
 
         currentDetailedViews.Add(visOnDetailedView.name, visOnDetailedView.transform);
 
@@ -286,14 +301,13 @@ public class DashboardController_UserStudy : MonoBehaviour
                 highlighter.color = Color.yellow;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
             }
-            else if (landmark.GetComponent<Vis>().Selected)
+            else if (explicitlySelectedVis.Contains(landmark))
             {
                 highlighter.color = Color.blue;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
             }
             else if (selectedVis.Contains(landmark))
             {
-
                 highlighter.color = Color.green;
                 landmark.GetComponent<Vis>().Highlighted = true;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
@@ -378,20 +392,11 @@ public class DashboardController_UserStudy : MonoBehaviour
     private List<Transform> GetVisFromInteraction(Transform implicitObject)
     {
         List<Transform> showOnDashboard = new List<Transform>();
-        List<Transform> explicitSelectedVis = new List<Transform>();
 
-        foreach (Transform t in currentLandmarks.Values)
-        {
-            if (t.GetComponent<Vis>().Selected)
-            {
-                explicitSelectedVis.Add(t);
-            }
-        }
-
-        if (explicitSelectedVis.Count > 3)
+        if (explicitlySelectedVis.Count > 3)
             Debug.LogError("Too many manually selected VIS!!!");
 
-        List<Transform> nearestVisMix = GetNearestVis(implicitObject, explicitSelectedVis);
+        List<Transform> nearestVisMix = GetNearestVis(implicitObject, explicitlySelectedVis);
 
         foreach (Transform t in nearestVisMix)
             showOnDashboard.Add(t);
@@ -498,6 +503,23 @@ public class DashboardController_UserStudy : MonoBehaviour
     public void GetArmLength() {
         armLength = Vector3.Distance(shoulderPosition, MainHand.position);
         Shoulder.GetChild(0).localScale = Vector3.one * armLength * 2;
+    }
+
+    public void AddExplicitSelection(Transform t) {
+        t.GetComponent<Vis>().Selected = true;
+        explicitlySelectedVis.Add(t);
+        if (explicitlySelectedVis.Count > 3) {
+            explicitlySelectedVis[0].GetComponent<Vis>().Selected = false;
+            explicitlySelectedVis.RemoveAt(0);
+        } 
+    }
+
+    public void RemoveExplicitSelection(Transform t)
+    {
+        if (explicitlySelectedVis.Contains(t)) {
+            t.GetComponent<Vis>().Selected = false;
+            explicitlySelectedVis.Remove(t);
+        }       
     }
     #endregion
 

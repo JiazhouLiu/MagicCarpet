@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -832,7 +832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947b27445602ed640b885db7e667dfc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabButton: 3
+  grabButton: 7
   grabPrecognition: 0
   throwMultiplier: 1
   createRigidBodyWhenNotTouching: 0
@@ -1518,6 +1518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7772c124bf202ca4a94ad14ccfd75685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DC: {fileID: 126790190}
   GroundLandmarks: {fileID: 789476394}
   FTC: {fileID: 3964280016841834269}
   SR: {fileID: 3964280016841834271}
@@ -2569,7 +2570,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1489775094}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 1.658}
+  m_LocalPosition: {x: 0, y: 1.5, z: 1.658}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 332023609}
@@ -2813,7 +2814,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947b27445602ed640b885db7e667dfc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabButton: 3
+  grabButton: 7
   grabPrecognition: 0
   throwMultiplier: 1
   createRigidBodyWhenNotTouching: 0
@@ -3163,6 +3164,11 @@ PrefabInstance:
       propertyPath: grabToPointerTip
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2991845234049359651, guid: 56af40b9ce01df345b295050108afc34,
+        type: 3}
+      propertyPath: maximumLength
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2991845234049359654, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: interactGrab
@@ -3173,6 +3179,11 @@ PrefabInstance:
       propertyPath: interactGrab
       value: 
       objectReference: {fileID: 1791100209}
+    - target: {fileID: 2991845235613300230, guid: 56af40b9ce01df345b295050108afc34,
+        type: 3}
+      propertyPath: maximumLength
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2991845235613300231, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: grabToPointerTip
