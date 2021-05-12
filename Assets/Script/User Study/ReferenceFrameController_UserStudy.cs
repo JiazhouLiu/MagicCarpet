@@ -116,7 +116,11 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             foreach (Transform t in transform)
                 t.localScale = Vector3.Lerp(t.localScale, Vector3.one * VisSize, Time.deltaTime * animationSpeed);
         }
+
+        
     }
+
+    
 
     /// <summary>
     /// update vis position
@@ -203,7 +207,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
                 t.position = mappedTransform.position;
 
                 t.GetComponent<Rigidbody>().isKinematic = false;
-                t.GetComponent<Rigidbody>().AddForce(newPosition * 50, ForceMode.Force);
+                t.GetComponent<Rigidbody>().AddForce(newPosition.normalized * 50, ForceMode.Force);
             }
         }
         else if (currentRF == ReferenceFrames.Shelves) // landmarks on shelves

@@ -51,54 +51,20 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     {
         if (interactableObject.IsGrabbed())
         {
-            transform.localScale = Vector3.one * 0.5f;
-            transform.localEulerAngles = Vector3.zero;
+            //transform.localScale = Vector3.one * 0.5f;
+            transform.localEulerAngles = new Vector3(45, 0, 0);
         }
 
-        if (DC.Landmark == ReferenceFrames.Body && transform.parent.name == "Body Reference Frame - Waist Level Display")
+        if (DC.Landmark == ReferenceFrames.Body && transform.parent != null && transform.parent.name == "Body Reference Frame - Waist Level Display")
         {
             transform.LookAt(DC.Shoulder);
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
         }
 
-        if (DC.Landmark == ReferenceFrames.Floor)
-        {
-            if (transform.localPosition.x < -1.75f) // too far to the left
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.x > 1.75f) // too far to the right
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.z < -1.75f)// too far to the back
-            {  
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, -1.75f), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.z > 1.75f) // too far to the front
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, 1.75f), 10 * Time.deltaTime);
-            }
-        }
-        else if (DC.Landmark == ReferenceFrames.Shelves) {
-            if (transform.localPosition.y < 0.15f) {  // too far to the bottom
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.15f, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if(transform.localPosition.y > 0.85f) // too far to the top
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.85f, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.x < -1.3f) // too far to the left
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.x > 1.3f) // too far to the right
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-        }
+        DetectOutOfScreenAndAdjustPosition();            
     }
 
+    #region Interaction Event: Trigger, grabbing, detection
     private void VisGrabbed(object sender, InteractableObjectEventArgs e)
     {
         isGrabbing = true;
@@ -126,12 +92,16 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         {
             if (isTouchingDisplaySurface)
                 AttachToDisplayScreen();
-            else if(moveInside){
-                currentRigidbody.AddForce(movingPosition * 10, ForceMode.Force);
-            }else
+            else if (moveInside)
+            {
+                transform.SetParent(previousParent);
+                transform.localScale = previousScale;
+            }
+            else
                 ReturnToLastState();
         }
-        else {
+        else
+        {
             if (isTouchingDisplaySurface)
                 AttachToDisplayScreen();
             else
@@ -163,25 +133,38 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
             currentRigidbody.isKinematic = true;
 
-            if(!isGrabbing)
+            if (!isGrabbing)
                 AttachToDisplayScreen();
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing && 
-            !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && 
+        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing &&
+            !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing &&
             transform.parent.name != "Original Visualisation List")
         {
             other.GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().isKinematic = false;
-            GetComponent<Rigidbody>().AddForce((transform.position - other.transform.position) * 100, ForceMode.Force);
+            GetComponent<Rigidbody>().AddForce(transform.position - other.transform.position, ForceMode.Force);
         }
 
-        if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body && isGrabbing) {
-            movingPosition = transform.localPosition;
-            moveInside = true;
+        if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body)
+        {
+            if (isGrabbing)
+            {
+                movingPosition = transform.localPosition;
+                moveInside = true;
+            }
+            else
+            {
+                if (!initialisePosition) {
+                    currentRigidbody.isKinematic = false;
+                    //movingPosition = DC.RefineMovingPosition(transform, movingPosition);
+                    currentRigidbody.AddForce(movingPosition.normalized * 100, ForceMode.Force);
+                }
+                
+            }
         }
     }
 
@@ -203,7 +186,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
                 AttachToDisplayScreen();
             }
-            else {
+            else
+            {
                 isTouchingDisplaySurface = false;
                 touchingDisplaySurface = null;
                 moveInside = false;
@@ -213,8 +197,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                 initialisePosition = false;
         }
 
-        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing && 
-            !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && 
+        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing &&
+            !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing &&
             transform.parent.name != "Original Visualisation List")
         {
             other.GetComponent<Rigidbody>().isKinematic = true;
@@ -222,6 +206,49 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         }
     }
 
+    private void DetectOutOfScreenAndAdjustPosition() {
+        if (DC.Landmark == ReferenceFrames.Floor)
+        {
+            if (transform.localPosition.x < -1.75f) // too far to the left
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x > 1.75f) // too far to the right
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.z < -1.75f)// too far to the back
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, -1.75f), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.z > 1.75f) // too far to the front
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, 1.75f), 10 * Time.deltaTime);
+            }
+        }
+        else if (DC.Landmark == ReferenceFrames.Shelves)
+        {
+            if (transform.localPosition.y < 0.15f)
+            {  // too far to the bottom
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.15f, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.y > 0.85f) // too far to the top
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.85f, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x < -1.3f) // too far to the left
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x > 1.3f) // too far to the right
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+        }
+    }
+    #endregion
+
+    #region vis related
     private void ReturnToLastState() {
         transform.SetParent(previousParent);
         transform.localPosition = previousPosition;
@@ -259,7 +286,9 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             visualisation.OnShelves = true;
         }
     }
+    #endregion
 
+    #region Utilities
     public void AnimateTowards(Vector3 targetPos, Quaternion targetRot, float duration)
     {
         ColliderActiveState = false;
@@ -328,4 +357,5 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                 return;
         }
     }
+    #endregion
 }

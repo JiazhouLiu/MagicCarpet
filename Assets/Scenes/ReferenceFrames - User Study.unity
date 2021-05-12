@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -488,8 +488,8 @@ MonoBehaviour:
   shoulderPosition: {x: 0, y: 0, z: 0}
   armLength: 0
   VisNumber: 6
-  Landmark: 2
-  DetailedView: 0
+  Landmark: 0
+  DetailedView: 2
   LandmarkSizeOnGround: 0.5
   LandmarkSizeOnBody: 0.2
   LandmarkSizeOnShelves: 0.3

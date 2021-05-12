@@ -188,6 +188,11 @@ public class DashboardController_UserStudy : MonoBehaviour
             }
         }
 
+        if (Landmark == ReferenceFrames.Body)
+        {
+            //DetectOverlapAndFix();
+        }
+
         UpdateHighlighter();
     }
 
@@ -578,6 +583,73 @@ public class DashboardController_UserStudy : MonoBehaviour
         previousHumanHandPosition = currentHandPosition;
         return true;
     }
+
+    private void DetectOverlapAndFix()
+    {
+        foreach (Transform t in currentLandmarks.Values)
+        {
+            List<Transform> tmpList = currentLandmarks.Values.ToList();
+            tmpList.Remove(t);
+            foreach (Transform t2 in tmpList)
+            {
+                if (Vector3.Angle(t.localPosition, t2.position) < 20)
+                {
+                    Vector3 projection = Vector3.Project(t2.position, t.localPosition);
+                    float d = projection.magnitude / 2;
+                    Vector3 newDirection = (t2.position - projection).normalized * d + projection;
+                    t2.localPosition = newDirection.normalized * armLength;
+                }
+            }
+        }
+    }
+
+    //public Vector3 RefineMovingPosition(Transform self, Vector3 previousMovingPosition)
+    //{
+    //    bool allPassed = true;
+    //    Vector3 newPosition = previousMovingPosition;
+
+    //    List<Transform> tmpList = new List<Transform>();
+    //    tmpList = currentLandmarks.Values.ToList();
+    //    tmpList.Remove(self);
+
+    //    foreach (Transform t in tmpList)
+    //    {
+    //        if (Vector3.Angle(t.localPosition, previousMovingPosition) < 30)
+    //        {
+    //            allPassed = false;
+    //            //Vector3 projection = Vector3.Project(previousMovingPosition, t.localPosition);
+    //            //float d = projection.magnitude / 2;
+    //            //Vector3 newDirection = (previousMovingPosition - projection).normalized * d + projection;
+    //            //newPosition = newDirection;
+    //            float newX = 0;
+    //            float newY = 0;
+    //            float newZ = 0;
+    //            if (previousMovingPosition.x > 0)
+    //                newX = Random.Range(0, 0.01f);
+    //            else
+    //                newX = Random.Range(-0.01f, 0);
+
+    //            if (previousMovingPosition.y > 0)
+    //                newY = Random.Range(0, 0.01f);
+    //            else
+    //                newY = Random.Range(-0.01f, 0);
+
+    //            if (previousMovingPosition.z > 0)
+    //                newZ = Random.Range(0, 0.01f);
+    //            else
+    //                newZ = Random.Range(-0.01f, 0);
+    //            newPosition = previousMovingPosition + new Vector3(newX, newY, newZ);
+    //            break;
+    //        }
+    //    }
+
+    //    if (allPassed)
+    //        return newPosition;
+    //    else
+    //        RefineMovingPosition(self, newPosition);
+
+    //    return Vector3.zero;
+    //}
     #endregion
     #endregion
 }
