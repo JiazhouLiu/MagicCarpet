@@ -32,6 +32,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Vector3 previousScale;
 
     private Vis beforeGrabbing;
+    private Vector3 movingPosition;
+    private bool moveInside = false;
 
     private void Awake()
     {
@@ -119,10 +121,21 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         GetComponent<Vis>().Moving = false;
         GetComponent<Vis>().CopyEntity(beforeGrabbing);
 
-        if (isTouchingDisplaySurface)
-            AttachToDisplayScreen();
-        else
-            ReturnToLastState();
+        if (DC.Landmark == ReferenceFrames.Body)
+        {
+            if (isTouchingDisplaySurface)
+                AttachToDisplayScreen();
+            else if(moveInside){
+                currentRigidbody.AddForce(movingPosition * 10, ForceMode.Force);
+            }else
+                ReturnToLastState();
+        }
+        else {
+            if (isTouchingDisplaySurface)
+                AttachToDisplayScreen();
+            else
+                ReturnToLastState();
+        }
     }
 
     private void VisUsed(object sender, InteractableObjectEventArgs e)
@@ -152,21 +165,6 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             if(!isGrabbing)
                 AttachToDisplayScreen();
         }
-        else if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body)
-        {
-            if (!isGrabbing)
-            {
-                isTouchingDisplaySurface = false;
-                touchingDisplaySurface = null;
-            }
-
-            if (isGrabbing) {
-                isTouchingDisplaySurface = true;
-                touchingDisplaySurface = other.GetComponent<DisplaySurface>();
-                currentRigidbody.isKinematic = true;
-            }
-                
-        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -176,6 +174,11 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             other.GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().AddForce((transform.position - other.transform.position) * 100, ForceMode.Force);
+        }
+
+        if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body && isGrabbing) {
+            movingPosition = transform.localPosition;
+            moveInside = true;
         }
     }
 
@@ -189,12 +192,19 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         }
         else if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body)
         {
-            isTouchingDisplaySurface = true;
-            touchingDisplaySurface = other.GetComponent<DisplaySurface>();
-            currentRigidbody.isKinematic = true;
-
             if (!isGrabbing)
+            {
+                isTouchingDisplaySurface = true;
+                touchingDisplaySurface = other.GetComponent<DisplaySurface>();
+                currentRigidbody.isKinematic = true;
+
                 AttachToDisplayScreen();
+            }
+            else {
+                isTouchingDisplaySurface = false;
+                touchingDisplaySurface = null;
+                moveInside = false;
+            }  
         }
 
         if (other.CompareTag("InteractableObj") && !isGrabbing && !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && transform.parent.name != "Original Visualisation List")
