@@ -34,6 +34,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Vis beforeGrabbing;
     private Vector3 movingPosition;
     private bool moveInside = false;
+    private bool initialisePosition = true;
 
     private void Awake()
     {
@@ -169,7 +170,9 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("InteractableObj") && !isGrabbing && !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && transform.parent.name != "Original Visualisation List")
+        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing && 
+            !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && 
+            transform.parent.name != "Original Visualisation List")
         {
             other.GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().isKinematic = false;
@@ -204,10 +207,15 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                 isTouchingDisplaySurface = false;
                 touchingDisplaySurface = null;
                 moveInside = false;
-            }  
+            }
+
+            if (initialisePosition)
+                initialisePosition = false;
         }
 
-        if (other.CompareTag("InteractableObj") && !isGrabbing && !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && transform.parent.name != "Original Visualisation List")
+        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing && 
+            !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing && 
+            transform.parent.name != "Original Visualisation List")
         {
             other.GetComponent<Rigidbody>().isKinematic = true;
             GetComponent<Rigidbody>().isKinematic = true;

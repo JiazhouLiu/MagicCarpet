@@ -183,6 +183,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         if (DetailedView == ReferenceFrames.Shelves && !ShelvesPositionConfirmed && Camera.main != null) {
             if (Camera.main.transform.position.y > 1.3f) {
                 Shelves.position = new Vector3(0, Camera.main.transform.position.y, 1.65f);
+                ShelvesDisplay.position = Shelves.position;
                 ShelvesPositionConfirmed = true;
             }
         }
@@ -221,11 +222,11 @@ public class DashboardController_UserStudy : MonoBehaviour
         visOnDetailedView.transform.position = t.position;
         visOnDetailedView.transform.rotation = t.rotation;
         visOnDetailedView.transform.localScale = Vector3.one * 0.1f;
+        visOnDetailedView.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.white);
 
         // setup components
         visOnDetailedView.GetComponent<Rigidbody>().isKinematic = true;
         visOnDetailedView.GetComponent<BoxCollider>().enabled = false;
-        visOnDetailedView.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.white);
 
         currentDetailedViews.Add(visOnDetailedView.name, visOnDetailedView.transform);
 
