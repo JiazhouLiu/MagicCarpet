@@ -29,6 +29,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Transform previousParent;
     private Vector3 previousPosition;
     private Vector3 previousRotation;
+    private Vector3 lastRotation;
     private Vector3 previousScale;
 
     private Vis beforeGrabbing;
@@ -52,7 +53,10 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         if (interactableObject.IsGrabbed())
         {
             //transform.localScale = Vector3.one * 0.5f;
-            transform.localEulerAngles = new Vector3(45, 0, 0);
+            //transform.localEulerAngles = new Vector3(45, 0, 0);
+            //lastRotation = DC.TableTopDisplay.InverseTransformPoint(transform.eulerAngles);
+            Quaternion localRotation = Quaternion.Inverse(DC.TableTopDisplay.rotation) * transform.rotation;
+            lastRotation = localRotation.eulerAngles;
         }
 
         if (DC.Landmark == ReferenceFrames.Body && transform.parent != null && transform.parent.name == "Body Reference Frame - Waist Level Display")
@@ -61,7 +65,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
         }
 
-        DetectOutOfScreenAndAdjustPosition();            
+        if(!isGrabbing)
+            DetectOutOfScreenAndAdjustPosition();            
     }
 
     #region Interaction Event: Trigger, grabbing, detection
@@ -76,7 +81,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         GetComponent<Vis>().OnGround = false;
         GetComponent<Vis>().OnWaist = false;
         GetComponent<Vis>().OnShelves = false;
-        GetComponent<Vis>().Selected = false;
+        //GetComponent<Vis>().Selected = false;
         GetComponent<Vis>().showHighlighted = false;
         GetComponent<Vis>().Moving = true;
     }
@@ -100,12 +105,29 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             else
                 ReturnToLastState();
         }
-        else
+        else if (DC.Landmark == ReferenceFrames.Floor)
         {
             if (isTouchingDisplaySurface)
                 AttachToDisplayScreen();
             else
                 ReturnToLastState();
+        }
+        else if (DC.Landmark == ReferenceFrames.Shelves) {
+            if (isTouchingDisplaySurface)
+                AttachToDisplayScreen();
+            else
+            {
+                BoxCollider b = DC.TableTop.GetComponent<BoxCollider>();
+                Vector3 v1 = DC.TableTop.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, b.size.z) * 0.5f);
+                Vector3 v2 = DC.TableTop.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, -b.size.z) * 0.5f);
+                Vector3 v3 = DC.TableTop.transform.TransformPoint(b.center + new Vector3(-b.size.x, b.size.y, b.size.z) * 0.5f);
+                Plane surfacePlane = new Plane(v1,v2,v3);
+                Vector3 closestPointOnPlane = surfacePlane.ClosestPointOnPlane(transform.position);
+                transform.SetParent(previousParent);
+                transform.position = closestPointOnPlane;
+                transform.localEulerAngles = new Vector3(90, lastRotation.y, lastRotation.z);
+                transform.localScale = previousScale;
+            }
         }
     }
 
@@ -135,18 +157,30 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
             if (!isGrabbing)
                 AttachToDisplayScreen();
+
+            if (initialisePosition)
+                initialisePosition = false;
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
+        if (other.CompareTag("InteractableObj") &&
+            transform.parent.name != "Original Visualisation List") {
+        }
+        
         if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing &&
             !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing &&
             transform.parent.name != "Original Visualisation List")
         {
             other.GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().isKinematic = false;
-            GetComponent<Rigidbody>().AddForce(transform.position - other.transform.position, ForceMode.Force);
+            if (DC.Landmark == ReferenceFrames.Shelves) {
+                Vector3 forceDirection = transform.localPosition - other.transform.localPosition;
+                GetComponent<Rigidbody>().AddForce((new Vector3(forceDirection.x, 0, forceDirection.z)).normalized * 50, ForceMode.Force);
+            }
+            else
+                GetComponent<Rigidbody>().AddForce((transform.position - other.transform.position).normalized * 100, ForceMode.Force);
         }
 
         if (other.CompareTag("DisplaySurface") && DC.Landmark == ReferenceFrames.Body)
@@ -228,21 +262,21 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         }
         else if (DC.Landmark == ReferenceFrames.Shelves)
         {
-            if (transform.localPosition.y < 0.15f)
+            if (transform.localPosition.x < -0.9f) // too far to the left
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-0.9f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.x > 0.9f) // too far to the right
+            {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(0.9f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+            }
+            if (transform.localPosition.z < -0.2f)
             {  // too far to the bottom
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.15f, transform.localPosition.z), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, -0.2f), 10 * Time.deltaTime);
             }
-            if (transform.localPosition.y > 0.85f) // too far to the top
+            if (transform.localPosition.z > 0.2f) // too far to the top
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.85f, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.x < -1.3f) // too far to the left
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
-            }
-            if (transform.localPosition.x > 1.3f) // too far to the right
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.3f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, 0.2f), 10 * Time.deltaTime);
             }
         }
     }
@@ -294,12 +328,15 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         ColliderActiveState = false;
 
 
-        if (DC.Landmark == ReferenceFrames.Body)
-        {
+        if (DC.Landmark == ReferenceFrames.Body) {
             transform.DOMove(targetPos, duration).SetEase(Ease.OutQuint).OnComplete(() =>
             {
                 ColliderActiveState = true;
             });
+        }
+        else if(DC.Landmark == ReferenceFrames.Shelves)
+        {
+            transform.localPosition = new Vector3(targetPos.x, 0.04f, targetPos.z);
         }
         else {
             transform.DOLocalMove(targetPos, duration).SetEase(Ease.OutQuint).OnComplete(() =>
@@ -307,45 +344,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                 ColliderActiveState = true;
             });
         }
-        
-
         transform.DOLocalRotate(targetRot.eulerAngles, duration).SetEase(Ease.OutQuint);
-    }
-
-    private Vector3 MovePositionInsideScreen(Vector3 localPos, Vector3 localVertex)
-    {
-        // Case 1: vertex is too far to the left
-        if (localVertex.x <= -0.5f)
-        {
-            float delta = Mathf.Abs(-0.5f - localVertex.x);
-            localPos.x += delta;
-        }
-        // Case 2: vertex is too far to the right
-        else if (0.5f <= localVertex.x)
-        {
-            float delta = localVertex.x - 0.5f;
-            localPos.x -= delta;
-        }
-        // Case 3: vertex is too far to the top
-        if (0.5f <= localVertex.y)
-        {
-            float delta = localVertex.y - 0.5f;
-            localPos.y -= delta;
-        }
-        // Case 4: vertex is too far to the bottom
-        else if (localVertex.y <= -0.5f)
-        {
-            float delta = Mathf.Abs(-0.5f - localVertex.y);
-            localPos.y += delta;
-        }
-        // Case 5: vertex is behind the screen
-        if (0f <= localVertex.z)
-        {
-            float delta = localVertex.z;
-            localPos.z -= delta;
-        }
-
-        return localPos;
     }
 
     public bool ColliderActiveState

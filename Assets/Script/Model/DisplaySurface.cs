@@ -62,6 +62,8 @@ public class DisplaySurface : MonoBehaviour {
     {
         // Temporarily remove parent for calculations
         Transform oldParent = chart.transform.parent;
+        Vector3 oldLocalPosition = chart.transform.localPosition;
+        Vector3 oldLocalRotation = chart.transform.localEulerAngles;
         chart.transform.parent = null;
 
         // Store the previous position and rotation
@@ -89,15 +91,14 @@ public class DisplaySurface : MonoBehaviour {
         }
         else if (rf == ReferenceFrames.Shelves)
         {
-            pos.z = mappedReferenceFrame.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position.z + b.size.z * 0.5f;
+            rot = Quaternion.Euler(90, oldLocalRotation.y, oldLocalRotation.z);
+            pos = oldLocalPosition;
         }
-        //pos = transform.TransformPoint(pos);
 
         // Restore the original position, rotation and parent
+        chart.transform.SetParent(oldParent);
         chart.transform.position = oldPos;
         chart.transform.rotation = oldRot;
-        chart.transform.SetParent(oldParent);
-
     }
 
     private Vector3 MovePositionInsideScreen(Vector3 position, Vector3 vertex)

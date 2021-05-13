@@ -5,6 +5,7 @@ using VRTK;
 
 public class Vis : MonoBehaviour
 {
+    public Transform VisBorder;
     public string showName;
     public Vector3 showGroundPosition;
     public Vector3 showHeadDashboardPosition;

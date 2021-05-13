@@ -15,7 +15,6 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
 
     [Header("Variables")]
     public DisplayDashboard display = new DisplayDashboard();
-    public bool Curved;
     public float ForwardParameter;
     public float VisSize;
     public float HSpacing;
@@ -43,49 +42,26 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             display == DisplayDashboard.HeadDisplay && CameraTransform != null)
         {// script for head-level dashboard
 
-            // configure curved display (vis)
-            if (Curved)
+            Vector3 oldAngle = CameraTransform.eulerAngles;
+            CameraTransform.eulerAngles = new Vector3(0, oldAngle.y, oldAngle.z);
+            Vector3 forward = CameraTransform.forward;
+            CameraTransform.eulerAngles = oldAngle;
+
+            // configure dashboard position 
+            transform.position = CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
+
+            // configure dashboard rotation
+            transform.LookAt(CameraTransform);
+            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + 180, 0);
+
+            // configure waist vis positions
+            int i = 0;
+            foreach (Transform t in transform)
             {
-                // configure dashboard position (head position)
-                transform.position = Vector3.Lerp(transform.position, CameraTransform.position,
-                    Time.deltaTime * animationSpeed);
-
-                // configure dashboard rotation (body-fixed)
-                transform.localEulerAngles = WaistTransform.localEulerAngles;
-                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-
-
-                foreach (Transform t in transform)
-                {
-                    UpdateVisPosition(t);
-
-                    t.LookAt(CameraTransform);
-                    t.localEulerAngles = new Vector3(-t.localEulerAngles.x, t.localEulerAngles.y + 180, 0);
-                }
-            }
-            else
-            {
-                Vector3 oldAngle = CameraTransform.eulerAngles;
-                CameraTransform.eulerAngles = new Vector3(0, oldAngle.y, oldAngle.z);
-                Vector3 forward = CameraTransform.forward;
-                CameraTransform.eulerAngles = oldAngle;
-
-                // configure dashboard position 
-                transform.position = CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
-
-                // configure dashboard rotation
-                transform.LookAt(CameraTransform);
-                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + 180, 0);
-
-                // configure waist vis positions
-                int i = 0;
-                foreach (Transform t in transform)
-                {
-                    float n = ((transform.childCount - 1) / 2f);
-                    t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
-                    t.localEulerAngles = new Vector3(0, 0, 0);
-                    i++;
-                }
+                float n = ((transform.childCount - 1) / 2f);
+                t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
+                t.localEulerAngles = new Vector3(0, 0, 0);
+                i++;
             }
 
             foreach (Transform t in transform)
@@ -93,34 +69,23 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         }
 
         if (DC_UserStudy.DetailedView == ReferenceFrames.Shelves &&
-            display == DisplayDashboard.Shelves) {
-            // configure curved display (vis)
-            if (Curved)
+            display == DisplayDashboard.Wall) {
+
+            // configure vis positions
+            int i = 0;
+            foreach (Transform t in transform)
             {
-                //TODO
-            }
-            else
-            {
-                // configure vis positions
-                int i = 0;
-                foreach (Transform t in transform)
-                {
-                    Vector3 landmarkPosition = t.GetComponent<Vis>().GroundPosition;
-                    float n = ((transform.childCount - 1) / 2f);
-                    t.transform.localPosition = Vector3.Lerp(t.transform.localPosition, new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0), animationSpeed * Time.deltaTime);
-                    t.localEulerAngles = Vector3.Lerp(t.localEulerAngles, new Vector3(0, 0, 0), animationSpeed * Time.deltaTime * 10);
-                    i++;
-                }
+                Vector3 landmarkPosition = t.GetComponent<Vis>().GroundPosition;
+                float n = ((transform.childCount - 1) / 2f);
+                t.transform.localPosition = Vector3.Lerp(t.transform.localPosition, new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0.3f, -0.05f), animationSpeed * Time.deltaTime);
+                t.localEulerAngles = Vector3.Lerp(t.localEulerAngles, new Vector3(0, 0, 0), animationSpeed * Time.deltaTime * 10);
+                i++;
             }
 
             foreach (Transform t in transform)
                 t.localScale = Vector3.Lerp(t.localScale, Vector3.one * VisSize, Time.deltaTime * animationSpeed);
         }
-
-        
     }
-
-    
 
     /// <summary>
     /// update vis position
@@ -219,9 +184,10 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
                 landmarkPositions.Add(newPosition);
 
                 t.position = newPosition;
+                t.localPosition += Vector3.up * 0.5f;
 
                 t.GetComponent<Rigidbody>().isKinematic = false;
-                t.GetComponent<Rigidbody>().AddForce(Vector3.forward * 10, ForceMode.Force);
+                t.GetComponent<Rigidbody>().AddForce(t.InverseTransformPoint(-t.up * 10), ForceMode.Force);
             }
         }
     }
@@ -239,7 +205,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         else if (currentRF == ReferenceFrames.Shelves)
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnShelves;
-            tmpPosition = new Vector3(mappedTransform.position.x + Random.Range(-1.3f, 1.3f), mappedTransform.position.y + Random.Range(-0.35f, 0.35f), mappedTransform.position.z - 0.1f);
+            tmpPosition = new Vector3(mappedTransform.position.x + Random.Range(-0.9f, 0.9f), mappedTransform.position.y, mappedTransform.position.z + Random.Range(-0.2f, 0.2f));
         }
         else if (currentRF == ReferenceFrames.Body)
         {

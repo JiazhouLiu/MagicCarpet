@@ -10,7 +10,8 @@ public enum DisplayDashboard // your custom enumeration
     HeadDisplay,
     WaistDisplay,
     GroundMarkers,
-    Shelves
+    Wall,
+    TableTop
 };
 
 public enum ReferenceFrames // your custom enumeration
