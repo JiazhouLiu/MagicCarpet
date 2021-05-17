@@ -51,8 +51,8 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             transform.position = CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
 
             // configure dashboard rotation
-            transform.LookAt(CameraTransform);
-            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y + 180, 0);
+            transform.localEulerAngles = WaistTransform.localEulerAngles;
+            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 
             // configure waist vis positions
             int i = 0;
@@ -167,12 +167,13 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             {
                 // get random available positions and assign it to landmarks
                 Vector3 newPosition = GetAvaiableRandomPosition(landmarkPositions, ReferenceFrames.Body);
+
                 landmarkPositions.Add(newPosition);
 
-                t.position = mappedTransform.position;
+                t.localPosition = newPosition;
 
-                t.GetComponent<Rigidbody>().isKinematic = false;
-                t.GetComponent<Rigidbody>().AddForce(newPosition.normalized * 50, ForceMode.Force);
+                //t.GetComponent<Rigidbody>().isKinematic = false;
+                //t.GetComponent<Rigidbody>().AddForce(newPosition.normalized * 50, ForceMode.Force);
             }
         }
         else if (currentRF == ReferenceFrames.Shelves) // landmarks on shelves
@@ -183,8 +184,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
                 Vector3 newPosition = GetAvaiableRandomPosition(landmarkPositions, ReferenceFrames.Shelves);
                 landmarkPositions.Add(newPosition);
 
-                t.position = newPosition;
-                t.localPosition += Vector3.up * 0.5f;
+                t.localPosition = newPosition + Vector3.up * 0.2f;
 
                 t.GetComponent<Rigidbody>().isKinematic = false;
                 t.GetComponent<Rigidbody>().AddForce(t.InverseTransformPoint(-t.up * 10), ForceMode.Force);
@@ -205,25 +205,13 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         else if (currentRF == ReferenceFrames.Shelves)
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnShelves;
-            tmpPosition = new Vector3(mappedTransform.position.x + Random.Range(-0.9f, 0.9f), mappedTransform.position.y, mappedTransform.position.z + Random.Range(-0.2f, 0.2f));
+            tmpPosition = new Vector3(Random.Range(-0.9f, 0.9f), 0, Random.Range(-0.2f, 0.2f));
         }
         else if (currentRF == ReferenceFrames.Body)
         {
-            //landmarkSize = DC_UserStudy.LandmarkSizeOnBody;
-            tmpPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1, 1f), Random.Range(0, 1f));
-
-            if (currentList.Count > 0)
-            {
-                foreach (Vector3 v in currentList)
-                {
-                    if (Vector3.Angle(tmpPosition, v) < 30)
-                    {
-                        tmpPosition = GetAvaiableRandomPosition(currentList, currentRF);
-                    }
-                }
-            }
-
-            return tmpPosition;
+            landmarkSize = DC_UserStudy.LandmarkSizeOnBody;
+            Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0), Random.Range(0, 1f));
+            tmpPosition = direction.normalized * DC_UserStudy.armLength;
         }
 
         if (currentList.Count > 0)

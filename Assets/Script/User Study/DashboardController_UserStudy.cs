@@ -54,7 +54,6 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     // experiment use
     private bool DemoFlag = true;
-    private bool ShelvesPositionConfirmed = false;
     private List<Transform> visParentList;
     private List<Transform> originalLandmarks;
 
@@ -312,12 +311,18 @@ public class DashboardController_UserStudy : MonoBehaviour
     #endregion
 
     #region Update Function
+    private void RePositionLandmarks() {
+        foreach (Transform t in currentLandmarks.Values)
+        {
+            WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Body);
+        }
+    }
     private void UpdateVisFromPositionChange(Transform implicitObject)
     {
         selectedVis = GetVisFromInteraction(implicitObject);
 
         if (selectedVis.Count > 0) {
-            if (Landmark == ReferenceFrames.Shelves)
+            if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
                 selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
             currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
         }
@@ -423,17 +428,35 @@ public class DashboardController_UserStudy : MonoBehaviour
     private List<Transform> RearrangeDisplayBasedOnLandmarkPosition(List<Transform> markers)
     {
         List<Transform> finalList = new List<Transform>();
-
-        if (markers != null && markers.Count > 0)
+        if (Landmark == ReferenceFrames.Shelves)
         {
-            Dictionary<Transform, float> markerLocPositionX = new Dictionary<Transform, float>();
+            if (markers != null && markers.Count > 0)
+            {
+                Dictionary<Transform, float> markerLocPositionX = new Dictionary<Transform, float>();
 
-            foreach (Transform t in markers)
-                markerLocPositionX.Add(t, t.localPosition.x);
+                foreach (Transform t in markers)
+                    markerLocPositionX.Add(t, t.localPosition.x);
 
-            foreach (KeyValuePair<Transform, float> item in markerLocPositionX.OrderBy(key => key.Value))
-                finalList.Add(item.Key);
+                foreach (KeyValuePair<Transform, float> item in markerLocPositionX.OrderBy(key => key.Value))
+                    finalList.Add(item.Key);
+            }
         }
+        else {
+            if (markers != null && markers.Count > 0)
+            {
+                Dictionary<Transform, float> markerLocAngleFromCenter = new Dictionary<Transform, float>();
+
+                foreach (Transform t in markers) {
+                    Vector3 position2D = new Vector3(t.localPosition.x, 0, t.localPosition.z);
+                    float angleFromForward = Vector3.SignedAngle(Vector3.forward, position2D, Vector3.up);
+                    markerLocAngleFromCenter.Add(t, angleFromForward);
+                }
+
+                foreach (KeyValuePair<Transform, float> item in markerLocAngleFromCenter.OrderBy(key => key.Value))
+                    finalList.Add(item.Key);
+            }
+        }
+        
         return finalList;
     }
 
@@ -568,6 +591,8 @@ public class DashboardController_UserStudy : MonoBehaviour
     public void GetArmLength() {
         armLength = Vector3.Distance(shoulderPosition, MainHand.position);
         Shoulder.GetChild(0).localScale = Vector3.one * armLength * 2;
+
+        RePositionLandmarks();
     }
 
     public void AddExplicitSelection(Transform t) {
@@ -599,7 +624,6 @@ public class DashboardController_UserStudy : MonoBehaviour
     }
 
     private void ConnectLandmarkWithDV(Transform landmark, Transform detailedView) {
-        //float minD = 100000;
         Transform landmarkBorder = null;
 
         if (Vector3.Distance(landmark.GetComponent<Vis>().VisBorder.GetChild(0).position, detailedView.position) <
@@ -608,27 +632,16 @@ public class DashboardController_UserStudy : MonoBehaviour
         }else
             landmarkBorder = landmark.GetComponent<Vis>().VisBorder.GetChild(1);
 
-        //foreach (Transform t in landmark.GetComponent<Vis>().VisBorder) {
-        //    if (Vector3.Distance(t.position, detailedView.position) < minD) {
-        //        minD = Vector3.Distance(t.position, detailedView.position);
-        //        landmarkBorder = t;
-        //    }
-        //}
-        //minD = 100000;
         Transform detailedViewBorder = detailedView.GetComponent<Vis>().VisBorder.GetChild(1);
-        //foreach (Transform t in detailedView.GetComponent<Vis>().VisBorder)
-        //{
-        //    if (Vector3.Distance(t.position, landmark.position) < minD)
-        //    {
-        //        minD = Vector3.Distance(t.position, landmark.position);
-        //        detailedViewBorder = t;
-        //    }
-        //}
+
         Vector3 landmarkToTable = TableTopDisplay.InverseTransformPoint(landmarkBorder.position);
         Vector3 tableBorder = new Vector3(landmarkToTable.x, 0.03f, 0.3f);
         if (landmarkBorder != null & detailedViewBorder != null) {
             landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, landmarkBorder.position);
-            landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, TableTopDisplay.TransformPoint(tableBorder));
+            if(landmark.GetComponent<Vis>().Moving || Landmark != ReferenceFrames.Shelves)
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, (landmarkBorder.position + detailedViewBorder.position ) / 2);
+            else
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, TableTopDisplay.TransformPoint(tableBorder));
             landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, detailedViewBorder.position);
         }
 
