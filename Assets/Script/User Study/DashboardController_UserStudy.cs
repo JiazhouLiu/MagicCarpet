@@ -64,6 +64,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     private Dictionary<string, Transform> currentDetailedViews;
 
     private float highlighterIntensity = 10;
+    private bool InitialiseTable = false;
 
 
     private void Awake()
@@ -127,6 +128,14 @@ public class DashboardController_UserStudy : MonoBehaviour
     {
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
+
+        if (!InitialiseTable && HumanWaist.position.y != 0) {
+            InitialiseTable = true;
+            TableTop.position = new Vector3(TableTop.position.x, HumanWaist.position.y, TableTop.position.z);
+            TableTopDisplay.position = TableTop.position;
+
+            RePositionLandmarks();
+        }
 
         // OneEuroFilter
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
@@ -447,7 +456,11 @@ public class DashboardController_UserStudy : MonoBehaviour
                 Dictionary<Transform, float> markerLocAngleFromCenter = new Dictionary<Transform, float>();
 
                 foreach (Transform t in markers) {
-                    Vector3 position2D = new Vector3(t.localPosition.x, 0, t.localPosition.z);
+                    Vector3 position2D;
+                    if (t.parent == WaistLevelDisplay)
+                        position2D = new Vector3(t.localPosition.x, 0, t.localPosition.z);
+                    else
+                        position2D = new Vector3(WaistLevelDisplay.InverseTransformPoint(t.position).x, 0, WaistLevelDisplay.InverseTransformPoint(t.position).z);
                     float angleFromForward = Vector3.SignedAngle(Vector3.forward, position2D, Vector3.up);
                     markerLocAngleFromCenter.Add(t, angleFromForward);
                 }
@@ -476,6 +489,10 @@ public class DashboardController_UserStudy : MonoBehaviour
     #endregion
 
     #region Get Function
+    // public get current landmarks
+    public List<Transform> GetCurrentLandmarks() {
+        return currentLandmarks.Values.ToList();
+    }
     // Tracking human body to determine what to display, can return no more than 3 vis
     private List<Transform> GetVisFromInteraction(Transform implicitObject)
     {

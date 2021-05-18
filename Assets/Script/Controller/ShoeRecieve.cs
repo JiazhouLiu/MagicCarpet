@@ -125,17 +125,21 @@ public class ShoeRecieve : MonoBehaviour
 
     void OnApplicationQuit()
     {
+        sp.Close();
         if(ReadThread != null)
             ReadThread.Abort();
     }
 
     public void AbortThread()
     {
+        sp.Close();
         ReadThread.Abort();
+      
     }
 
     private void OnDestroy()
     {
+        sp.Close();
         if (ReadThread != null)
             ReadThread.Abort();
     }
