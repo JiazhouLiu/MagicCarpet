@@ -72,7 +72,8 @@ public class DisplaySurface : MonoBehaviour {
 
         BoxCollider b = chart.GetComponent<BoxCollider>();
 
-        chart.transform.rotation = transform.rotation;
+        if(rf != ReferenceFrames.Floor)
+            chart.transform.rotation = transform.rotation;
         pos = chart.transform.position;
 
         rot = transform.rotation;

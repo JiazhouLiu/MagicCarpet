@@ -41,7 +41,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
     private Vector3 previousDirection;
     private Vector3 previousToePosition;
     private Dictionary<string, Vector3> previousFromCenterToFoot;
-    private Dictionary<Transform, Transform> previousParent;
 
     // pressure sensor
     private bool normalPressFlag = false;
@@ -58,16 +57,19 @@ public class FootGestureController_UserStudy : MonoBehaviour
         interactingOBJ = new List<Transform>();
         movingOBJ = new List<Transform>();
         previousFromCenterToFoot = new Dictionary<string, Vector3>();
-        previousParent = new Dictionary<Transform, Transform>();
     }
 
     // Update is called once per frame
     void Update()
     {
         // pressure feedback
-        if (SR.value.Length > 0 && float.Parse(SR.value) < 3500f) {
+        if (SR.value.Length > 0 && float.Parse(SR.value) < 3000f) {
             PressFeedback.gameObject.SetActive(true);
             PressFeedback.position = mainFootToe.position;
+
+            //PressFeedback.LookAt(Camera.main.transform.position);
+            //PressFeedback.localEulerAngles = new Vector3(0, PressFeedback.localEulerAngles.y + 90, 0);
+
             FeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(SR.value))/ 4095f * 0.09f + 0.01f);
             if (float.Parse(SR.value) <= pressToSelectThreshold)
                 FeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
@@ -117,28 +119,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 }
             }
         }
-        else if (rotationMethod == RotationMethod.AttachToToe) {
-            if (holdingFlag)
-            {
-                if (FTC.TouchedObjs.Count > 0)
-                {
-                    foreach (Transform t in FTC.TouchedObjs)
-                    {
-                        if (!previousParent.ContainsKey(t))
-                            previousParent.Add(t, t.parent);
-                        t.parent = mainFootToe;
-                    }
-                }
-            }
-            else {
-                foreach (Transform t in FTC.TouchedObjs)
-                {
-                    if (previousParent.ContainsKey(t))
-                        t.parent = previousParent[t];
-                }
-            }
-            
-        }
 
         foreach (Transform t in GroundLandmarks)
         {
@@ -158,7 +138,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
     private void PressureSensorDetector()
     {
         // pressure sensor
-        if (SR.value.Length > 0 && int.Parse(SR.value) < pressToSelectThreshold && !normalPressFlag)
+        if (SR.value.Length > 0 && int.Parse(SR.value) <= pressToSelectThreshold && !normalPressFlag)
         {
             normalPressFlag = true;
             Debug.Log("Press");
@@ -178,13 +158,12 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 {
                     if (!holdingFlag)
                     {
-                        previousToePosition = mainFootToe.position;
                         holdingFlag = true;
                     }
                 }
                 else
                 {
-                    if (holdingFlag && Vector3.Distance(previousToePosition, mainFootToe.position) < 0.01f) {
+                    if (holdingFlag) {
                         holdingFlag = false;
                     }
                         
@@ -267,24 +246,34 @@ public class FootGestureController_UserStudy : MonoBehaviour
             {
                 foreach (Transform t in FTC.TouchedObjs)
                 {
-                    if (!previousParent.ContainsKey(t)) {
-                        previousParent.Add(t, t.parent);
-                        t.parent = mainFootToe;
-                        t.GetComponent<Vis>().Moving = false;
-                    }  
+                    if (!movingOBJ.Contains(t))
+                        movingOBJ.Add(t);
+                        
+                    t.parent = mainFoot;
+                    t.GetComponent<Vis>().Moving = true;
                 }
             }
         }
         else
         {
-            foreach (Transform t in FTC.TouchedObjs)
-            {
-                if (previousParent.ContainsKey(t)) {
-                    t.parent = previousParent[t];
+            if (movingOBJ.Count > 0) {
+                foreach (Transform t in movingOBJ) {
+                    t.parent = DC.GroundDisplay;
+                    //if (t.position.y > 0.025f)
+                    //{
+                    //    t.GetComponent<Rigidbody>().isKinematic = false;
+                    //    t.GetComponent<Rigidbody>().AddForce(Vector3.down * 1, ForceMode.Force);
+                    //}
+                    //else if (t.position.y < 0.025f) {
+                    //    t.GetComponent<Rigidbody>().isKinematic = false;
+                    //    t.GetComponent<Rigidbody>().AddForce(Vector3.up * 1, ForceMode.Force);
+                    //}
+                        
                     t.GetComponent<Vis>().Moving = false;
                 }
-                    
-            }
+
+                movingOBJ.Clear();
+            }                
         }
 
         //Vector3 moveV3 = mainFootToe.position - previousToePosition;

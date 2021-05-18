@@ -129,12 +129,12 @@ public class DashboardController_UserStudy : MonoBehaviour
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
-        if (!InitialiseTable && HumanWaist.position.y != 0) {
+        if (Landmark == ReferenceFrames.Shelves && !InitialiseTable && HumanWaist.position.y != 0) {
             InitialiseTable = true;
             TableTop.position = new Vector3(TableTop.position.x, HumanWaist.position.y, TableTop.position.z);
             TableTopDisplay.position = TableTop.position;
 
-            RePositionLandmarks();
+            RePositionLandmarks(ReferenceFrames.Shelves);
         }
 
         // OneEuroFilter
@@ -320,10 +320,13 @@ public class DashboardController_UserStudy : MonoBehaviour
     #endregion
 
     #region Update Function
-    private void RePositionLandmarks() {
+    private void RePositionLandmarks(ReferenceFrames rf) {
         foreach (Transform t in currentLandmarks.Values)
         {
-            WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Body);
+            if(rf == ReferenceFrames.Body)
+                WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Body);
+            if (rf == ReferenceFrames.Shelves)
+                TableTopDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Shelves);
         }
     }
     private void UpdateVisFromPositionChange(Transform implicitObject)
@@ -609,7 +612,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         armLength = Vector3.Distance(shoulderPosition, MainHand.position);
         Shoulder.GetChild(0).localScale = Vector3.one * armLength * 2;
 
-        RePositionLandmarks();
+        RePositionLandmarks(ReferenceFrames.Body);
     }
 
     public void AddExplicitSelection(Transform t) {

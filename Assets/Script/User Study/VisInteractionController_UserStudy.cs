@@ -86,7 +86,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             
         }
 
-        if(!isGrabbing)
+        if ((DC.Landmark == ReferenceFrames.Floor && !GetComponent<Vis>().Moving) || ((DC.Landmark == ReferenceFrames.Shelves || DC.Landmark == ReferenceFrames.Body) && !isGrabbing))
             DetectOutOfScreenAndAdjustPosition();            
     }
 
@@ -127,13 +127,6 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
             closestPointOnSphere = direction.normalized * DC.armLength;
         }
-        else if (DC.Landmark == ReferenceFrames.Floor)
-        {
-            if (isTouchingDisplaySurface)
-                AttachToDisplayScreen();
-            else
-                ReturnToLastState();
-        }
         else if (DC.Landmark == ReferenceFrames.Shelves) {
             if (isTouchingDisplaySurface)
                 AttachToDisplayScreen();
@@ -171,7 +164,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DisplaySurface") && (DC.Landmark == ReferenceFrames.Shelves || DC.Landmark == ReferenceFrames.Floor))
+        if (other.CompareTag("DisplaySurface") && (DC.Landmark == ReferenceFrames.Shelves))
         {
             isTouchingDisplaySurface = true;
             touchingDisplaySurface = other.GetComponent<DisplaySurface>();
@@ -183,34 +176,57 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             if (initialisePosition)
                 initialisePosition = false;
         }
+        if (other.CompareTag("DisplaySurface") && (DC.Landmark == ReferenceFrames.Floor) && initialisePosition)
+        {
+            isTouchingDisplaySurface = true;
+            touchingDisplaySurface = other.GetComponent<DisplaySurface>();
+            currentRigidbody.isKinematic = true;
+
+            if(!GetComponent<Vis>().Moving)
+                AttachToDisplayScreen();
+
+            //if (initialisePosition)
+                initialisePosition = false;
+        }
     }
 
     private void OnTriggerStay(Collider other)
-    {   
-        if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing &&
+    {
+        if (DC.Landmark == ReferenceFrames.Shelves)
+        {
+            if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing &&
             !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing &&
             transform.parent.name != "Original Visualisation List")
-        {  
-            if (DC.Landmark == ReferenceFrames.Shelves)
             {
                 other.GetComponent<Rigidbody>().isKinematic = false;
                 GetComponent<Rigidbody>().isKinematic = false;
                 Vector3 forceDirection = transform.localPosition - other.transform.localPosition;
                 GetComponent<Rigidbody>().AddForce((new Vector3(forceDirection.x, 0, forceDirection.z)).normalized * 50, ForceMode.Force);
             }
-            else if (DC.Landmark == ReferenceFrames.Floor)
+        }
+        else if (DC.Landmark == ReferenceFrames.Floor)
+        {
+            if (!initialisePosition && other.CompareTag("InteractableObj") && !GetComponent<Vis>().Moving &&
+                !other.GetComponent<Vis>().Moving && transform.parent.name != "Original Visualisation List")
             {
                 other.GetComponent<Rigidbody>().isKinematic = false;
                 GetComponent<Rigidbody>().isKinematic = false;
                 GetComponent<Rigidbody>().AddForce((transform.position - other.transform.position).normalized * 100, ForceMode.Force);
             }
+
+            //if (other.CompareTag("DisplaySurface") && !GetComponent<Vis>().Moving) {
+            //    isTouchingDisplaySurface = true;
+            //    touchingDisplaySurface = other.GetComponent<DisplaySurface>();
+            //    currentRigidbody.isKinematic = true;
+
+            //    AttachToDisplayScreen();
+            //}
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-
-        if (other.CompareTag("DisplaySurface") && (DC.Landmark == ReferenceFrames.Shelves || DC.Landmark == ReferenceFrames.Floor))
+        if (other.CompareTag("DisplaySurface") && (DC.Landmark == ReferenceFrames.Shelves))
         {
             isTouchingDisplaySurface = false;
             touchingDisplaySurface = null;
@@ -291,6 +307,12 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             {
                 transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, 1.75f), 10 * Time.deltaTime);
             }
+
+            if(transform.localPosition.y != 0.025f)
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z), 10 * Time.deltaTime);
+
+            if (transform.localEulerAngles.x != 90)
+                transform.localEulerAngles = Vector3.Lerp(transform.localEulerAngles, new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z), 10 * Time.deltaTime);
         }
         else if (DC.Landmark == ReferenceFrames.Shelves)
         {
@@ -331,7 +353,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void AttachToDisplayScreen()
     {
-        if(transform.parent != touchingDisplaySurface.mappedReferenceFrame)
+        if(transform.parent == null || transform.parent != touchingDisplaySurface.mappedReferenceFrame)
             transform.SetParent(touchingDisplaySurface.mappedReferenceFrame);
 
         Vector3 pos;
