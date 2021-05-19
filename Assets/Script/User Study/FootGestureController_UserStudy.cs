@@ -67,6 +67,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
             PressFeedback.gameObject.SetActive(true);
             PressFeedback.position = mainFootToe.position;
 
+            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             //PressFeedback.LookAt(Camera.main.transform.position);
             //PressFeedback.localEulerAngles = new Vector3(0, PressFeedback.localEulerAngles.y + 90, 0);
 

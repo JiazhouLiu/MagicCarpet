@@ -549,7 +549,7 @@ public class DashboardController_UserStudy : MonoBehaviour
             if (originalList.Count > 2)
             {
                 // get nearest vis
-                for (int i = 0; i < 3 - previousSelectedVis.Count; i++)
+                for (int i = 0; i < (3 - previousSelectedVis.Count); i++)
                 {
                     float minDis = 10000;
                     Transform nearestOne = null;
@@ -622,11 +622,12 @@ public class DashboardController_UserStudy : MonoBehaviour
 
         explicitlySelectedVis.Add(t);
         if (explicitlySelectedVis.Count > 3) {
-            explicitlySelectedVis[0].GetComponent<Vis>().Selected = false;
-            explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
-            explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
-            explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
-            explicitlySelectedVis.RemoveAt(0);
+            RemoveExplicitSelection(explicitlySelectedVis[0]);
+            //explicitlySelectedVis[0].GetComponent<Vis>().Selected = false;
+            //explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
+            //explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
+            //explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
+            //explicitlySelectedVis.RemoveAt(0);
         } 
     }
 

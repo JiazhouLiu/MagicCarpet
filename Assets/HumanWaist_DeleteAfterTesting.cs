@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanWaist_DeleteAfterTesting : MonoBehaviour
+public class Tester : MonoBehaviour
 {
     // Update is called once per frame
     void Update()
