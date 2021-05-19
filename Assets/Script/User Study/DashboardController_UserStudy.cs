@@ -9,6 +9,7 @@ public class DashboardController_UserStudy : MonoBehaviour
 {
     public Transform OriginalVisParent;
     public Transform Shoulder;
+    public Transform TrackedShoulderPosition;
     public Transform Wall;
     public Transform TableTop;
     public Transform FloorSurface;
@@ -66,7 +67,7 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     private float highlighterIntensity = 10;
     private bool InitialiseTable = false;
-
+    private bool InitialiseShoulder = false;
 
     private void Awake()
     {
@@ -136,6 +137,11 @@ public class DashboardController_UserStudy : MonoBehaviour
             TableTopDisplay.position = TableTop.position;
 
             RePositionLandmarks(ReferenceFrames.Shelves);
+        }
+
+        if (Landmark == ReferenceFrames.Body && !InitialiseShoulder && TrackedShoulderPosition.position != Vector3.zero) {
+            InitialiseShoulder = true;
+            Shoulder.position = TrackedShoulderPosition.position;
         }
 
         // OneEuroFilter
@@ -611,7 +617,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     }
 
     public void GetShoulderPosition() {
-        shoulderPosition = MainHand.position;
+        shoulderPosition = TrackedShoulderPosition.position;
         Shoulder.position = shoulderPosition;
     }
 

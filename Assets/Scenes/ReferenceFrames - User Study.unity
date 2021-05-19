@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -131,7 +131,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4491443}
-  - component: {fileID: 4491444}
   m_Layer: 0
   m_Name: Shoulder
   m_TagString: Untagged
@@ -146,7 +145,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4491442}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -155,20 +154,6 @@ Transform:
   m_Father: {fileID: 1929076752}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4491444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4491442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4fead0a62ec76b479f2b95a6bab9234, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObjectName: joe_shoulder
-  Client: {fileID: 2078243979}
 --- !u!1 &17693355
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,6 +599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OriginalVisParent: {fileID: 1612381467}
   Shoulder: {fileID: 4491443}
+  TrackedShoulderPosition: {fileID: 776486660}
   Wall: {fileID: 1489775097}
   TableTop: {fileID: 1419236298}
   FloorSurface: {fileID: 134848114}
@@ -632,7 +618,7 @@ MonoBehaviour:
   armLength: 0.5
   ImplicitDistance: 0.2
   VisNumber: 6
-  Landmark: 2
+  Landmark: 1
   DetailedView: 2
   LandmarkSizeOnGround: 0.5
   LandmarkSizeOnBody: 0.2
@@ -1738,6 +1724,51 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 1883821918}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &776486659
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 776486660}
+  - component: {fileID: 776486661}
+  m_Layer: 2
+  m_Name: ShoulderCurrentPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &776486660
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776486659}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 569897917}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &776486661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776486659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4fead0a62ec76b479f2b95a6bab9234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectName: joe_shoulder
+  Client: {fileID: 2078243979}
 --- !u!1 &789476393
 GameObject:
   m_ObjectHideFlags: 0
@@ -3860,7 +3891,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.699
+      value: 0.288
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3870,7 +3901,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.962
+      value: 0.621
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3880,7 +3911,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0.86602545
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3890,7 +3921,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 0.49999994
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -3905,7 +3936,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -4127,7 +4158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2030222497
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4798,7 +4829,7 @@ PrefabInstance:
     - target: {fileID: 2776397578937781002, guid: 779ddae7652c42d40a93be6220b853ba,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2776397578937781003, guid: 779ddae7652c42d40a93be6220b853ba,
         type: 3}
@@ -4859,6 +4890,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LeftFoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 2776397578937781015, guid: 779ddae7652c42d40a93be6220b853ba,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 779ddae7652c42d40a93be6220b853ba, type: 3}
