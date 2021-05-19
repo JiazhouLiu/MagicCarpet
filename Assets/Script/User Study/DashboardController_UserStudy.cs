@@ -31,6 +31,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     public float betweenVisDelta = 0.05f;
     public Vector3 shoulderPosition;
     public float armLength = 0.6f;
+    public float ImplicitDistance = 0.2f;
 
     [Header("Experiment Setup")]
     public int VisNumber = 6;
@@ -140,7 +141,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         // OneEuroFilter
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
-        filteredHandPosition = vector3Filter.Filter(MainHand.position);
+        filteredHandPosition = MainHand.position;
 
         if (Landmark == ReferenceFrames.Floor) // vis on floor/shelves as landmarks
         {
@@ -446,8 +447,14 @@ public class DashboardController_UserStudy : MonoBehaviour
             {
                 Dictionary<Transform, float> markerLocPositionX = new Dictionary<Transform, float>();
 
-                foreach (Transform t in markers)
-                    markerLocPositionX.Add(t, t.localPosition.x);
+                foreach (Transform t in markers) {
+                    float positionX;
+                    if (t.parent == TableTopDisplay)
+                        positionX = t.localPosition.x;
+                    else
+                        positionX = TableTopDisplay.InverseTransformPoint(t.position).x;
+                    markerLocPositionX.Add(t, positionX);
+                }
 
                 foreach (KeyValuePair<Transform, float> item in markerLocPositionX.OrderBy(key => key.Value))
                     finalList.Add(item.Key);
@@ -635,6 +642,9 @@ public class DashboardController_UserStudy : MonoBehaviour
     {
         if (explicitlySelectedVis.Contains(t)) {
             t.GetComponent<Vis>().Selected = false;
+            t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
+            t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
+            t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
             foreach (Transform dv in currentDetailedViews.Values)
             {
                 if (dv.name == t.name)
@@ -695,7 +705,19 @@ public class DashboardController_UserStudy : MonoBehaviour
         Vector3 currentHandPosition = filteredHandPosition;
         if (currentHandPosition == previousHumanHandPosition)
             return false;
-        previousHumanHandPosition = currentHandPosition;
+        else {
+            previousHumanHandPosition = currentHandPosition;
+            bool flag = false;
+
+            foreach (Transform t in currentLandmarks.Values)
+            {
+                if (Vector3.Distance(t.position, currentHandPosition) < ImplicitDistance)
+                    flag = true;
+            }
+
+            if (!flag)
+                return false;
+        }
         return true;
     }
 
