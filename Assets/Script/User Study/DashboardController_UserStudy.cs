@@ -467,12 +467,17 @@ public class DashboardController_UserStudy : MonoBehaviour
             }
             else
             {
-                currentLandmarks[detailedView.name].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
-                currentLandmarks[detailedView.name].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
-                currentLandmarks[detailedView.name].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
                 detailedView.GetComponent<Vis>().VisBorder.gameObject.SetActive(false);
             }
                 
+        }
+
+        foreach (Transform landmark in currentLandmarks.Values.ToList()) {
+            if (!landmark.GetComponent<Vis>().Selected && !landmark.GetComponent<Vis>().Highlighted) {
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExperimentManager : MonoBehaviour
 {
@@ -15,10 +16,14 @@ public class ExperimentManager : MonoBehaviour
     public bool Reset = false;
     [HideInInspector]
     public bool NextBtnPressed = false;
+    [HideInInspector]
+    public List<string> questions;
 
     [Header("Reference")]
     public Transform LandmarkParent;
     public Transform DetailedViewParent;
+    public TextAsset QuestionFile;
+    public Transform QuestionBoard;
 
     private Transform CurrentLandmarkParent;
     private Transform CurrentDetailedViewParent;
@@ -27,10 +32,14 @@ public class ExperimentManager : MonoBehaviour
 
     private bool startFlag = true;
 
+    private char lineSeperater = '\n'; // It defines line seperate character
+    private char fieldSeperator = ','; // It defines field seperate chracter
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        questions = new List<string>();
+        ReadQuestionsFromFile();
     }
 
     // Update is called once per frame
@@ -177,7 +186,9 @@ public class ExperimentManager : MonoBehaviour
             Reset = true;
             NextBtnPressed = false;
         }
-            
+
+        DisplayQuestionOnBoard(questions[QuestionID - 1]);
+        
     }
 
     public Transform GetCurrentLandmarkParent() {
@@ -208,5 +219,19 @@ public class ExperimentManager : MonoBehaviour
 
     public void UpdateTrialID() {
         NextBtnPressed = true;
+    }
+
+    private void ReadQuestionsFromFile() {
+        string[] lines = QuestionFile.text.Split(lineSeperater);
+
+        questions.AddRange(lines);
+    }
+
+    private void DisplayQuestionOnBoard(string question) {
+        string[] lines = question.Split(lineSeperater);
+        string final = "";
+        foreach (string s in lines)
+            final += s;
+        QuestionBoard.GetChild(0).GetChild(0).GetComponent<Text>().text = final;
     }
 }
