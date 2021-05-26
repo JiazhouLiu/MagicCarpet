@@ -19,7 +19,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
 {
     [Header("Prefabs or OBJ in Scene")]
     public DashboardController_UserStudy DC;
-    public Transform GroundLandmarks;
+    public Transform GroundLandmarks; 
     public FootToeCollision FTC;
     public ShoeRecieve SR;
     public Transform PressFeedback;

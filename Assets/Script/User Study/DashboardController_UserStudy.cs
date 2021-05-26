@@ -7,7 +7,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class DashboardController_UserStudy : MonoBehaviour
 {
-    public Transform OriginalVisParent;
+    public ExperimentManager EM;
     public Transform Shoulder;
     public Transform TrackedShoulderPosition;
     public Transform Wall;
@@ -36,8 +36,6 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     [Header("Experiment Setup")]
     public int VisNumber = 6;
-    public ReferenceFrames Landmark;
-    public ReferenceFrames DetailedView;
     public float LandmarkSizeOnGround = 0.5f;
     public float LandmarkSizeOnBody = 0.2f;
     public float LandmarkSizeOnShelves = 1f;
@@ -55,8 +53,15 @@ public class DashboardController_UserStudy : MonoBehaviour
     private OneEuroFilter<Vector3> vector3Filter;
 
     // experiment use
+    private Transform OriginalLandmarkParent;
+    private Transform OriginalDetailedViewParent;
+
+    public ReferenceFrames Landmark;
+    public ReferenceFrames DetailedView;
+
     private bool DemoFlag = true;
-    private List<Transform> visParentList;
+    private List<Transform> landmarkParentList;
+    private Dictionary<string, Transform> detailedViewParentList;
     private List<Transform> originalLandmarks;
 
     private List<Transform> selectedVis;
@@ -71,37 +76,8 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     private void Awake()
     {
-        // enable landmarks and detailed views based on configuration 
-        switch (Landmark) {
-            case ReferenceFrames.Body:
-                Shoulder.gameObject.SetActive(true);
-                WaistLevelDisplay.gameObject.SetActive(true);
-                break;
-            case ReferenceFrames.Floor:
-                GroundDisplay.gameObject.SetActive(true);
-                FloorSurface.gameObject.SetActive(true);
-                break;
-            case ReferenceFrames.Shelves:
-                TableTop.gameObject.SetActive(true);
-                TableTopDisplay.gameObject.SetActive(true);
-                TableTopDisplay.position = TableTop.position;
-                TableTopDisplay.rotation = TableTop.rotation;
-                break;
-        }
-
-        switch (DetailedView) {
-            case ReferenceFrames.Body:
-                HeadLevelDisplay.gameObject.SetActive(true);
-                break;
-            case ReferenceFrames.Shelves:
-                Wall.gameObject.SetActive(true);
-                WallDisplay.gameObject.SetActive(true);
-                WallDisplay.position = Wall.position;
-                break;
-        }
-
-        // landmarks
-        visParentList = new List<Transform>();
+        landmarkParentList = new List<Transform>();
+        detailedViewParentList = new Dictionary<string, Transform>();
         originalLandmarks = new List<Transform>();
 
         selectedVis = new List<Transform>();
@@ -109,25 +85,17 @@ public class DashboardController_UserStudy : MonoBehaviour
 
         currentLandmarks = new Dictionary<string, Transform>();
         currentDetailedViews = new Dictionary<string, Transform>();
-        
-        foreach (Transform t in OriginalVisParent)
-        {
-            visParentList.Add(t);
-        }
-
         // one euro filter
         vector3Filter = new OneEuroFilter<Vector3>(filterFrequency);
-
-        if (Landmark == ReferenceFrames.Body) // vis on body as landmarks
-            WaistLevelDisplay.position = Shoulder.position;
-
-        // initiate landmarks
-        originalLandmarks = GetRandomItemsFromList(visParentList, VisNumber);
-        PositionLandmarks(Landmark, originalLandmarks);
     }
 
     private void Update()
     {
+        if (EM.Reset) {
+            EM.Reset = false;
+            InitialiseEnvironment();
+        }
+
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
@@ -139,9 +107,14 @@ public class DashboardController_UserStudy : MonoBehaviour
             RePositionLandmarks(ReferenceFrames.Shelves);
         }
 
-        if (Landmark == ReferenceFrames.Body && !InitialiseShoulder && TrackedShoulderPosition.position != Vector3.zero) {
+        if (Landmark == ReferenceFrames.Body && !InitialiseShoulder && HumanWaist.position != Vector3.zero && Camera.main != null) {
+            float waistToEye = Camera.main.transform.position.y - HumanWaist.position.y;
+
             InitialiseShoulder = true;
-            Shoulder.position = TrackedShoulderPosition.position;
+            Shoulder.localPosition = new Vector3(waistToEye / 4f, waistToEye * 3f / 4f, 0);
+            WaistLevelDisplay.position = Shoulder.position;
+
+            RePositionLandmarks(ReferenceFrames.Body);
         }
 
         // OneEuroFilter
@@ -200,56 +173,143 @@ public class DashboardController_UserStudy : MonoBehaviour
             }
         }
 
-        if (Landmark == ReferenceFrames.Body)
-        {
-            //DetectOverlapAndFix();
-        }
-
         UpdateHighlighter();
     }
 
     #region Experiment Use
     #region Generate Function
+    private void InitialiseEnvironment() {
+        InitialiseTable = false;
+        InitialiseShoulder = false;
+        DemoFlag = true;
+
+        previousHumanWaistPosition = Vector3.zero;
+        previousHumanWaistRotation = Vector3.zero;
+        previousHumanHandPosition = Vector3.zero;
+
+        filteredWaistPosition = Vector3.zero;
+        filteredWaistRotation = Vector3.zero;
+        filteredHandPosition = Vector3.zero;
+
+        // landmarks
+        landmarkParentList.Clear();
+        detailedViewParentList.Clear();
+        originalLandmarks.Clear();
+
+        selectedVis.Clear();
+        explicitlySelectedVis.Clear();
+
+        foreach (Transform t in currentLandmarks.Values.ToList())
+            Destroy(t.gameObject);
+        currentLandmarks.Clear();
+
+        foreach (Transform t in currentDetailedViews.Values.ToList())
+            Destroy(t.gameObject);
+        currentDetailedViews.Clear();
+
+        OriginalLandmarkParent = EM.GetCurrentLandmarkParent();
+        OriginalDetailedViewParent = EM.GetCurrentDetailedViewParent();
+
+        Landmark = EM.GetCurrentLandmarkFOR();
+        DetailedView = EM.GetCurrentDetailedViewFOR();
+
+        // enable landmarks and detailed views based on configuration 
+        switch (Landmark)
+        {
+            case ReferenceFrames.Body:
+                Shoulder.gameObject.SetActive(true);
+                WaistLevelDisplay.gameObject.SetActive(true);
+                break;
+            case ReferenceFrames.Floor:
+                GroundDisplay.gameObject.SetActive(true);
+                FloorSurface.gameObject.SetActive(true);
+                break;
+            case ReferenceFrames.Shelves:
+                TableTop.gameObject.SetActive(true);
+                TableTopDisplay.gameObject.SetActive(true);
+                TableTopDisplay.position = TableTop.position;
+                TableTopDisplay.rotation = TableTop.rotation;
+                break;
+        }
+
+        switch (DetailedView)
+        {
+            case ReferenceFrames.Body:
+                HeadLevelDisplay.gameObject.SetActive(true);
+                break;
+            case ReferenceFrames.Shelves:
+                Wall.gameObject.SetActive(true);
+                WallDisplay.gameObject.SetActive(true);
+                WallDisplay.position = Wall.position;
+                break;
+        }
+
+        foreach (Transform t in OriginalLandmarkParent)
+        {
+            landmarkParentList.Add(t);
+        }
+
+        foreach (Transform t in OriginalDetailedViewParent)
+        {
+            detailedViewParentList.Add(t.name, t);
+        }
+
+        if (Landmark == ReferenceFrames.Body) // vis on body as landmarks
+            WaistLevelDisplay.position = Shoulder.position;
+
+        // initiate landmarks
+        originalLandmarks = GetRandomItemsFromList(landmarkParentList, VisNumber);
+        PositionLandmarks(Landmark, originalLandmarks);
+    }
+
     private Transform GenerateDetailedView(Transform t)
     {
-        GameObject visOnDetailedView = Instantiate(t.gameObject);
-        visOnDetailedView.name = t.name;
-        visOnDetailedView.GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
-
-        if (DetailedView == ReferenceFrames.Body)
+        if (detailedViewParentList.ContainsKey(t.name))
         {
-            visOnDetailedView.transform.SetParent(HeadLevelDisplay);
-            visOnDetailedView.GetComponent<Vis>().OnHead = true;
-            if (Landmark == ReferenceFrames.Floor)
-                visOnDetailedView.GetComponent<Vis>().OnGround = false;
-            if (Landmark == ReferenceFrames.Shelves)
-                visOnDetailedView.GetComponent<Vis>().OnShelves = false;
+            GameObject visOnDetailedView = Instantiate(detailedViewParentList[t.name].gameObject);
+            visOnDetailedView.name = t.name;
+            visOnDetailedView.GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
+
+            if (DetailedView == ReferenceFrames.Body)
+            {
+                visOnDetailedView.transform.SetParent(HeadLevelDisplay);
+                visOnDetailedView.GetComponent<Vis>().OnHead = true;
+                if (Landmark == ReferenceFrames.Floor)
+                    visOnDetailedView.GetComponent<Vis>().OnGround = false;
+                if (Landmark == ReferenceFrames.Shelves)
+                    visOnDetailedView.GetComponent<Vis>().OnShelves = false;
+            }
+            else if (DetailedView == ReferenceFrames.Shelves)
+            {
+                visOnDetailedView.transform.SetParent(WallDisplay);
+                visOnDetailedView.GetComponent<Vis>().OnShelves = true;
+                visOnDetailedView.GetComponent<Vis>().GroundPosition = t.position;
+                if (Landmark == ReferenceFrames.Floor)
+                    visOnDetailedView.GetComponent<Vis>().OnGround = false;
+                if (Landmark == ReferenceFrames.Body)
+                    visOnDetailedView.GetComponent<Vis>().OnWaist = false;
+            }
+
+            // setup transform
+            visOnDetailedView.transform.position = t.position;
+            visOnDetailedView.transform.rotation = t.rotation;
+            visOnDetailedView.transform.localScale = Vector3.one * 0.1f;
+            visOnDetailedView.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.white);
+            visOnDetailedView.GetComponent<VisInteractionController_UserStudy>().enabled = false;
+
+            // setup components
+            visOnDetailedView.GetComponent<Rigidbody>().isKinematic = true;
+            visOnDetailedView.GetComponent<BoxCollider>().enabled = false;
+
+            currentDetailedViews.Add(visOnDetailedView.name, visOnDetailedView.transform);
+
+            return visOnDetailedView.transform;
         }
-        else if (DetailedView == ReferenceFrames.Shelves)
-        {
-            visOnDetailedView.transform.SetParent(WallDisplay);
-            visOnDetailedView.GetComponent<Vis>().OnShelves = true;
-            visOnDetailedView.GetComponent<Vis>().GroundPosition = t.position;
-            if (Landmark == ReferenceFrames.Floor)
-                visOnDetailedView.GetComponent<Vis>().OnGround = false;
-            if (Landmark == ReferenceFrames.Body)
-                visOnDetailedView.GetComponent<Vis>().OnWaist = false;
+        else {
+            Debug.LogError("No mapped detailed view found!!");
+            return null;
         }
-
-        // setup transform
-        visOnDetailedView.transform.position = t.position;
-        visOnDetailedView.transform.rotation = t.rotation;
-        visOnDetailedView.transform.localScale = Vector3.one * 0.1f;
-        visOnDetailedView.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.white);
-        visOnDetailedView.GetComponent<VisInteractionController_UserStudy>().enabled = false;
-
-        // setup components
-        visOnDetailedView.GetComponent<Rigidbody>().isKinematic = true;
-        visOnDetailedView.GetComponent<BoxCollider>().enabled = false;
-
-        currentDetailedViews.Add(visOnDetailedView.name, visOnDetailedView.transform);
-
-        return visOnDetailedView.transform;
+        
     }
 
     private void PositionLandmarks(ReferenceFrames landmark, List<Transform> originalLandmarks)
@@ -344,6 +404,10 @@ public class DashboardController_UserStudy : MonoBehaviour
             if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
                 selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
             currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
+
+            foreach (Transform t in selectedVis) {
+                currentDetailedViews[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
+            }
         }
             
     }
@@ -368,6 +432,7 @@ public class DashboardController_UserStudy : MonoBehaviour
             {
                 highlighter.color = Color.green;
                 landmark.GetComponent<Vis>().Highlighted = true;
+                currentDetailedViews[landmark.name].GetComponent<Vis>().Highlighted = true;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
             }
             else
@@ -385,10 +450,23 @@ public class DashboardController_UserStudy : MonoBehaviour
             if (detailedView.GetComponent<Vis>().Selected)
             {
                 // configure line between selected views
-                ConnectLandmarkWithDV(currentLandmarks[detailedView.name], detailedView);
+                ConnectLandmarkWithDV(currentLandmarks[detailedView.name], detailedView, "selected");
                 detailedView.GetComponent<Vis>().VisBorder.gameObject.SetActive(true);
+                foreach (Transform t in detailedView.GetComponent<Vis>().VisBorder) { 
+                    t.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.blue);
+                }
             }
-            else {
+            else if (detailedView.GetComponent<Vis>().Highlighted) {
+                // configure line between selected views
+                ConnectLandmarkWithDV(currentLandmarks[detailedView.name], detailedView, "highlighted");
+                detailedView.GetComponent<Vis>().VisBorder.gameObject.SetActive(true);
+                foreach (Transform t in detailedView.GetComponent<Vis>().VisBorder)
+                {
+                    t.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.green);
+                }
+            }
+            else
+            {
                 currentLandmarks[detailedView.name].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
                 currentLandmarks[detailedView.name].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
                 currentLandmarks[detailedView.name].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
@@ -660,7 +738,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         }       
     }
 
-    private void ConnectLandmarkWithDV(Transform landmark, Transform detailedView) {
+    private void ConnectLandmarkWithDV(Transform landmark, Transform detailedView, string mode) {
         Transform landmarkBorder = null;
 
         if (Vector3.Distance(landmark.GetComponent<Vis>().VisBorder.GetChild(0).position, detailedView.position) <
@@ -680,6 +758,11 @@ public class DashboardController_UserStudy : MonoBehaviour
             else
                 landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, TableTopDisplay.TransformPoint(tableBorder));
             landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, detailedViewBorder.position);
+
+            if (mode == "selected")
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().material.SetColor("_UnlitColor", Color.blue);
+            else
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().material.SetColor("_UnlitColor", Color.green);
         }
 
     }

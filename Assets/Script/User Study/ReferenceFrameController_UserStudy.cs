@@ -200,7 +200,8 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         if (currentRF == ReferenceFrames.Floor)
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnGround;
-            tmpPosition = new Vector3(Random.Range(-1.75f, 1.75f), 0.1f, Random.Range(-1.75f, 1.75f));
+            tmpPosition = new Vector3(Random.Range(-1.5f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1.5f - (DC_UserStudy.LandmarkSizeOnGround / 2)), 0.1f, 
+                Random.Range(-1.5f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1.5f - (DC_UserStudy.LandmarkSizeOnGround / 2)));
         }
         else if (currentRF == ReferenceFrames.Shelves)
         {
@@ -210,7 +211,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         else if (currentRF == ReferenceFrames.Body)
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnBody;
-            Vector3 direction = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0), Random.Range(0, 1f));
+            Vector3 direction = new Vector3(Random.Range(-0.9f, 0.9f), Random.Range(-0.7f, 0), Random.Range(0, 0.9f));
             tmpPosition = direction.normalized * DC_UserStudy.armLength;
         }
 

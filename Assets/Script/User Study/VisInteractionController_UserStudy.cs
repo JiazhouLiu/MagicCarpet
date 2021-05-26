@@ -334,11 +334,10 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             }
         }
         else {
-            if (closestPointOnSphere != Vector3.zero) {
-                loopCount = 0;
-                FindNearestLandingPosition();
-            }
-                
+            //if (closestPointOnSphere != Vector3.zero) {
+            //    loopCount = 0;
+            //    FindNearestLandingPosition();
+            //}  
         }
     }
     #endregion
