@@ -8,45 +8,41 @@ public enum RepositionMethod {
     DragAndDrop
 };
 
-public enum RotationMethod
-{
-    SpinFoot,
-    DragToRotate,
-    AttachToToe
-};
-
 public class FootGestureController_UserStudy : MonoBehaviour
 {
     [Header("Prefabs or OBJ in Scene")]
+    public ExperimentManager EM;
     public DashboardController_UserStudy DC;
+    public LogManager logManager;
     public Transform GroundLandmarks; 
-    public FootToeCollision FTC;
-    public ShoeRecieve SR;
-    public Transform PressFeedback;
-    public Transform FeedbackCircle;
 
-    [Header("Main Foot")]
-    public Transform mainFoot;
-    public Transform mainFootToe;
-
-    [Header("Variable")]
-    public RepositionMethod moveMethod;
-    public RotationMethod rotationMethod;
+    [Header("Two Feet")]
+    //public Transform mainFoot;
+    //public Transform mainFootToe;
+    // left foot
+    public Transform leftFoot;
+    public Transform leftFootToe;
+    public FootToeCollision leftFootToeCollision;
+    public ShoeRecieve leftSR;
+    public Transform leftPressFeedback;
+    public Transform leftFeedbackCircle;
+    // right foot
+    public Transform rightFoot;
+    public Transform rightFootToe;
+    public FootToeCollision rightFootToeCollision;
+    public ShoeRecieve rightSR;
+    public Transform rightPressFeedback;
+    public Transform rightFeedbackCircle;
 
     [Header("PressureSensor")]
-    public int firmPressThreashold = 0;
     public int pressToSelectThreshold = 0;
     public int holdThreshold = 500;
 
-    private Vector3 previousDirection;
-    private Vector3 previousToePosition;
-    private Dictionary<string, Vector3> previousFromCenterToFoot;
-
     // pressure sensor
-    private bool normalPressFlag = false;
-    private bool firmPressFlag = false;
-    private bool dragAndDropFlag = false;
-    private bool holdingFlag = false;
+    [HideInInspector] public bool leftNormalPressFlag = false;
+    [HideInInspector] public bool rightNormalPressFlag = false;
+    [HideInInspector] public bool leftHoldingFlag = false;
+    [HideInInspector] public bool rightHoldingFlag = false;
 
     private List<Transform> interactingOBJ;
     private List<Transform> movingOBJ;
@@ -56,180 +52,123 @@ public class FootGestureController_UserStudy : MonoBehaviour
     {
         interactingOBJ = new List<Transform>();
         movingOBJ = new List<Transform>();
-        previousFromCenterToFoot = new Dictionary<string, Vector3>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // pressure feedback
-        if (SR.value.Length > 0 && float.Parse(SR.value) < 3000f) {
-            PressFeedback.gameObject.SetActive(true);
-            PressFeedback.position = mainFootToe.position;
+        // pressure feedback right
+        if (rightSR.value.Length > 0 && float.Parse(rightSR.value) < 3000f) {
+            rightPressFeedback.gameObject.SetActive(true);
+            rightPressFeedback.transform.eulerAngles = Vector3.zero;
 
-            PressFeedback.transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
-            //PressFeedback.LookAt(Camera.main.transform.position);
-            //PressFeedback.localEulerAngles = new Vector3(0, PressFeedback.localEulerAngles.y + 90, 0);
-
-            FeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(SR.value))/ 4095f * 0.09f + 0.01f);
-            if (float.Parse(SR.value) <= pressToSelectThreshold)
-                FeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
-            else if (float.Parse(SR.value) < holdThreshold)
-                FeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
+            rightFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(rightSR.value))/ 4095f * 0.09f + 0.01f);
+            if (float.Parse(rightSR.value) <= pressToSelectThreshold)
+                rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
+            else if (float.Parse(rightSR.value) < holdThreshold)
+                rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
             else
-                FeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0, 0, 0.4f));
+                rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0, 0, 0.4f));
         }else
-            PressFeedback.gameObject.SetActive(false);
+            rightPressFeedback.gameObject.SetActive(false);
+
+        // pressure feedback left
+        if (leftSR.value.Length > 0 && float.Parse(leftSR.value) < 3000f)
+        {
+            leftPressFeedback.gameObject.SetActive(true);
+            leftPressFeedback.transform.eulerAngles = Vector3.zero;
+
+            leftFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(leftSR.value)) / 4095f * 0.09f + 0.01f);
+            if (float.Parse(leftSR.value) <= pressToSelectThreshold)
+                leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
+            else if (float.Parse(leftSR.value) < holdThreshold)
+                leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
+            else
+                leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0, 0, 0.4f));
+        }
+        else
+            leftPressFeedback.gameObject.SetActive(false);
 
         PressureSensorDetector();
-
-        //VisRotation();
     }
-
-    #region Vis Rotation
-    private void VisRotation() {
-        if (rotationMethod == RotationMethod.SpinFoot)
-        {
-            if (FTC.TouchedObjs.Count > 0)
-            {
-                foreach (Transform t in FTC.TouchedObjs)
-                {
-                    Vector3 currentDirection = mainFootToe.position - mainFoot.position;
-                    float angle = Vector3.SignedAngle(currentDirection, previousDirection, Vector3.up);
-
-                    t.RotateAround(t.position, Vector3.up, -angle);
-                }
-            }
-
-            previousDirection = mainFootToe.position - mainFoot.position;
-        }
-        else if (rotationMethod == RotationMethod.DragToRotate)
-        {
-            if (FTC.TouchedObjs.Count > 0)
-            {
-                foreach (Transform t in FTC.TouchedObjs)
-                {
-                    Vector3 currentFromCenterToFoot = mainFoot.position - t.position;
-                    if (previousFromCenterToFoot.Count > 0)
-                    {
-                        float angle = Vector3.SignedAngle(currentFromCenterToFoot, previousFromCenterToFoot[t.name], Vector3.up);
-
-                        t.RotateAround(t.position, Vector3.up, -angle);
-                    }
-
-                }
-            }
-        }
-
-        foreach (Transform t in GroundLandmarks)
-        {
-            if (!previousFromCenterToFoot.ContainsKey(t.name))
-            {
-                previousFromCenterToFoot.Add(t.name, mainFoot.position - t.position);
-            }
-            else
-            {
-                previousFromCenterToFoot[t.name] = mainFoot.position - t.position;
-            }
-        }
-    }
-    #endregion
 
     #region Pressure Sensor Detection
     private void PressureSensorDetector()
     {
         // pressure sensor
-        if (SR.value.Length > 0 && int.Parse(SR.value) <= pressToSelectThreshold && !normalPressFlag)
+        if (leftSR.value.Length > 0 && int.Parse(leftSR.value) <= pressToSelectThreshold && !leftNormalPressFlag)
         {
-            normalPressFlag = true;
-            Debug.Log("Press");
+            leftNormalPressFlag = true;
+            Debug.Log("Press - left");
+            logManager.WriteInteractionToLog("Left Foot Press");
             RunPressToSelect();
         }
-        if (normalPressFlag && SR.value.Length > 0 && int.Parse(SR.value) > pressToSelectThreshold)
+        if (leftNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > pressToSelectThreshold)
         {
-            normalPressFlag = false;
+            leftNormalPressFlag = false;
+        }
+
+        if (leftSR.value.Length > 0 && int.Parse(leftSR.value) <= pressToSelectThreshold && !rightNormalPressFlag)
+        {
+            rightNormalPressFlag = true;
+            Debug.Log("Press - right");
+            logManager.WriteInteractionToLog("Right Foot Press");
+            RunPressToSelect();
+        }
+        if (rightNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > pressToSelectThreshold)
+        {
+            rightNormalPressFlag = false;
         }
 
 
-        if (moveMethod == RepositionMethod.Sliding)
+        if (leftSR.value.Length > 0 || rightSR.value.Length > 0)
         {
-            if (SR.value.Length > 0)
+            if (int.Parse(leftSR.value) < holdThreshold)
             {
-                if (int.Parse(SR.value) < holdThreshold)
-                {
-                    if (!holdingFlag)
-                    {
-                        holdingFlag = true;
-                    }
-                }
-                else
-                {
-                    if (holdingFlag) {
-                        holdingFlag = false;
-                    }
-                        
-                }
+                if (!leftHoldingFlag)
+                    leftHoldingFlag = true;
+                logManager.WriteInteractionToLog("Left Foot Sliding");
             }
+            else
+            {
+                if (leftHoldingFlag)
+                    leftHoldingFlag = false;
+            }
+
+            if (int.Parse(rightSR.value) < holdThreshold)
+            {
+                if (!rightHoldingFlag)
+                    rightHoldingFlag = true;
+                logManager.WriteInteractionToLog("Right Foot Sliding");
+            }
+            else
+            {
+                if (rightHoldingFlag)
+                    rightHoldingFlag = false;
+            }
+
             RunPressToSlide();
-            //if (holdingFlag)
-            //{
-            //    Debug.Log("Holding");
-
-            //    RunPressToSlide();
-            //}
-            //else {
-            //    foreach (Transform t in GroundLandmarks) {
-            //        t.GetComponent<Vis>().Moving = false;
-            //    }
-            //}
-        }
-        else if(moveMethod == RepositionMethod.DragAndDrop)
-        {
-            if (SR.value.Length > 0 && int.Parse(SR.value) < firmPressThreashold && !firmPressFlag)
-            {
-                firmPressFlag = true;
-                if (dragAndDropFlag) {
-                    dragAndDropFlag = false;
-
-                    movingOBJ.Clear();
-                } 
-                else {
-                    dragAndDropFlag = true;
-                    if (FTC.TouchedObjs.Count > 0)
-                    {
-                        foreach (Transform t in FTC.TouchedObjs)
-                        {
-                            if (!movingOBJ.Contains(t))
-                                movingOBJ.Add(t);
-                        }
-                    }
-                }
-                    
-                Debug.Log("Firm Press");
-            }
-
-            if (SR.value.Length > 0 && int.Parse(SR.value) > firmPressThreashold && firmPressFlag)
-                firmPressFlag = false;
-
-            if (dragAndDropFlag)
-                RunPressToDragAndDrop();
-            else {
-                foreach (Transform t in GroundLandmarks)
-                {
-                    t.GetComponent<Vis>().Moving = false;
-                }
-            }
-        }
-        
+        }  
     }
     #endregion
 
     #region Foot Press using pressure sensor
     private void RunPressToSelect()
     {
-        if (FTC.TouchedObjs.Count > 0)
+        if (leftFootToeCollision.TouchedObjs.Count > 0)
         {
-            foreach (Transform t in FTC.TouchedObjs)
+            foreach (Transform t in leftFootToeCollision.TouchedObjs)
+            {
+                if (t.GetComponent<Vis>().Selected)
+                    DC.RemoveExplicitSelection(t);
+                else
+                    DC.AddExplicitSelection(t);
+            }
+        }
+
+        if (rightFootToeCollision.TouchedObjs.Count > 0)
+        {
+            foreach (Transform t in rightFootToeCollision.TouchedObjs)
             {
                 if (t.GetComponent<Vis>().Selected)
                     DC.RemoveExplicitSelection(t);
@@ -241,16 +180,16 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
     private void RunPressToSlide()
     {
-        if (holdingFlag)
+        if (leftHoldingFlag)
         {
-            if (FTC.TouchedObjs.Count > 0)
+            if (leftFootToeCollision.TouchedObjs.Count > 0)
             {
-                foreach (Transform t in FTC.TouchedObjs)
+                foreach (Transform t in leftFootToeCollision.TouchedObjs)
                 {
                     if (!movingOBJ.Contains(t))
                         movingOBJ.Add(t);
                         
-                    t.parent = mainFoot;
+                    t.parent = leftFoot;
                     t.GetComponent<Vis>().Moving = true;
                 }
             }
@@ -259,17 +198,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         {
             if (movingOBJ.Count > 0) {
                 foreach (Transform t in movingOBJ) {
-                    t.parent = DC.GroundDisplay;
-                    //if (t.position.y > 0.025f)
-                    //{
-                    //    t.GetComponent<Rigidbody>().isKinematic = false;
-                    //    t.GetComponent<Rigidbody>().AddForce(Vector3.down * 1, ForceMode.Force);
-                    //}
-                    //else if (t.position.y < 0.025f) {
-                    //    t.GetComponent<Rigidbody>().isKinematic = false;
-                    //    t.GetComponent<Rigidbody>().AddForce(Vector3.up * 1, ForceMode.Force);
-                    //}
-                        
+                    t.parent = EM.GroundDisplay;
                     t.GetComponent<Vis>().Moving = false;
                 }
 
@@ -277,39 +206,33 @@ public class FootGestureController_UserStudy : MonoBehaviour
             }                
         }
 
-        //Vector3 moveV3 = mainFootToe.position - previousToePosition;
-        //Vector3 moveV2 = new Vector3(moveV3.x, 0, moveV3.z);
-
-        //if (FTC.TouchedObjs.Count > 0)
-        //{
-        //    foreach (Transform t in FTC.TouchedObjs) {
-        //        t.position += moveV2;
-        //        t.GetComponent<Vis>().Moving = true;
-        //    }
-                
-        //}
-
-
-        //previousToePosition = mainFootToe.position;
-    }
-
-    private void RunPressToDragAndDrop()
-    {
-        if (movingOBJ.Count > 0)
+        if (rightHoldingFlag)
         {
-            foreach (Transform t in movingOBJ) {
-                Vector3 footForward = mainFoot.position + mainFoot.right * t.localScale.x;
-                Vector3 footForwardV2 = new Vector3(footForward.x, 0.05f, footForward.z);
-                t.position = footForwardV2;
-                t.GetComponent<Vis>().Moving = true;
+            if (rightFootToeCollision.TouchedObjs.Count > 0)
+            {
+                foreach (Transform t in rightFootToeCollision.TouchedObjs)
+                {
+                    if (!movingOBJ.Contains(t))
+                        movingOBJ.Add(t);
+
+                    t.parent = rightFoot;
+                    t.GetComponent<Vis>().Moving = true;
+                }
             }
-                
         }
-    }
+        else
+        {
+            if (movingOBJ.Count > 0)
+            {
+                foreach (Transform t in movingOBJ)
+                {
+                    t.parent = EM.GroundDisplay;
+                    t.GetComponent<Vis>().Moving = false;
+                }
 
-    private void RunPressToRotate()
-    {
-
+                movingOBJ.Clear();
+            }
+        }
     }
     #endregion
 

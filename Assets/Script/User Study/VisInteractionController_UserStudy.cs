@@ -9,7 +9,11 @@ using UnityEngine.UI;
 public class VisInteractionController_UserStudy : MonoBehaviour
 {
     [SerializeField]
+    private ExperimentManager EM;
+    [SerializeField]
     private DashboardController_UserStudy DC;
+    [SerializeField]
+    private LogManager logManager;
     [SerializeField]
     private VRTK_InteractableObject interactableObject;
     [SerializeField]
@@ -58,16 +62,17 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     {
         if (interactableObject.IsGrabbed())
         {
+            logManager.WriteInteractionToLog(name + " Grabbed");
             //transform.localScale = Vector3.one * 0.5f;
             //transform.localEulerAngles = new Vector3(45, 0, 0);
             //lastRotation = DC.TableTopDisplay.InverseTransformPoint(transform.eulerAngles);
             if (DC.Landmark == ReferenceFrames.Shelves)
             {
-                Quaternion localRotation = Quaternion.Inverse(DC.TableTopDisplay.rotation) * transform.rotation;
+                Quaternion localRotation = Quaternion.Inverse(EM.TableTopDisplay.rotation) * transform.rotation;
                 lastRotation = localRotation.eulerAngles;
             }
             else if (DC.Landmark == ReferenceFrames.Body) {
-                Quaternion localRotation = Quaternion.Inverse(DC.WaistLevelDisplay.rotation) * transform.rotation;
+                Quaternion localRotation = Quaternion.Inverse(EM.WaistLevelDisplay.rotation) * transform.rotation;
                 lastRotation = localRotation.eulerAngles;
             }
         }
@@ -76,11 +81,11 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         {
             if (lastRotation != Vector3.zero)
             {
-                transform.LookAt(DC.Shoulder);
+                transform.LookAt(EM.Shoulder);
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, lastRotation.z + 180);
             }
             else {
-                transform.LookAt(DC.Shoulder);
+                transform.LookAt(EM.Shoulder);
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
             }
             
@@ -118,24 +123,24 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             transform.localScale = previousScale;
             //transform.localEulerAngles = new Vector3(90, lastRotation.y, lastRotation.z);
 
-            Vector3 direction = transform.position - DC.WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position;
+            Vector3 direction = transform.position - EM.WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position;
 
             if (direction.y > 0)
                 direction = new Vector3(direction.x, 0, direction.z);
             if (direction.z < 0)
                 direction = new Vector3(direction.x, direction.y, 0);
 
-            closestPointOnSphere = direction.normalized * DC.armLength;
+            closestPointOnSphere = direction.normalized * EM.armLength;
         }
         else if (DC.Landmark == ReferenceFrames.Shelves) {
             if (isTouchingDisplaySurface)
                 AttachToDisplayScreen();
             else
             {
-                BoxCollider b = DC.TableTop.GetComponent<BoxCollider>();
-                Vector3 v1 = DC.TableTop.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, b.size.z) * 0.5f);
-                Vector3 v2 = DC.TableTop.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, -b.size.z) * 0.5f);
-                Vector3 v3 = DC.TableTop.transform.TransformPoint(b.center + new Vector3(-b.size.x, b.size.y, b.size.z) * 0.5f);
+                BoxCollider b = EM.TableTop.GetComponent<BoxCollider>();
+                Vector3 v1 = EM.TableTop.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, b.size.z) * 0.5f);
+                Vector3 v2 = EM.TableTop.transform.TransformPoint(b.center + new Vector3(b.size.x, b.size.y, -b.size.z) * 0.5f);
+                Vector3 v3 = EM.TableTop.transform.TransformPoint(b.center + new Vector3(-b.size.x, b.size.y, b.size.z) * 0.5f);
                 Plane surfacePlane = new Plane(v1,v2,v3);
                 Vector3 closestPointOnPlane = surfacePlane.ClosestPointOnPlane(transform.position);
                 transform.SetParent(previousParent);
@@ -148,6 +153,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void VisUsed(object sender, InteractableObjectEventArgs e)
     {
+        logManager.WriteInteractionToLog(name + " Selected");
         if (GetComponent<Vis>().Selected)
             DC.RemoveExplicitSelection(transform);
         else
@@ -273,7 +279,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                         newV = new Vector3(newV.x, 0, newV.z);
                     if (newV.z < 0)
                         newV = new Vector3(newV.x, newV.y, 0);
-                    closestPointOnSphere = newV.normalized * DC.armLength;
+                    closestPointOnSphere = newV.normalized * EM.armLength;
                     goto nextUpperLoop;
                 }
             }

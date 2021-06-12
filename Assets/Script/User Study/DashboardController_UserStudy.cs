@@ -8,22 +8,6 @@ using UnityEngine.Rendering.HighDefinition;
 public class DashboardController_UserStudy : MonoBehaviour
 {
     public ExperimentManager EM;
-    public Transform Shoulder;
-    public Transform TrackedShoulderPosition;
-    public Transform Wall;
-    public Transform TableTop;
-    public Transform FloorSurface;
-
-    // body tracking
-    public Transform HumanWaist;
-    public Transform MainHand;
-
-    // dashboards
-    public Transform HeadLevelDisplay;
-    public Transform WaistLevelDisplay;
-    public Transform GroundDisplay;
-    public Transform WallDisplay;
-    public Transform TableTopDisplay;
 
     [Header("Variables")]
     public float Show3VisDelta = 0.5f;
@@ -31,7 +15,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     public float filterFrequency = 120f;
     public float betweenVisDelta = 0.05f;
     public Vector3 shoulderPosition;
-    public float armLength = 0.6f;
+    
     public float ImplicitDistance = 0.2f;
 
     [Header("Experiment Setup")]
@@ -40,16 +24,44 @@ public class DashboardController_UserStudy : MonoBehaviour
     public float LandmarkSizeOnBody = 0.2f;
     public float LandmarkSizeOnShelves = 1f;
 
+    [Header("Log Purpose")]
+    [HideInInspector] public string GrabbedVis = "";
+    [HideInInspector] public string PinnedVis = "";
+    [HideInInspector] public string LandmarkNames = "";
+    [HideInInspector] public string LandmarkPositions = "";
+    [HideInInspector] public string LandmarkRotations = "";
+    [HideInInspector] public string LandmarkState = "";
+
+    // reference frames transform
+    private Transform Wall;
+    private Transform TableTop;
+    private Transform FloorSurface;
+
+    // dashboards
+    private Transform HeadLevelDisplay;
+    private Transform WaistLevelDisplay;
+    private Transform GroundDisplay;
+    private Transform WallDisplay;
+    private Transform TableTopDisplay;
+
     // body tracking
+    private float armLength;
+    private Transform HumanWaist;
+    private Transform LeftHand;
+    private Transform RightHand;
     private Transform CameraTransform;
+    private Transform Shoulder;
+    private Transform TrackedShoulderPosition;
     private Vector3 previousHumanWaistPosition;
     private Vector3 previousHumanWaistRotation;
-    private Vector3 previousHumanHandPosition;
+    private Vector3 previousLeftHandPosition;
+    private Vector3 previousRightHandPosition;
 
     // one euro filter
     private Vector3 filteredWaistPosition;
     private Vector3 filteredWaistRotation;
-    private Vector3 filteredHandPosition;
+    private Vector3 filteredLeftHandPosition;
+    private Vector3 filteredRightHandPosition;
     private OneEuroFilter<Vector3> vector3Filter;
 
     // experiment use
@@ -76,6 +88,23 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     private void Awake()
     {
+        Wall = EM.Wall;
+        TableTop = EM.TableTop;
+        FloorSurface = EM.FloorSurface;
+
+        HeadLevelDisplay = EM.HeadLevelDisplay;
+        WaistLevelDisplay = EM.WaistLevelDisplay;
+        GroundDisplay = EM.GroundDisplay;
+        WallDisplay = EM.WallDisplay;
+        TableTopDisplay = EM.TableTopDisplay;
+
+        armLength = EM.armLength;
+        HumanWaist = EM.waist;
+        LeftHand = EM.leftHand;
+        RightHand = EM.rightHand;
+        Shoulder = EM.Shoulder;
+        TrackedShoulderPosition = EM.TrackedShoulderPosition;
+
         landmarkParentList = new List<Transform>();
         detailedViewParentList = new Dictionary<string, Transform>();
         originalLandmarks = new List<Transform>();
@@ -91,7 +120,8 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     private void Update()
     {
-        if (EM.Reset) {
+        if (EM.Reset)
+        {
             EM.Reset = false;
             InitialiseEnvironment();
         }
@@ -99,7 +129,8 @@ public class DashboardController_UserStudy : MonoBehaviour
         if (Camera.main != null && CameraTransform == null)
             CameraTransform = Camera.main.transform;
 
-        if (Landmark == ReferenceFrames.Shelves && !InitialiseTable && HumanWaist.position.y != 0) {
+        if (Landmark == ReferenceFrames.Shelves && !InitialiseTable && HumanWaist.position.y != 0)
+        {
             InitialiseTable = true;
             TableTop.position = new Vector3(TableTop.position.x, HumanWaist.position.y, TableTop.position.z);
             TableTopDisplay.position = TableTop.position;
@@ -107,7 +138,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             RePositionLandmarks(ReferenceFrames.Shelves);
         }
 
-        if (Landmark == ReferenceFrames.Body && !InitialiseShoulder && HumanWaist.position != Vector3.zero && Camera.main != null) {
+        if (Landmark == ReferenceFrames.Body && !InitialiseShoulder && HumanWaist.position != Vector3.zero && Camera.main != null)
+        {
             float waistToEye = Camera.main.transform.position.y - HumanWaist.position.y;
 
             InitialiseShoulder = true;
@@ -120,7 +152,8 @@ public class DashboardController_UserStudy : MonoBehaviour
         // OneEuroFilter
         filteredWaistPosition = vector3Filter.Filter(HumanWaist.position);
         filteredWaistRotation = vector3Filter.Filter(HumanWaist.eulerAngles);
-        filteredHandPosition = MainHand.position;
+        filteredLeftHandPosition = LeftHand.position;
+        filteredRightHandPosition = RightHand.position;
 
         if (Landmark == ReferenceFrames.Floor) // vis on floor/shelves as landmarks
         {
@@ -143,7 +176,9 @@ public class DashboardController_UserStudy : MonoBehaviour
                     {
                         currentDetailedViews.Values.ToList()[currentDetailedViews.Count - i - 1].SetParent(HeadLevelDisplay);
                     }
-                } else if (DetailedView == ReferenceFrames.Shelves) {
+                }
+                else if (DetailedView == ReferenceFrames.Shelves)
+                {
                     WallDisplay.DetachChildren();
                     for (int i = 0; i < currentDetailedViews.Count; i++)
                     {
@@ -162,8 +197,9 @@ public class DashboardController_UserStudy : MonoBehaviour
             {
                 DemoFlag = false;
 
-                UpdateVisFromPositionChange(MainHand.transform);
-                if (DetailedView == ReferenceFrames.Shelves) {
+                UpdateVisFromPositionChange(LeftHand.transform, RightHand.transform);
+                if (DetailedView == ReferenceFrames.Shelves)
+                {
                     WallDisplay.DetachChildren();
                     for (int i = 0; i < currentDetailedViews.Count; i++)
                     {
@@ -178,18 +214,21 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     #region Experiment Use
     #region Generate Function
-    private void InitialiseEnvironment() {
+    private void InitialiseEnvironment()
+    {
         InitialiseTable = false;
         InitialiseShoulder = false;
         DemoFlag = true;
 
         previousHumanWaistPosition = Vector3.zero;
         previousHumanWaistRotation = Vector3.zero;
-        previousHumanHandPosition = Vector3.zero;
+        previousLeftHandPosition = Vector3.zero;
+        previousRightHandPosition = Vector3.zero;
 
         filteredWaistPosition = Vector3.zero;
         filteredWaistRotation = Vector3.zero;
-        filteredHandPosition = Vector3.zero;
+        filteredLeftHandPosition = Vector3.zero;
+        filteredRightHandPosition = Vector3.zero;
 
         // landmarks
         landmarkParentList.Clear();
@@ -305,11 +344,12 @@ public class DashboardController_UserStudy : MonoBehaviour
 
             return visOnDetailedView.transform;
         }
-        else {
+        else
+        {
             Debug.LogError("No mapped detailed view found!!");
             return null;
         }
-        
+
     }
 
     private void PositionLandmarks(ReferenceFrames landmark, List<Transform> originalLandmarks)
@@ -387,10 +427,11 @@ public class DashboardController_UserStudy : MonoBehaviour
     #endregion
 
     #region Update Function
-    private void RePositionLandmarks(ReferenceFrames rf) {
+    private void RePositionLandmarks(ReferenceFrames rf)
+    {
         foreach (Transform t in currentLandmarks.Values)
         {
-            if(rf == ReferenceFrames.Body)
+            if (rf == ReferenceFrames.Body)
                 WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Body);
             if (rf == ReferenceFrames.Shelves)
                 TableTopDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Shelves);
@@ -400,33 +441,68 @@ public class DashboardController_UserStudy : MonoBehaviour
     {
         selectedVis = GetVisFromInteraction(implicitObject);
 
-        if (selectedVis.Count > 0) {
+        if (selectedVis.Count > 0)
+        {
             if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
                 selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
             currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
 
-            foreach (Transform t in selectedVis) {
+            foreach (Transform t in selectedVis)
+            {
                 currentDetailedViews[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
             }
         }
-            
+    }
+
+    private void UpdateVisFromPositionChange(Transform leftHand, Transform rightHand)
+    {
+        selectedVis = GetVisFromInteraction(leftHand, rightHand);
+
+        if (selectedVis.Count > 0)
+        {
+            if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
+                selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
+            currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
+
+            foreach (Transform t in selectedVis)
+            {
+                currentDetailedViews[t.name].GetComponent<Vis>().CopyEntity(t.GetComponent<Vis>());
+            }
+        }
+
     }
 
     private void UpdateHighlighter()
     {
+        // log related
+        string grabbedVis = "";
+        string pinnedVis = "";
+        string names = "";
+        string positions = "";
+        string rotations = "";
+        string states = "";
+
         // highlight selected Vis
         foreach (Transform landmark in currentLandmarks.Values)
         {
+            names += landmark.name + ",";
+            positions += "(" + landmark.position.x + ";" + landmark.position.y + ";" + landmark.position.z + "),";
+            rotations += "(" + landmark.eulerAngles.x + ";" + landmark.eulerAngles.y + ";" + landmark.eulerAngles.z + "),";
+
             Light highlighter = landmark.GetChild(2).GetComponent<Light>();
             if (landmark.GetComponent<Vis>().Moving)
             {
                 highlighter.color = Color.yellow;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
+                grabbedVis += landmark.name + ",";
+                states += "moving;";
             }
             else if (explicitlySelectedVis.Contains(landmark))
             {
                 highlighter.color = Color.blue;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
+                pinnedVis += landmark.name + ",";
+                states += "grabbing;";
             }
             else if (selectedVis.Contains(landmark))
             {
@@ -434,6 +510,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 landmark.GetComponent<Vis>().Highlighted = true;
                 currentDetailedViews[landmark.name].GetComponent<Vis>().Highlighted = true;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
+                states += "highlighting;";
             }
             else
             {
@@ -441,7 +518,15 @@ public class DashboardController_UserStudy : MonoBehaviour
                 landmark.GetComponent<Vis>().Highlighted = false;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(0);
             }
+            states += ",";
         }
+
+        GrabbedVis = grabbedVis.Remove(grabbedVis.Length - 1);
+        PinnedVis = pinnedVis.Remove(pinnedVis.Length - 1);
+        LandmarkNames = names;
+        LandmarkPositions = positions;
+        LandmarkRotations = rotations;
+        LandmarkState = states;
 
         foreach (Transform detailedView in currentDetailedViews.Values.ToList())
         {
@@ -452,11 +537,13 @@ public class DashboardController_UserStudy : MonoBehaviour
                 // configure line between selected views
                 ConnectLandmarkWithDV(currentLandmarks[detailedView.name], detailedView, "selected");
                 detailedView.GetComponent<Vis>().VisBorder.gameObject.SetActive(true);
-                foreach (Transform t in detailedView.GetComponent<Vis>().VisBorder) { 
+                foreach (Transform t in detailedView.GetComponent<Vis>().VisBorder)
+                {
                     t.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.blue);
                 }
             }
-            else if (detailedView.GetComponent<Vis>().Highlighted) {
+            else if (detailedView.GetComponent<Vis>().Highlighted)
+            {
                 // configure line between selected views
                 ConnectLandmarkWithDV(currentLandmarks[detailedView.name], detailedView, "highlighted");
                 detailedView.GetComponent<Vis>().VisBorder.gameObject.SetActive(true);
@@ -469,11 +556,13 @@ public class DashboardController_UserStudy : MonoBehaviour
             {
                 detailedView.GetComponent<Vis>().VisBorder.gameObject.SetActive(false);
             }
-                
+
         }
 
-        foreach (Transform landmark in currentLandmarks.Values.ToList()) {
-            if (!landmark.GetComponent<Vis>().Selected && !landmark.GetComponent<Vis>().Highlighted) {
+        foreach (Transform landmark in currentLandmarks.Values.ToList())
+        {
+            if (!landmark.GetComponent<Vis>().Selected && !landmark.GetComponent<Vis>().Highlighted)
+            {
                 landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
                 landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
                 landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
@@ -485,7 +574,8 @@ public class DashboardController_UserStudy : MonoBehaviour
     {
         if (oldVis.Count == 0)
         {
-            foreach (Transform t in newVis.Values.ToList()) {
+            foreach (Transform t in newVis.Values.ToList())
+            {
                 GenerateDetailedView(t);
             }
         }
@@ -494,7 +584,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             // add new vis
             foreach (Transform t in newVis.Values.ToList())
             {
-                if (!oldVis.Keys.Contains(t.name)) {
+                if (!oldVis.Keys.Contains(t.name))
+                {
                     GenerateDetailedView(t);
                 }
             }
@@ -536,7 +627,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             {
                 Dictionary<Transform, float> markerLocPositionX = new Dictionary<Transform, float>();
 
-                foreach (Transform t in markers) {
+                foreach (Transform t in markers)
+                {
                     float positionX;
                     if (t.parent == TableTopDisplay)
                         positionX = t.localPosition.x;
@@ -549,12 +641,14 @@ public class DashboardController_UserStudy : MonoBehaviour
                     finalList.Add(item.Key);
             }
         }
-        else {
+        else
+        {
             if (markers != null && markers.Count > 0)
             {
                 Dictionary<Transform, float> markerLocAngleFromCenter = new Dictionary<Transform, float>();
 
-                foreach (Transform t in markers) {
+                foreach (Transform t in markers)
+                {
                     Vector3 position2D;
                     if (t.parent == WaistLevelDisplay)
                         position2D = new Vector3(t.localPosition.x, 0, t.localPosition.z);
@@ -568,7 +662,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                     finalList.Add(item.Key);
             }
         }
-        
+
         return finalList;
     }
 
@@ -589,7 +683,8 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     #region Get Function
     // public get current landmarks
-    public List<Transform> GetCurrentLandmarks() {
+    public List<Transform> GetCurrentLandmarks()
+    {
         return currentLandmarks.Values.ToList();
     }
     // Tracking human body to determine what to display, can return no more than 3 vis
@@ -601,6 +696,42 @@ public class DashboardController_UserStudy : MonoBehaviour
             Debug.LogError("Too many manually selected VIS!!!");
 
         List<Transform> nearestVisMix = GetNearestVis(implicitObject, explicitlySelectedVis);
+
+        foreach (Transform t in nearestVisMix)
+            showOnDashboard.Add(t);
+
+        // if some vis to show
+        if (showOnDashboard.Count > 0)
+        {
+            // remove duplicates
+            showOnDashboard = showOnDashboard.Distinct().ToList();
+
+            // list to dictionary
+            Dictionary<string, Transform> newVisDict = new Dictionary<string, Transform>();
+            foreach (Transform t in showOnDashboard)
+            {
+                if (t != null)
+                    newVisDict.Add(t.name, t);
+            }
+
+            // update vis on detailed views
+            UpdateDetailedViews(newVisDict, currentDetailedViews);
+
+            showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+            return showOnDashboard;
+        }
+        else
+            return new List<Transform>();
+    }
+
+    private List<Transform> GetVisFromInteraction(Transform leftHand, Transform rightHand)
+    {
+        List<Transform> showOnDashboard = new List<Transform>();
+
+        if (explicitlySelectedVis.Count > 3)
+            Debug.LogError("Too many manually selected VIS!!!");
+
+        List<Transform> nearestVisMix = GetNearestVis(leftHand, rightHand, explicitlySelectedVis);
 
         foreach (Transform t in nearestVisMix)
             showOnDashboard.Add(t);
@@ -681,6 +812,64 @@ public class DashboardController_UserStudy : MonoBehaviour
         return nearestList;
     }
 
+    private List<Transform> GetNearestVis(Transform leftHand, Transform rightHand, List<Transform> previousSelectedVis)
+    {
+        List<Transform> originalList = new List<Transform>();
+        List<Transform> nearestList = new List<Transform>();
+        // load original list
+        foreach (Transform t in currentLandmarks.Values)
+        {
+            if (!previousSelectedVis.Contains(t))
+                originalList.Add(t);
+        }
+
+        if (previousSelectedVis.Count < 3)
+        {
+            if (originalList.Count > 2)
+            {
+                // get nearest vis
+                for (int i = 0; i < (3 - previousSelectedVis.Count); i++)
+                {
+                    float minDis = 10000;
+                    Transform nearestOne = null;
+                    foreach (Transform t in originalList)
+                    {
+                        if (Vector3.Distance(t.position, leftHand.position) < minDis)
+                        {
+                            minDis = Vector3.Distance(t.position, leftHand.position);
+                            nearestOne = t;
+                        }
+
+                        if (Vector3.Distance(t.position, rightHand.position) < minDis)
+                        {
+                            minDis = Vector3.Distance(t.position, rightHand.position);
+                            nearestOne = t;
+                        }
+                    }
+
+                    if (nearestOne != null)
+                    {
+                        nearestList.Add(nearestOne);
+                        originalList.Remove(nearestOne);
+                    }
+                    else
+                        Debug.Log("Error");
+                }
+
+                foreach (Transform t in previousSelectedVis)
+                {
+                    nearestList.Add(t);
+                }
+            }
+        }
+        else
+        {
+            nearestList = previousSelectedVis;
+        }
+
+        return nearestList;
+    }
+
     public static List<Transform> GetRandomItemsFromList(List<Transform> list, int number)
     {
         // this is the list we're going to remove picked items from
@@ -699,37 +888,42 @@ public class DashboardController_UserStudy : MonoBehaviour
         return newList;
     }
 
-    public void GetShoulderPosition() {
-        shoulderPosition = TrackedShoulderPosition.position;
-        Shoulder.position = shoulderPosition;
-    }
+    //public void GetShoulderPosition()
+    //{
+    //    shoulderPosition = TrackedShoulderPosition.position;
+    //    Shoulder.position = shoulderPosition;
+    //}
 
-    public void GetArmLength() {
-        armLength = Vector3.Distance(shoulderPosition, MainHand.position);
-        Shoulder.GetChild(0).localScale = Vector3.one * armLength * 2;
+    //public void GetArmLength()
+    //{
+    //    armLength = Vector3.Distance(shoulderPosition, MainHand.position);
+    //    Shoulder.GetChild(0).localScale = Vector3.one * armLength * 2;
 
-        RePositionLandmarks(ReferenceFrames.Body);
-    }
+    //    RePositionLandmarks(ReferenceFrames.Body);
+    //}
 
-    public void AddExplicitSelection(Transform t) {
+    public void AddExplicitSelection(Transform t)
+    {
         t.GetComponent<Vis>().Selected = true;
-        if(currentDetailedViews.ContainsKey(t.name))
+        if (currentDetailedViews.ContainsKey(t.name))
             currentDetailedViews[t.name].GetComponent<Vis>().Selected = true;
 
         explicitlySelectedVis.Add(t);
-        if (explicitlySelectedVis.Count > 3) {
+        if (explicitlySelectedVis.Count > 3)
+        {
             RemoveExplicitSelection(explicitlySelectedVis[0]);
             //explicitlySelectedVis[0].GetComponent<Vis>().Selected = false;
             //explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
             //explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
             //explicitlySelectedVis[0].Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
             //explicitlySelectedVis.RemoveAt(0);
-        } 
+        }
     }
 
     public void RemoveExplicitSelection(Transform t)
     {
-        if (explicitlySelectedVis.Contains(t)) {
+        if (explicitlySelectedVis.Contains(t))
+        {
             t.GetComponent<Vis>().Selected = false;
             t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
             t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
@@ -740,26 +934,30 @@ public class DashboardController_UserStudy : MonoBehaviour
                     dv.GetComponent<Vis>().Selected = false;
             }
             explicitlySelectedVis.Remove(t);
-        }       
+        }
     }
 
-    private void ConnectLandmarkWithDV(Transform landmark, Transform detailedView, string mode) {
+    private void ConnectLandmarkWithDV(Transform landmark, Transform detailedView, string mode)
+    {
         Transform landmarkBorder = null;
 
         if (Vector3.Distance(landmark.GetComponent<Vis>().VisBorder.GetChild(0).position, detailedView.position) <
-            Vector3.Distance(landmark.GetComponent<Vis>().VisBorder.GetChild(1).position, detailedView.position)) {
+            Vector3.Distance(landmark.GetComponent<Vis>().VisBorder.GetChild(1).position, detailedView.position))
+        {
             landmarkBorder = landmark.GetComponent<Vis>().VisBorder.GetChild(0);
-        }else
+        }
+        else
             landmarkBorder = landmark.GetComponent<Vis>().VisBorder.GetChild(1);
 
         Transform detailedViewBorder = detailedView.GetComponent<Vis>().VisBorder.GetChild(1);
 
         Vector3 landmarkToTable = TableTopDisplay.InverseTransformPoint(landmarkBorder.position);
         Vector3 tableBorder = new Vector3(landmarkToTable.x, 0.03f, 0.3f);
-        if (landmarkBorder != null & detailedViewBorder != null) {
+        if (landmarkBorder != null & detailedViewBorder != null)
+        {
             landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, landmarkBorder.position);
-            if(landmark.GetComponent<Vis>().Moving || Landmark != ReferenceFrames.Shelves)
-                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, (landmarkBorder.position + detailedViewBorder.position ) / 2);
+            if (landmark.GetComponent<Vis>().Moving || Landmark != ReferenceFrames.Shelves)
+                landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, (landmarkBorder.position + detailedViewBorder.position) / 2);
             else
                 landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, TableTopDisplay.TransformPoint(tableBorder));
             landmark.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, detailedViewBorder.position);
@@ -796,16 +994,27 @@ public class DashboardController_UserStudy : MonoBehaviour
 
     private bool CheckHumanHandMoving()
     {
-        Vector3 currentHandPosition = filteredHandPosition;
-        if (currentHandPosition == previousHumanHandPosition)
+        Vector3 currentLeftHandPosition = filteredLeftHandPosition;
+        Vector3 currentRightHandPosition = filteredRightHandPosition;
+
+        if (currentLeftHandPosition == previousLeftHandPosition && currentRightHandPosition == previousRightHandPosition)
             return false;
-        else {
-            previousHumanHandPosition = currentHandPosition;
+        else
+        {
+            previousLeftHandPosition = currentLeftHandPosition;
+            previousRightHandPosition = currentRightHandPosition;
+
             bool flag = false;
 
             foreach (Transform t in currentLandmarks.Values)
             {
-                if (Vector3.Distance(t.position, currentHandPosition) < ImplicitDistance)
+                if (Vector3.Distance(t.position, currentLeftHandPosition) < ImplicitDistance)
+                    flag = true;
+            }
+
+            foreach (Transform t in currentLandmarks.Values)
+            {
+                if (Vector3.Distance(t.position, currentRightHandPosition) < ImplicitDistance)
                     flag = true;
             }
 

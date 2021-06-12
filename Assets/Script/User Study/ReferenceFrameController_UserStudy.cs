@@ -6,6 +6,7 @@ using System.Linq;
 public class ReferenceFrameController_UserStudy : MonoBehaviour
 {
     [Header("Prefabs")]
+    public ExperimentManager EM;
     public DashboardController_UserStudy DC_UserStudy;
     public Transform mappedTransform;
 
@@ -28,7 +29,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
     private void Awake()
     {
         // sync Camera/Human Game Object
-        WaistTransform = DC_UserStudy.HumanWaist;
+        WaistTransform = EM.waist;
     }
 
     // Update is called once per frame
@@ -212,7 +213,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnBody;
             Vector3 direction = new Vector3(Random.Range(-0.9f, 0.9f), Random.Range(-0.7f, 0), Random.Range(0, 0.9f));
-            tmpPosition = direction.normalized * DC_UserStudy.armLength;
+            tmpPosition = direction.normalized * EM.armLength;
         }
 
         if (currentList.Count > 0)
