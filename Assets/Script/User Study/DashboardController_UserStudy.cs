@@ -51,7 +51,6 @@ public class DashboardController_UserStudy : MonoBehaviour
     private Transform RightHand;
     private Transform CameraTransform;
     private Transform Shoulder;
-    private Transform TrackedShoulderPosition;
     private Vector3 previousHumanWaistPosition;
     private Vector3 previousHumanWaistRotation;
     private Vector3 previousLeftHandPosition;
@@ -102,8 +101,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         HumanWaist = EM.waist;
         LeftHand = EM.leftHand;
         RightHand = EM.rightHand;
-        Shoulder = EM.Shoulder;
-        TrackedShoulderPosition = EM.TrackedShoulderPosition;
+        Shoulder = EM.SphereCenter;
 
         landmarkParentList = new List<Transform>();
         detailedViewParentList = new Dictionary<string, Transform>();

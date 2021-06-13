@@ -81,11 +81,11 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         {
             if (lastRotation != Vector3.zero)
             {
-                transform.LookAt(EM.Shoulder);
+                transform.LookAt(EM.SphereCenter);
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, lastRotation.z + 180);
             }
             else {
-                transform.LookAt(EM.Shoulder);
+                transform.LookAt(EM.SphereCenter);
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x + 180, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
             }
             

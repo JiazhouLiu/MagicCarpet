@@ -20,8 +20,7 @@ public class ExperimentManager : MonoBehaviour
     [Header("Body-Tracking")]
     public float armLength;
     public Transform waist;
-    public Transform Shoulder;
-    public Transform TrackedShoulderPosition;
+    public Transform SphereCenter;
     [Header("FoR transform")]
     public Transform Wall;
     public Transform TableTop;
@@ -89,137 +88,162 @@ public class ExperimentManager : MonoBehaviour
 
     #region Getter functions
     private void GetCurrentRoF() {
-        switch (ParticipantID % 4)
+        if (ParticipantID == 0)
         {
-            case 1:
-                QuestionID = TrialNo;
-                CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                if (TrialNo <= 5)
-                {
-                    CurrentLandmarkFOR = ReferenceFrames.Shelves;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else if (TrialNo <= 10)
-                {
-                    CurrentLandmarkFOR = ReferenceFrames.Body;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else if (TrialNo <= 15)
-                {
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else
-                {
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Body;
-                }
-                break;
-            case 2:
-                if (TrialNo <= 5)
-                {
-                    QuestionID = TrialNo + 5;
+            if (TrialNo == 1)
+            {
+                CurrentLandmarkFOR = ReferenceFrames.Shelves;
+                CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+            }
+            else if (TrialNo == 2)
+            {
+                CurrentLandmarkFOR = ReferenceFrames.Body;
+                CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+            }
+            else if (TrialNo == 3)
+            {
+                CurrentLandmarkFOR = ReferenceFrames.Floor;
+                CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+            }
+            else
+            {
+                CurrentLandmarkFOR = ReferenceFrames.Floor;
+                CurrentDetailedViewFOR = ReferenceFrames.Body;
+            }
+        }
+        else {
+            switch (ParticipantID % 4)
+            {
+                case 1:
+                    QuestionID = TrialNo;
                     CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                     CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Body;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else if (TrialNo <= 10)
-                {
-                    QuestionID = TrialNo + 10;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Body;
-                }
-                else if (TrialNo <= 15)
-                {
-                    QuestionID = TrialNo - 10;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Shelves;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else
-                {
-                    QuestionID = TrialNo - 5;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                break;
-            case 3:
-                if (TrialNo <= 5)
-                {
-                    QuestionID = TrialNo + 15;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Body;
-                }
-                else if (TrialNo <= 10)
-                {
-                    QuestionID = TrialNo + 5;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else if (TrialNo <= 15)
-                {
-                    QuestionID = TrialNo - 5;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Body;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else
-                {
-                    QuestionID = TrialNo - 15;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Shelves;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                break;
-            case 0:
-                if (TrialNo <= 5)
-                {
-                    QuestionID = TrialNo + 10;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else if (TrialNo <= 10)
-                {
-                    QuestionID = TrialNo - 5;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Shelves;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                else if (TrialNo <= 15)
-                {
-                    QuestionID = TrialNo + 5;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Floor;
-                    CurrentDetailedViewFOR = ReferenceFrames.Body;
-                }
-                else
-                {
-                    QuestionID = TrialNo - 10;
-                    CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
-                    CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    CurrentLandmarkFOR = ReferenceFrames.Body;
-                    CurrentDetailedViewFOR = ReferenceFrames.Shelves;
-                }
-                break;
-            default:
-                break;
+                    if (TrialNo <= 5)
+                    {
+                        CurrentLandmarkFOR = ReferenceFrames.Shelves;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else if (TrialNo <= 10)
+                    {
+                        CurrentLandmarkFOR = ReferenceFrames.Body;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else if (TrialNo <= 15)
+                    {
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else
+                    {
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Body;
+                    }
+                    break;
+                case 2:
+                    if (TrialNo <= 5)
+                    {
+                        QuestionID = TrialNo + 5;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Body;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else if (TrialNo <= 10)
+                    {
+                        QuestionID = TrialNo + 10;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Body;
+                    }
+                    else if (TrialNo <= 15)
+                    {
+                        QuestionID = TrialNo - 10;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Shelves;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else
+                    {
+                        QuestionID = TrialNo - 5;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    break;
+                case 3:
+                    if (TrialNo <= 5)
+                    {
+                        QuestionID = TrialNo + 15;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Body;
+                    }
+                    else if (TrialNo <= 10)
+                    {
+                        QuestionID = TrialNo + 5;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else if (TrialNo <= 15)
+                    {
+                        QuestionID = TrialNo - 5;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Body;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else
+                    {
+                        QuestionID = TrialNo - 15;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Shelves;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    break;
+                case 0:
+                    if (TrialNo <= 5)
+                    {
+                        QuestionID = TrialNo + 10;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else if (TrialNo <= 10)
+                    {
+                        QuestionID = TrialNo - 5;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Shelves;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    else if (TrialNo <= 15)
+                    {
+                        QuestionID = TrialNo + 5;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Floor;
+                        CurrentDetailedViewFOR = ReferenceFrames.Body;
+                    }
+                    else
+                    {
+                        QuestionID = TrialNo - 10;
+                        CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+                        CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
+                        CurrentLandmarkFOR = ReferenceFrames.Body;
+                        CurrentDetailedViewFOR = ReferenceFrames.Shelves;
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
