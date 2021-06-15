@@ -60,8 +60,8 @@ public class ExperimentManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        leftControllerEvents.ButtonOneReleased += LeftTaskBoardToggle;
-        rightControllerEvents.ButtonOneReleased += RightTaskBoardToggle;
+        leftControllerEvents.ButtonTwoReleased += LeftTaskBoardToggle;
+        rightControllerEvents.ButtonTwoReleased += RightTaskBoardToggle;
     }
 
     // Update is called once per frame
@@ -263,14 +263,14 @@ public class ExperimentManager : MonoBehaviour
 
     public ReferenceFrames GetCurrentDetailedViewFOR()
     {
-        return CurrentDetailedViewFOR; ;
+        return CurrentDetailedViewFOR;
     }
 
     public float GetCurrentTimer() {
         return timer;
     }
 
-    private string GetTrialID() {
+    public string GetTrialID() {
         if ((TrialNo - 1) % 5 == 0)
             return "Training";
         else
@@ -291,7 +291,8 @@ public class ExperimentManager : MonoBehaviour
             logManager.WriteInteractionToLog("Left Taskboard Show");
             TaskBoard.gameObject.SetActive(true);
             TaskBoard.SetParent(leftHand);
-            TaskBoard.localPosition = Vector3.zero;
+            TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
+            TaskBoard.localEulerAngles = Vector3.zero;
         }
     }
 
@@ -305,7 +306,8 @@ public class ExperimentManager : MonoBehaviour
             logManager.WriteInteractionToLog("Right Taskboard Show");
             TaskBoard.gameObject.SetActive(true);
             TaskBoard.SetParent(rightHand);
-            TaskBoard.localPosition = Vector3.zero;
+            TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
+            TaskBoard.localEulerAngles = Vector3.zero;
         }
     }
 
@@ -315,7 +317,15 @@ public class ExperimentManager : MonoBehaviour
 
     public void NextQuestion() {
         TrialNo++;
-        timer = 0;
+        if (TrialNo <= 20)
+        {
+            NextBtnPressed = true;
+            logManager.WriteInteractionToLog("Trial " + TrialNo + " completion time: " +  timer);
+            timer = 0;
+        }
+        else {
+            logManager.QuitGame();
+        }
     }
 
     public void PauseTimer() {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using VRTK;
 
 public class SelectedAnswer : MonoBehaviour
@@ -35,11 +36,21 @@ public class SelectedAnswer : MonoBehaviour
         else
             selected = true;
 
-        if (name == "True")
-            TM.EM.NextQuestion();
-        else {
+        if (name == "True") {
+            selected = false;
             TM.ConfirmBoard.gameObject.SetActive(false);
             TM.QuestionBoard.gameObject.SetActive(true);
+            TM.AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Answer";
+            TM.QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Question";
+            TM.EM.ResumeTimer();
+            TM.EM.NextQuestion();
+        }
+        else {
+            selected = false;
+            TM.ConfirmBoard.gameObject.SetActive(false);
+            TM.QuestionBoard.gameObject.SetActive(true);
+            TM.AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Answer";
+            TM.QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Question";
             TM.EM.ResumeTimer();
         }
     }

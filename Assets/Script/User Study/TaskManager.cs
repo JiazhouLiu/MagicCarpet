@@ -20,6 +20,9 @@ public class TaskManager : MonoBehaviour
 
     private bool Answered = false;
 
+    private bool QuestionButtonUsed = false;
+    private bool AnswerButtonUsed = false;
+
     private char lineSeperater = '\n'; // It defines line seperate character
     private char fieldSeperator = ','; // It defines field seperate chracter
 
@@ -41,39 +44,61 @@ public class TaskManager : MonoBehaviour
             UpdateUI(questionID);
         }
 
-        if (QuestionButton.GetComponent<VRTK_InteractableObject>().IsUsing()) {
-            QuestionButton.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(QuestionButton.localPosition.x, 0, QuestionButton.localPosition.z), Time.deltaTime * 10);
-            AnswerButton.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(AnswerButton.localPosition.x, 0.01f, AnswerButton.localPosition.z), Time.deltaTime * 10);
+        if (QuestionButton.GetComponent<VRTK_InteractableObject>().IsUsing())
+            QuestionButtonUsed = true;
+        else
+        {
+            if (QuestionButtonUsed) {
+                QuestionButtonUsed = false;
 
-            if (Answered) // show confirm page
-            {
-                ConfirmBoard.gameObject.SetActive(true);
-                QuestionBoard.gameObject.SetActive(false);
-                EM.PauseTimer();
+                QuestionButton.localPosition = Vector3.Lerp(QuestionButton.localPosition, new Vector3(QuestionButton.localPosition.x, 0, QuestionButton.localPosition.z), Time.deltaTime * 10);
+                AnswerButton.localPosition = Vector3.Lerp(AnswerButton.localPosition, new Vector3(AnswerButton.localPosition.x, 0.01f, AnswerButton.localPosition.z), Time.deltaTime * 10);
+
+                if (Answered) // show confirm page
+                {
+                    ConfirmBoard.gameObject.SetActive(true);
+                    QuestionBoard.gameObject.SetActive(false);
+                    EM.PauseTimer();
+                }
+                else {
+                    ConfirmBoard.gameObject.SetActive(false);
+                    QuestionBoard.gameObject.SetActive(true);
+                }
             }
         }
 
-        if (AnswerButton.GetComponent<VRTK_InteractableObject>().IsUsing()) {
-            if (!Answered) // participants try to answer, pause the timer
-            {
-                QuestionButton.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(QuestionButton.localPosition.x, 0.01f, QuestionButton.localPosition.z), Time.deltaTime * 10);
-                AnswerButton.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(AnswerButton.localPosition.x, 0f, AnswerButton.localPosition.z), Time.deltaTime * 10);
+        if (AnswerButton.GetComponent<VRTK_InteractableObject>().IsUsing())
+            AnswerButtonUsed = true;
+        else {
+            if (AnswerButtonUsed) {
+                AnswerButtonUsed = false;
 
-                AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Re-do";
-                QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Next";
+                if (!Answered) // participants try to answer, pause the timer
+                {
+                    QuestionButton.localPosition = Vector3.Lerp(QuestionButton.localPosition, new Vector3(QuestionButton.localPosition.x, 0.01f, QuestionButton.localPosition.z), Time.deltaTime * 10);
+                    AnswerButton.localPosition = Vector3.Lerp(AnswerButton.localPosition, new Vector3(AnswerButton.localPosition.x, 0f, AnswerButton.localPosition.z), Time.deltaTime * 10);
 
-                Answered = true;
+                    AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Re-do";
+                    QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Next";
 
-                EM.PauseTimer();
-            }
-            else { // participants try to re-do, resume the timer
-                Answered = false;
-                AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Answer";
-                QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Question";
+                    Answered = true;
 
-                EM.ResumeTimer();
+                    EM.PauseTimer();
+                }
+                else
+                { // participants try to re-do, resume the timer
+                    Answered = false;
+                    AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Answer";
+                    QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Question";
+
+                    ConfirmBoard.gameObject.SetActive(false);
+                    QuestionBoard.gameObject.SetActive(true);
+
+                    EM.ResumeTimer();
+                }
             }
         }
+
     }
 
     private void UpdateUI(int questionID) {

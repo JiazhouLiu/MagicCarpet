@@ -1,0 +1,21 @@
+TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction
+3.219929,1,Training,1,Shelves,Shelves,Left Taskboard Show
+11.01976,2,Training,1,Shelves,Shelves,Trial 2 completion time: 4.320573
+15.20855,3,3,1,Shelves,Shelves,Trial 3 completion time: 2.797311
+18.49737,4,4,1,Shelves,Shelves,Trial 4 completion time: 1.528777
+22.74172,5,5,1,Shelves,Shelves,Trial 5 completion time: 2.599224
+27.45272,6,6,1,Shelves,Shelves,Trial 6 completion time: 2.725144
+31.59708,7,Training,1,Body,Shelves,Trial 7 completion time: 2.201784
+34.7859,8,7,1,Body,Shelves,Trial 8 completion time: 1.360158
+40.79687,9,8,1,Body,Shelves,Trial 9 completion time: 4.174529
+43.81903,10,9,1,Body,Shelves,Trial 10 completion time: 1.424934
+53.49659,11,10,1,Body,Shelves,Trial 11 completion time: 8.057218
+57.2854,12,Training,1,Floor,Shelves,Trial 12 completion time: 1.925176
+60.77421,13,11,1,Floor,Shelves,Trial 13 completion time: 1.639846
+64.10747,14,12,1,Floor,Shelves,Trial 14 completion time: 1.446822
+67.56294,15,13,1,Floor,Shelves,Trial 15 completion time: 1.470521
+71.11842,16,14,1,Floor,Shelves,Trial 16 completion time: 1.727572
+75.4961,17,Training,1,Floor,Body,Trial 17 completion time: 2.400923
+79.02936,18,15,1,Floor,Body,Trial 18 completion time: 1.475379
+82.61816,19,16,1,Floor,Body,Trial 19 completion time: 1.789661
+85.94032,20,17,1,Floor,Body,Trial 20 completion time: 1.606658

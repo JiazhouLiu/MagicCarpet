@@ -26,16 +26,16 @@ public class LogManager : MonoBehaviour
 
     // update
     private StreamWriter writerRaw;
-    StreamWriter writerTrackedObj;
-    StreamWriter writerInteraction;
-    StreamWriter writerTask;
+    private StreamWriter writerTrackedObj;
+    private StreamWriter writerInteraction;
+    private StreamWriter writerTask;
 
     // Start is called before the first frame update
     void Start()
     {
         ParticipantID = EM.ParticipantID;
         leftHand = EM.leftHand;
-        leftHand = EM.rightHand;
+        rightHand = EM.rightHand;
         waist = EM.waist;
         leftFoot = EM.leftFoot;
         rightFoot = EM.rightFoot;
@@ -52,40 +52,45 @@ public class LogManager : MonoBehaviour
             EM.TrialNo ++;
             // Raw data log
             writerRaw = new StreamWriter(writerRawFilePath, false);
-            string rawFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,GrabbedVis,PinnedVis1,PinnedVis2,PinnedVis3," +
+            string rawFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,GrabbedVis1,GrabbedVis2,PinnedVis1,PinnedVis2,PinnedVis3," +
                 "CameraPosition.x,CameraPosition.y,CameraPosition.z,CameraEulerAngles.x,CameraEulerAngles.y,CameraEulerAngles.z," +
-                "MainControllerPosition.x,MainControllerPosition.y,MainControllerPosition.z,MainControllerEulerAngles.x,MainControllerEulerAngles.y,MainControllerEulerAngles.z," +
+                "LeftControllerPosition.x,LeftControllerPosition.y,LeftControllerPosition.z,LeftControllerEulerAngles.x,LeftControllerEulerAngles.y,LeftControllerEulerAngles.z," +
+                "RightControllerPosition.x,RightControllerPosition.y,RightControllerPosition.z,RightControllerEulerAngles.x,RightControllerEulerAngles.y,RightControllerEulerAngles.z," +
                 "WaistPosition.x,WaistPosition.y,WaistPosition.z,WaistEulerAngles.x,WaistEulerAngles.y,WaistEulerAngles.z," +
-                "MainShoePosition.x,MainShoePosition.y,MainShoePosition.z,MainShoeEulerAngles.x,MainShoeEulerAngles.y,MainShoeEulerAngles.z," +
+                "LeftShoePosition.x,LeftShoePosition.y,LeftShoePosition.z,LeftShoeEulerAngles.x,LeftShoeEulerAngles.y,LeftShoeEulerAngles.z," +
+                "RightShoePosition.x,RightShoePosition.y,RightShoePosition.z,RightShoeEulerAngles.x,RightShoeEulerAngles.y,RightShoeEulerAngles.z," +
                 "LeftGripPressed,LeftTriggerPressed,LeftFootSliding,LeftFootPressed,RightGripPressed,RightTriggerPressed,RightFootSliding,RightFootPressed";
             writerRaw.WriteLine(rawFileHeader);
-            writerRaw.Close();
+            //writerRaw.Close();
 
             // tracked obj log
             writerTrackedObj = new StreamWriter(writerTrackedObjFilePath, false);
             string trackedObjFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView," +
                 "CameraPosition.x,CameraPosition.y,CameraPosition.z,CameraEulerAngles.x,CameraEulerAngles.y,CameraEulerAngles.z," +
-                "MainControllerPosition.x,MainControllerPosition.y,MainControllerPosition.z,MainControllerEulerAngles.x,MainControllerEulerAngles.y,MainControllerEulerAngles.z," +
+                "LeftControllerPosition.x,LeftControllerPosition.y,LeftControllerPosition.z,LeftControllerEulerAngles.x,LeftControllerEulerAngles.y,LeftControllerEulerAngles.z," +
+                "RightControllerPosition.x,RightControllerPosition.y,RightControllerPosition.z,RightControllerEulerAngles.x,RightControllerEulerAngles.y,RightControllerEulerAngles.z," +
                 "WaistPosition.x,WaistPosition.y,WaistPosition.z,WaistEulerAngles.x,WaistEulerAngles.y,WaistEulerAngles.z," +
-                "MainShoePosition.x,MainShoePosition.y,MainShoePosition.z,MainShoeEulerAngles.x,MainShoeEulerAngles.y,MainShoeEulerAngles.z," +
+                "LeftShoePosition.x,LeftShoePosition.y,LeftShoePosition.z,LeftShoeEulerAngles.x,LeftShoeEulerAngles.y,LeftShoeEulerAngles.z," +
+                "RightShoePosition.x,RightShoePosition.y,RightShoePosition.z,RightShoeEulerAngles.x,RightShoeEulerAngles.y,RightShoeEulerAngles.z," +
                 "LeftGripPressed,LeftTriggerPressed,LeftFootSliding,LeftFootPressed,RightGripPressed,RightTriggerPressed,RightFootSliding,RightFootPressed";
             writerTrackedObj.WriteLine(trackedObjFileHeader);
-            writerTrackedObj.Close();
+            //writerTrackedObj.Close();
 
             // interaction log
             writerInteraction = new StreamWriter(writerInteractionFilePath, false);
             string interactionFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction";
             writerInteraction.WriteLine(interactionFileHeader);
-            writerInteraction.Close();
+            //writerInteraction.Close();
 
             // Answers data log
             writerTask = new StreamWriter(writerTaskFilePath, false);
             string taskFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView," +
+                "Landmark1Name,Landmark2Name,Landmark3Name,Landmark4Name,Landmark5Name,Landmark6Name," +
                 "Landmark1Pos,Landmark2Pos,Landmark3Pos,Landmark4Pos,Landmark5Pos,Landmark6Pos," +
                 "Landmark1Rot,Landmark2Rot,Landmark3Rot,Landmark4Rot,Landmark5Rot,Landmark6Rot," +
                 "Landmark1State,Landmark2State,Landmark3State,Landmark4State,Landmark5State,Landmark6State";
             writerTask.WriteLine(taskFileHeader);
-            writerTask.Close();
+            //writerTask.Close();
         }
         else
         {
@@ -129,7 +134,7 @@ public class LogManager : MonoBehaviour
 
     private void WritingToLog()
     {
-        if (writerRaw != null && Camera.main != null)
+        if (writerRaw != null && Camera.main != null && leftHand != null && rightHand != null)
         {
             writerRaw.WriteLine(GetFixedTime() +  "," + GetTrialNumber() + "," + GetTrialID() + "," + EM.ParticipantID + "," + GetLandmark() + "," + GetDetailedView() + "," +
                 GetGrabbedVis() + "," + GetPinnedVis() + "," + 
@@ -144,7 +149,7 @@ public class LogManager : MonoBehaviour
             writerRaw.Flush();
         }
 
-        if (writerTrackedObj != null && Camera.main != null)
+        if (writerTrackedObj != null && Camera.main != null && leftHand != null && rightHand != null)
         {
             writerTrackedObj.WriteLine(GetFixedTime() + "," + GetTrialNumber() + "," + GetTrialID() + "," + EM.ParticipantID + "," + GetLandmark() + "," + GetDetailedView() + "," +
                 VectorToString(Camera.main.transform.position) + "," + VectorToString(Camera.main.transform.eulerAngles) + "," +
@@ -172,7 +177,6 @@ public class LogManager : MonoBehaviour
         {
             writerInteraction.WriteLine(GetFixedTime() + "," + GetTrialNumber() + "," + GetTrialID() + "," + EM.ParticipantID + "," + GetLandmark() + "," + GetDetailedView() + "," +
                    info);
-
             writerInteraction.Flush();
         }
     }
@@ -195,17 +199,17 @@ public class LogManager : MonoBehaviour
 
     private string GetTrialID()
     {
-        return EM.TrialID;
+        return EM.GetTrialID();
     }
 
     private string GetLandmark()
     {
-        return DC.Landmark.ToString();
+        return EM.GetCurrentLandmarkFOR().ToString();
     }
 
     private string GetDetailedView()
     {
-        return DC.DetailedView.ToString();
+        return EM.GetCurrentDetailedViewFOR().ToString();
     }
 
     private string GetGrabbedVis() 
@@ -301,9 +305,23 @@ public class LogManager : MonoBehaviour
 #if UNITY_EDITOR
         // Application.Quit() does not work in the editor so
         // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+        ClearWriter();
         UnityEditor.EditorApplication.isPlaying = false;
 #else
+         ClearWriter();
          Application.Quit();
 #endif
+    }
+
+    private void ClearWriter() {
+        writerRaw.Close();
+        writerTrackedObj.Close();
+        writerInteraction.Close();
+        writerTask.Close();
+    }
+
+    private void OnDestroy()
+    {
+        ClearWriter();
     }
 }

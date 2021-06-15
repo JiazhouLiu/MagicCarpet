@@ -1,0 +1,15 @@
+TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction
+18.98625,1,Training,2,Body,Shelves,Left Taskboard Show
+28.15271,2,Training,2,Body,Shelves,Trial 2 completion time: 22.6004
+30.99709,3,3,2,Body,Shelves,Trial 3 completion time: 0
+32.20818,4,4,2,Body,Shelves,Trial 4 completion time: 0
+33.63036,5,5,2,Body,Shelves,Trial 5 completion time: 0
+34.60812,6,6,2,Body,Shelves,Trial 6 completion time: 0
+47.15229,7,Training,2,Floor,Body,Trial 7 completion time: 0
+47.3634,8,7,2,Floor,Body,Trial 8 completion time: 0
+47.75227,9,8,2,Floor,Body,Trial 9 completion time: 0
+48.03004,10,9,2,Floor,Body,Trial 10 completion time: 0
+48.39671,11,10,2,Floor,Body,Trial 11 completion time: 0
+48.68559,12,Training,2,Shelves,Shelves,Trial 12 completion time: 0
+48.91891,13,11,2,Shelves,Shelves,Trial 13 completion time: 0
+49.15224,14,12,2,Shelves,Shelves,Trial 14 completion time: 0

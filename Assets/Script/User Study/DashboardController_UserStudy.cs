@@ -141,7 +141,7 @@ public class DashboardController_UserStudy : MonoBehaviour
             float waistToEye = Camera.main.transform.position.y - HumanWaist.position.y;
 
             InitialiseShoulder = true;
-            Shoulder.localPosition = new Vector3(waistToEye / 4f, waistToEye * 3f / 4f, 0);
+            Shoulder.localPosition = new Vector3(0, waistToEye * 3f / 4f, 0);
             WaistLevelDisplay.position = Shoulder.position;
 
             RePositionLandmarks(ReferenceFrames.Body);
@@ -249,6 +249,17 @@ public class DashboardController_UserStudy : MonoBehaviour
 
         Landmark = EM.GetCurrentLandmarkFOR();
         DetailedView = EM.GetCurrentDetailedViewFOR();
+
+        Shoulder.gameObject.SetActive(false);
+        TableTop.gameObject.SetActive(false);
+        FloorSurface.gameObject.SetActive(false);
+        Wall.gameObject.SetActive(false);
+
+        WaistLevelDisplay.gameObject.SetActive(false);
+        GroundDisplay.gameObject.SetActive(false);
+        TableTopDisplay.gameObject.SetActive(false);
+        HeadLevelDisplay.gameObject.SetActive(false);
+        WallDisplay.gameObject.SetActive(false);
 
         // enable landmarks and detailed views based on configuration 
         switch (Landmark)
@@ -359,6 +370,8 @@ public class DashboardController_UserStudy : MonoBehaviour
                 // Instantiate game object
                 GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity);
                 newLandmark.name = t.name;
+                newLandmark.GetComponent<VisInteractionController_UserStudy>().enabled = true;
+                newLandmark.GetComponent<BoxCollider>().isTrigger = true;
 
                 // setup transform
                 newLandmark.transform.localScale = new Vector3(LandmarkSizeOnGround, LandmarkSizeOnGround, LandmarkSizeOnGround);
@@ -382,6 +395,8 @@ public class DashboardController_UserStudy : MonoBehaviour
                 // Instantiate game object
                 GameObject newLandmark = Instantiate(t.gameObject, Shoulder.transform.position, Quaternion.identity, WaistLevelDisplay);
                 newLandmark.name = t.name;
+                newLandmark.GetComponent<VisInteractionController_UserStudy>().enabled = true;
+                newLandmark.GetComponent<BoxCollider>().isTrigger = true;
 
                 // setup transform
                 newLandmark.transform.localScale = new Vector3(LandmarkSizeOnBody, LandmarkSizeOnBody, LandmarkSizeOnBody);
@@ -404,6 +419,8 @@ public class DashboardController_UserStudy : MonoBehaviour
                 // Instantiate game object
                 GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity, TableTopDisplay);
                 newLandmark.name = t.name;
+                newLandmark.GetComponent<VisInteractionController_UserStudy>().enabled = true;
+                newLandmark.GetComponent<BoxCollider>().isTrigger = true;
 
                 // setup transform
                 newLandmark.transform.localScale = new Vector3(LandmarkSizeOnShelves, LandmarkSizeOnShelves, LandmarkSizeOnShelves);
@@ -475,6 +492,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         // log related
         string grabbedVis = "";
         string pinnedVis = "";
+        int pinNumber = 0;
         string names = "";
         string positions = "";
         string rotations = "";
@@ -500,6 +518,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 highlighter.color = Color.blue;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
                 pinnedVis += landmark.name + ",";
+                pinNumber++;
                 states += "grabbing;";
             }
             else if (selectedVis.Contains(landmark))
@@ -519,12 +538,33 @@ public class DashboardController_UserStudy : MonoBehaviour
             states += ",";
         }
 
-        GrabbedVis = grabbedVis.Remove(grabbedVis.Length - 1);
-        PinnedVis = pinnedVis.Remove(pinnedVis.Length - 1);
-        LandmarkNames = names;
-        LandmarkPositions = positions;
-        LandmarkRotations = rotations;
-        LandmarkState = states;
+        if (grabbedVis.Length > 0) { 
+            if(grabbedVis.Contains(','))
+                GrabbedVis = grabbedVis.Remove(grabbedVis.Length - 1);
+            else
+                GrabbedVis = grabbedVis + ",";
+        }else
+            GrabbedVis = ",";
+
+        if (pinNumber > 0) { 
+            if(pinNumber == 3)
+                PinnedVis = pinnedVis.Remove(pinnedVis.Length - 1);
+            else if(pinNumber == 2)
+                PinnedVis = pinnedVis + ",";
+            else
+                PinnedVis = pinnedVis + ",,";
+        }
+        else
+            PinnedVis = ",,";
+        
+        if (names.Length > 0)
+            LandmarkNames = names.Remove(names.Length - 1);
+        if (positions.Length > 0)
+            LandmarkPositions = positions.Remove(positions.Length - 1);
+        if (rotations.Length > 0)
+            LandmarkRotations = rotations.Remove(rotations.Length - 1);
+        if (states.Length > 0)
+            LandmarkState = states.Remove(states.Length - 1);
 
         foreach (Transform detailedView in currentDetailedViews.Values.ToList())
         {

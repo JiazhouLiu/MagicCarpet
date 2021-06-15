@@ -35,7 +35,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private Vector3 lastRotation = Vector3.zero;
     private Vector3 previousScale;
 
-    private Vis beforeGrabbing;
+    //private Vis beforeGrabbing;
     private bool initialisePosition = true;
 
     private Vector3 closestPointOnSphere = Vector3.zero;
@@ -52,7 +52,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
         interactableObject.InteractableObjectUsed += VisUsed;
 
-        beforeGrabbing = new Vis();
+        //beforeGrabbing = new Vis();
 
         if (DC.Landmark == ReferenceFrames.Body)
             initialisePosition = false;
@@ -103,7 +103,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         previousPosition = transform.localPosition;
         previousRotation = transform.localEulerAngles;
         previousScale = transform.localScale;
-        beforeGrabbing.CopyEntity(GetComponent<Vis>());
+        //beforeGrabbing.CopyEntity(GetComponent<Vis>());
         GetComponent<Vis>().OnGround = false;
         GetComponent<Vis>().OnWaist = false;
         GetComponent<Vis>().OnShelves = false;
@@ -117,7 +117,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         isGrabbing = false;
         transform.SetParent(null);
         GetComponent<Vis>().Moving = false;
-        GetComponent<Vis>().CopyEntity(beforeGrabbing);
+        //GetComponent<Vis>().CopyEntity(beforeGrabbing);
         if (DC.Landmark == ReferenceFrames.Body) {
             transform.SetParent(previousParent);
             transform.localScale = previousScale;
@@ -200,6 +200,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     {
         if (DC.Landmark == ReferenceFrames.Shelves)
         {
+            //Debug.Log(name + " " + transform.parent.name);
             if (!initialisePosition && other.CompareTag("InteractableObj") && !isGrabbing &&
             !other.GetComponent<VisInteractionController_UserStudy>().isGrabbing &&
             transform.parent.name != "Original Visualisation List")

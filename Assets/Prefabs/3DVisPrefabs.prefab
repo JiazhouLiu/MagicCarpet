@@ -358,7 +358,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9a5ebfd5d5ee5d341a6f089153fa6273, type: 2}
+  - {fileID: 2100000, guid: c7585776c6a22da40a0f5f4cc13080a2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -860,7 +860,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0
   m_ColorTemperature: 3000
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 1}
@@ -998,11 +998,12 @@ GameObject:
   - component: {fileID: 8113456723291711514}
   - component: {fileID: -8006799864392820250}
   - component: {fileID: 4075761802996858419}
-  - component: {fileID: 5246856445685358553}
   - component: {fileID: -2409139519710459154}
+  - component: {fileID: 1308563542}
+  - component: {fileID: 6119622426693836558}
   m_Layer: 0
   m_Name: 3DVisPrefabs
-  m_TagString: Untagged
+  m_TagString: InteractableObj
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1059,7 +1060,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9021928950873538981}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 0.05}
@@ -1113,25 +1114,6 @@ MonoBehaviour:
   objectHighlighter: {fileID: 0}
   touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
   usingState: 0
---- !u!114 &5246856445685358553
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9021928950873538981}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d16e6f2905a240148972edcf39686b74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DC: {fileID: 0}
-  interactableObject: {fileID: 4075761802996858419}
-  visualisation: {fileID: 9021928950873538984}
-  currentBoxCollider: {fileID: 8113456723291711514}
-  currentRigidbody: {fileID: -8006799864392820250}
-  backgroundMR: {fileID: 3268269654657033820}
-  speed: 3
 --- !u!114 &-2409139519710459154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1150,3 +1132,36 @@ MonoBehaviour:
   throwVelocityWithAttachDistance: 1
   throwMultiplier: 3
   onGrabCollisionDelay: 0
+--- !u!114 &1308563542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9021928950873538981}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c347c00646d4794dac3cd0bb24bf297, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EM: {fileID: 0}
+  DC: {fileID: 0}
+  logManager: {fileID: 0}
+  interactableObject: {fileID: 4075761802996858419}
+  visualisation: {fileID: 9021928950873538984}
+  currentBoxCollider: {fileID: 8113456723291711514}
+  currentRigidbody: {fileID: -8006799864392820250}
+  backgroundMR: {fileID: 3268269654657033820}
+  isGrabbing: 0
+--- !u!114 &6119622426693836558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9021928950873538981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18055ba762aa3994f9c10208cd088bc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
