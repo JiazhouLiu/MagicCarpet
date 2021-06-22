@@ -317,14 +317,30 @@ public class ExperimentManager : MonoBehaviour
 
     public void NextQuestion() {
         TrialNo++;
-        if (TrialNo <= 20)
+        if (ParticipantID == 0)
         {
-            NextBtnPressed = true;
-            logManager.WriteInteractionToLog("Trial " + TrialNo + " completion time: " +  timer);
-            timer = 0;
+            if (TrialNo <= 4)
+            {
+                NextBtnPressed = true;
+                logManager.WriteInteractionToLog("Trial " + TrialNo + " completion time: " + timer);
+                timer = 0;
+            }
+            else
+            {
+                logManager.QuitGame();
+            }
         }
         else {
-            logManager.QuitGame();
+            if (TrialNo <= 20)
+            {
+                NextBtnPressed = true;
+                logManager.WriteInteractionToLog("Trial " + TrialNo + " completion time: " + timer);
+                timer = 0;
+            }
+            else
+            {
+                logManager.QuitGame();
+            }
         }
     }
 
