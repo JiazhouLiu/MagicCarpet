@@ -18,7 +18,7 @@ public class TaskManager : MonoBehaviour
     private int questionID;
     private int prevQuestionID;
 
-    private bool Answered = false;
+    public bool Answered = false;
 
     private bool QuestionButtonUsed = false;
     private bool AnswerButtonUsed = false;

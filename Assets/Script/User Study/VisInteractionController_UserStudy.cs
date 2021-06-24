@@ -45,11 +45,15 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void Awake()
     {
+
         landmarks = new List<Transform>();
         // Subscribe to events
+        interactableObject.InteractableObjectGrabbed -= VisGrabbed;
         interactableObject.InteractableObjectGrabbed += VisGrabbed;
+        interactableObject.InteractableObjectUngrabbed -= VisUngrabbed;
         interactableObject.InteractableObjectUngrabbed += VisUngrabbed;
 
+        interactableObject.InteractableObjectUsed -= VisUsed;
         interactableObject.InteractableObjectUsed += VisUsed;
 
         //beforeGrabbing = new Vis();
@@ -119,10 +123,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         GetComponent<Vis>().Moving = false;
         //GetComponent<Vis>().CopyEntity(beforeGrabbing);
         if (DC.Landmark == ReferenceFrames.Body) {
-            transform.SetParent(previousParent);
-            transform.localScale = previousScale;
-            //transform.localEulerAngles = new Vector3(90, lastRotation.y, lastRotation.z);
 
+            //transform.localEulerAngles = new Vector3(90, lastRotation.y, lastRotation.z);
             Vector3 direction = transform.position - EM.WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position;
 
             if (direction.y > 0)
@@ -131,6 +133,10 @@ public class VisInteractionController_UserStudy : MonoBehaviour
                 direction = new Vector3(direction.x, direction.y, 0);
 
             closestPointOnSphere = direction.normalized * EM.armLength;
+
+            transform.SetParent(previousParent);
+            transform.localScale = previousScale;
+            transform.localPosition = Vector3.Lerp(transform.localPosition, closestPointOnSphere, 10 * Time.deltaTime);
         }
         else if (DC.Landmark == ReferenceFrames.Shelves) {
             if (isTouchingDisplaySurface)
@@ -153,6 +159,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void VisUsed(object sender, InteractableObjectEventArgs e)
     {
+        Debug.Log("!");
         logManager.WriteInteractionToLog(name + " Selected");
         if (GetComponent<Vis>().Selected)
             DC.RemoveExplicitSelection(transform);
@@ -248,49 +255,49 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     }
 
     private void FindNearestLandingPosition() {
-        landmarks = DC.GetCurrentLandmarks();
+        //landmarks = DC.GetCurrentLandmarks();
 
-        if(landmarks.Contains(transform))
-            landmarks.Remove(transform);
+        //if(landmarks.Contains(transform))
+        //    landmarks.Remove(transform);
 
-        List<Vector3> locoPositions = new List<Vector3>();
+        //List<Vector3> locoPositions = new List<Vector3>();
 
-        foreach (Transform t in landmarks) {
-            locoPositions.Add(t.localPosition);
-        }
+        //foreach (Transform t in landmarks) {
+        //    locoPositions.Add(t.localPosition);
+        //}
 
         
 
-        bool endFlag = false;
-        while (!endFlag) {
-            endFlag = true;
-            foreach (Vector3 position in locoPositions)
-            {
-                if (Vector3.Distance(position, closestPointOnSphere) < DC.LandmarkSizeOnBody * 1.1f)
-                {
-                    endFlag = false;
-                    Vector3 forceDirection = transform.localPosition - position;
-                    Vector3 newV;
-                    if (loopCount < 3)
-                        newV = forceDirection.normalized * DC.LandmarkSizeOnBody * 1.1f + position;
-                    else
-                        newV = forceDirection.normalized * DC.LandmarkSizeOnBody * 1.1f + position + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0), Random.Range(0, 0.1f));
+        //bool endFlag = false;
+        //while (!endFlag) {
+        //    endFlag = true;
+        //    foreach (Vector3 position in locoPositions)
+        //    {
+        //        if (Vector3.Distance(position, closestPointOnSphere) < DC.LandmarkSizeOnBody * 1.1f)
+        //        {
+        //            endFlag = false;
+        //            Vector3 forceDirection = transform.localPosition - position;
+        //            Vector3 newV;
+        //            if (loopCount < 3)
+        //                newV = forceDirection.normalized * DC.LandmarkSizeOnBody * 1.1f + position;
+        //            else
+        //                newV = forceDirection.normalized * DC.LandmarkSizeOnBody * 1.1f + position + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0), Random.Range(0, 0.1f));
                     
-                    if (newV.y > 0)
-                        newV = new Vector3(newV.x, 0, newV.z);
-                    if (newV.z < 0)
-                        newV = new Vector3(newV.x, newV.y, 0);
-                    closestPointOnSphere = newV.normalized * EM.armLength;
-                    goto nextUpperLoop;
-                }
-            }
-        nextUpperLoop:;
+        //            if (newV.y > 0)
+        //                newV = new Vector3(newV.x, 0, newV.z);
+        //            if (newV.z < 0)
+        //                newV = new Vector3(newV.x, newV.y, 0);
+        //            closestPointOnSphere = newV.normalized * EM.armLength;
+        //            goto nextUpperLoop;
+        //        }
+        //    }
+        //nextUpperLoop:;
 
-            loopCount++;
-            if (loopCount > 10)
-                endFlag = true;
+        //    loopCount++;
+        //    if (loopCount > 10)
+        //        endFlag = true;
             
-        }
+        //}
 
         transform.localPosition = Vector3.Lerp(transform.localPosition, closestPointOnSphere, 10 * Time.deltaTime);
     }
@@ -347,6 +354,9 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             //}  
         }
     }
+
+
+
     #endregion
 
     #region vis related

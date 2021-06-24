@@ -121,7 +121,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         }
 
 
-        if (leftSR.value.Length > 0 || rightSR.value.Length > 0)
+        if (leftSR.value.Length > 0)
         {
             if (int.Parse(leftSR.value) < holdThreshold)
             {
@@ -134,7 +134,10 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 if (leftHoldingFlag)
                     leftHoldingFlag = false;
             }
+            RunPressToSlide();
+        }
 
+        if (rightSR.value.Length > 0) { 
             if (int.Parse(rightSR.value) < holdThreshold)
             {
                 if (!rightHoldingFlag)

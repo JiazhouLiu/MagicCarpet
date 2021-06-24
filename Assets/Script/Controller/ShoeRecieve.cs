@@ -40,7 +40,7 @@ public class ShoeRecieve : MonoBehaviour
         }
         catch (SystemException f)
         {
-            print("FAILED TO OPEN PORT");
+            print(name + ": FAILED TO OPEN PORT");
 
         }
         if (sp.IsOpen)

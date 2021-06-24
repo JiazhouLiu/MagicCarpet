@@ -60,8 +60,8 @@ public class ExperimentManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        leftControllerEvents.ButtonTwoReleased += LeftTaskBoardToggle;
-        rightControllerEvents.ButtonTwoReleased += RightTaskBoardToggle;
+        leftControllerEvents.ButtonOneReleased += LeftTaskBoardToggle;
+        rightControllerEvents.ButtonOneReleased += RightTaskBoardToggle;
     }
 
     // Update is called once per frame
@@ -90,6 +90,9 @@ public class ExperimentManager : MonoBehaviour
     private void GetCurrentRoF() {
         if (ParticipantID == 0)
         {
+            QuestionID = TrialNo;
+            CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
+            CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
             if (TrialNo == 1)
             {
                 CurrentLandmarkFOR = ReferenceFrames.Shelves;
@@ -274,7 +277,7 @@ public class ExperimentManager : MonoBehaviour
         if ((TrialNo - 1) % 5 == 0)
             return "Training";
         else
-            return (TrialNo - ((TrialNo - 1) / 5) + 1).ToString();
+            return (TrialNo - ((TrialNo - 1) / 5) - 1).ToString();
     }
 
     #endregion

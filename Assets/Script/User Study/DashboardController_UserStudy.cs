@@ -13,9 +13,7 @@ public class DashboardController_UserStudy : MonoBehaviour
     public float Show3VisDelta = 0.5f;
     public float speed = 3;
     public float filterFrequency = 120f;
-    public float betweenVisDelta = 0.05f;
-    public Vector3 shoulderPosition;
-    
+    public float betweenVisDelta = 0.05f;    
     public float ImplicitDistance = 0.2f;
 
     [Header("Experiment Setup")]
@@ -266,6 +264,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         {
             case ReferenceFrames.Body:
                 Shoulder.gameObject.SetActive(true);
+                Shoulder.localScale = Vector3.one * armLength * 2;
                 WaistLevelDisplay.gameObject.SetActive(true);
                 break;
             case ReferenceFrames.Floor:

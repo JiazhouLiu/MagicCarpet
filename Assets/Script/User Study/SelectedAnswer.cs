@@ -43,6 +43,8 @@ public class SelectedAnswer : MonoBehaviour
             TM.AnswerButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Answer";
             TM.QuestionButton.GetChild(0).GetChild(0).GetComponent<Text>().text = "Question";
             TM.EM.ResumeTimer();
+            TM.Answered = false;
+            TM.gameObject.SetActive(false);
             TM.EM.NextQuestion();
         }
         else {
