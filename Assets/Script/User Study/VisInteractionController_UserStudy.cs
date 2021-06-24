@@ -123,20 +123,19 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         GetComponent<Vis>().Moving = false;
         //GetComponent<Vis>().CopyEntity(beforeGrabbing);
         if (DC.Landmark == ReferenceFrames.Body) {
-
-            //transform.localEulerAngles = new Vector3(90, lastRotation.y, lastRotation.z);
-            Vector3 direction = transform.position - EM.WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position;
-
-            if (direction.y > 0)
-                direction = new Vector3(direction.x, 0, direction.z);
-            if (direction.z < 0)
-                direction = new Vector3(direction.x, direction.y, 0);
-
-            closestPointOnSphere = direction.normalized * EM.armLength;
-
             transform.SetParent(previousParent);
             transform.localScale = previousScale;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, closestPointOnSphere, 10 * Time.deltaTime);
+
+            //transform.localEulerAngles = new Vector3(90, lastRotation.y, lastRotation.z);
+            //Vector3 direction = transform.position - EM.WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().mappedTransform.position;
+            Vector3 localDirection = transform.localPosition;
+
+            if (localDirection.y > 0)
+                localDirection = new Vector3(localDirection.x, 0, localDirection.z);
+            if (localDirection.z < 0)
+                localDirection = new Vector3(localDirection.x, localDirection.y, 0);
+
+            closestPointOnSphere = localDirection.normalized * EM.armLength;
         }
         else if (DC.Landmark == ReferenceFrames.Shelves) {
             if (isTouchingDisplaySurface)
@@ -159,7 +158,6 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void VisUsed(object sender, InteractableObjectEventArgs e)
     {
-        Debug.Log("!");
         logManager.WriteInteractionToLog(name + " Selected");
         if (GetComponent<Vis>().Selected)
             DC.RemoveExplicitSelection(transform);
@@ -348,7 +346,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             }
         }
         else {
-            //if (closestPointOnSphere != Vector3.zero) {
+            if (closestPointOnSphere != Vector3.zero)
+                transform.localPosition = Vector3.Lerp(transform.localPosition, closestPointOnSphere, 10 * Time.deltaTime);
             //    loopCount = 0;
             //    FindNearestLandingPosition();
             //}  

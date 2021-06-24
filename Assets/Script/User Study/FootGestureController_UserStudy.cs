@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public enum RepositionMethod { 
     Sliding,
@@ -35,8 +34,11 @@ public class FootGestureController_UserStudy : MonoBehaviour
     public Transform rightFeedbackCircle;
 
     [Header("PressureSensor")]
-    public int pressToSelectThreshold = 0;
-    public int holdThreshold = 500;
+    public int pressToSelectThresholdLeft = 0;
+    public int holdThresholdLeft = 500;
+    public int pressToSelectThresholdRight = 0;
+    public int holdThresholdRight = 500;
+
 
     // pressure sensor
     [HideInInspector] public bool leftNormalPressFlag = false;
@@ -58,14 +60,20 @@ public class FootGestureController_UserStudy : MonoBehaviour
     void Update()
     {
         // pressure feedback right
-        if (rightSR.value.Length > 0 && float.Parse(rightSR.value) < 3000f) {
+        if (EM.GetCurrentLandmarkFOR() == ReferenceFrames.Floor && rightSR.value.Length > 0 && float.Parse(rightSR.value) < 3000f && 
+            ((leftFootToeCollision.TouchedObjs.Count > 0) || (rightFootToeCollision.TouchedObjs.Count > 0))) {
             rightPressFeedback.gameObject.SetActive(true);
             rightPressFeedback.transform.eulerAngles = Vector3.zero;
 
-            rightFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(rightSR.value))/ 4095f * 0.09f + 0.01f);
-            if (float.Parse(rightSR.value) <= pressToSelectThreshold)
+            float delta = 4095f - pressToSelectThresholdRight;
+
+            rightFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(rightSR.value))/ delta * 0.09f + 0.01f);
+            if (rightFeedbackCircle.localScale.x > 1)
+                leftFeedbackCircle.localScale = Vector3.one;
+
+            if (float.Parse(rightSR.value) <= pressToSelectThresholdRight)
                 rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
-            else if (float.Parse(rightSR.value) < holdThreshold)
+            else if (float.Parse(rightSR.value) < holdThresholdRight)
                 rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
             else
                 rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0, 0, 0.4f));
@@ -73,15 +81,21 @@ public class FootGestureController_UserStudy : MonoBehaviour
             rightPressFeedback.gameObject.SetActive(false);
 
         // pressure feedback left
-        if (leftSR.value.Length > 0 && float.Parse(leftSR.value) < 3000f)
+        if (EM.GetCurrentLandmarkFOR() == ReferenceFrames.Floor && leftSR.value.Length > 0 && float.Parse(leftSR.value) < 3000f &&
+            ((leftFootToeCollision.TouchedObjs.Count > 0) || (rightFootToeCollision.TouchedObjs.Count > 0)))
         {
             leftPressFeedback.gameObject.SetActive(true);
             leftPressFeedback.transform.eulerAngles = Vector3.zero;
 
-            leftFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(leftSR.value)) / 4095f * 0.09f + 0.01f);
-            if (float.Parse(leftSR.value) <= pressToSelectThreshold)
+            float delta = 4095f - pressToSelectThresholdLeft;
+
+            leftFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(leftSR.value)) / delta * 0.09f + 0.01f);
+            if (leftFeedbackCircle.localScale.x > 1)
+                leftFeedbackCircle.localScale = Vector3.one;
+
+            if (float.Parse(leftSR.value) <= pressToSelectThresholdLeft)
                 leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
-            else if (float.Parse(leftSR.value) < holdThreshold)
+            else if (float.Parse(leftSR.value) < holdThresholdLeft)
                 leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
             else
                 leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0, 0, 0.4f));
@@ -96,26 +110,26 @@ public class FootGestureController_UserStudy : MonoBehaviour
     private void PressureSensorDetector()
     {
         // pressure sensor
-        if (leftSR.value.Length > 0 && int.Parse(leftSR.value) <= pressToSelectThreshold && !leftNormalPressFlag)
+        if (leftSR.value.Length > 0 && int.Parse(leftSR.value) <= pressToSelectThresholdLeft && !leftNormalPressFlag)
         {
             leftNormalPressFlag = true;
-            Debug.Log("Press - left");
+            //Debug.Log("Press - left");
             logManager.WriteInteractionToLog("Left Foot Press");
             RunPressToSelect();
         }
-        if (leftNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > pressToSelectThreshold)
+        if (leftNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > pressToSelectThresholdLeft)
         {
             leftNormalPressFlag = false;
         }
 
-        if (leftSR.value.Length > 0 && int.Parse(leftSR.value) <= pressToSelectThreshold && !rightNormalPressFlag)
+        if (rightSR.value.Length > 0 && int.Parse(rightSR.value) <= pressToSelectThresholdRight && !rightNormalPressFlag)
         {
             rightNormalPressFlag = true;
-            Debug.Log("Press - right");
+            //Debug.Log("Press - right");
             logManager.WriteInteractionToLog("Right Foot Press");
             RunPressToSelect();
         }
-        if (rightNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > pressToSelectThreshold)
+        if (rightNormalPressFlag && rightSR.value.Length > 0 && int.Parse(rightSR.value) > pressToSelectThresholdRight)
         {
             rightNormalPressFlag = false;
         }
@@ -123,7 +137,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
         if (leftSR.value.Length > 0)
         {
-            if (int.Parse(leftSR.value) < holdThreshold)
+            if ((int.Parse(leftSR.value) < holdThresholdLeft) && (int.Parse(leftSR.value) > pressToSelectThresholdLeft))
             {
                 if (!leftHoldingFlag)
                     leftHoldingFlag = true;
@@ -138,7 +152,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         }
 
         if (rightSR.value.Length > 0) { 
-            if (int.Parse(rightSR.value) < holdThreshold)
+            if ((int.Parse(rightSR.value) < holdThresholdRight) && (int.Parse(rightSR.value) > pressToSelectThresholdRight))
             {
                 if (!rightHoldingFlag)
                     rightHoldingFlag = true;
@@ -149,7 +163,6 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 if (rightHoldingFlag)
                     rightHoldingFlag = false;
             }
-
             RunPressToSlide();
         }  
     }
