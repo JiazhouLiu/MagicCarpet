@@ -11,8 +11,10 @@ public class ExperimentManager : MonoBehaviour
     public int TrialNo;
     public Transform leftHand;
     public VRTK_ControllerEvents leftControllerEvents;
+    public int leftHandIndex;
     public Transform rightHand;
     public VRTK_ControllerEvents rightControllerEvents;
+    public int rightHandIndex;
     public Transform leftFoot;
     public Transform rightFoot;
     public Transform TaskBoard;
@@ -53,6 +55,7 @@ public class ExperimentManager : MonoBehaviour
     private ReferenceFrames CurrentDetailedViewFOR;
 
     private bool startFlag = true;
+    private bool vibFlag = false;
 
     private float timer = 0;
     private bool timerPaused = false;
@@ -84,6 +87,20 @@ public class ExperimentManager : MonoBehaviour
         if (!timerPaused)
             timer += Time.deltaTime;
 
+        if (timer > 120 && !vibFlag) { // if over 2 min, vibration and show question board
+            vibFlag = true;
+
+            logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Show");
+            TaskBoard.gameObject.SetActive(true);
+            TaskBoard.SetParent(leftHand);
+            TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
+            TaskBoard.localEulerAngles = Vector3.zero;
+        }
+
+        if (timer > 120 && timer <= 122) {
+            SteamVR_Controller.Input(leftHandIndex).TriggerHapticPulse(1500);
+            SteamVR_Controller.Input(rightHandIndex).TriggerHapticPulse(1500);
+        }
     }
 
     #region Getter functions
@@ -286,12 +303,12 @@ public class ExperimentManager : MonoBehaviour
     private void LeftTaskBoardToggle(object sender, ControllerInteractionEventArgs e) {
         if (TaskBoard.gameObject.activeSelf)
         {
-            logManager.WriteInteractionToLog("Left Taskboard Hide");
+            logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Hide");
             TaskBoard.gameObject.SetActive(false);
         }
         else
         {
-            logManager.WriteInteractionToLog("Left Taskboard Show");
+            logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Show");
             TaskBoard.gameObject.SetActive(true);
             TaskBoard.SetParent(leftHand);
             TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
@@ -302,11 +319,11 @@ public class ExperimentManager : MonoBehaviour
     private void RightTaskBoardToggle(object sender, ControllerInteractionEventArgs e)
     {
         if (TaskBoard.gameObject.activeSelf) {
-            logManager.WriteInteractionToLog("Right Taskboard Hide");
+            logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Hide");
             TaskBoard.gameObject.SetActive(false);
         }
         else {
-            logManager.WriteInteractionToLog("Right Taskboard Show");
+            logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Show");
             TaskBoard.gameObject.SetActive(true);
             TaskBoard.SetParent(rightHand);
             TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
@@ -319,14 +336,15 @@ public class ExperimentManager : MonoBehaviour
     }
 
     public void NextQuestion() {
+        logManager.WriteInteractionToLog("Completion", timer.ToString());
         TrialNo++;
         if (ParticipantID == 0)
         {
             if (TrialNo <= 4)
             {
                 NextBtnPressed = true;
-                logManager.WriteInteractionToLog("Trial " + TrialNo + " completion time: " + timer);
                 timer = 0;
+                vibFlag = false;
             }
             else
             {
@@ -337,8 +355,8 @@ public class ExperimentManager : MonoBehaviour
             if (TrialNo <= 20)
             {
                 NextBtnPressed = true;
-                logManager.WriteInteractionToLog("Trial " + TrialNo + " completion time: " + timer);
                 timer = 0;
+                vibFlag = false;
             }
             else
             {

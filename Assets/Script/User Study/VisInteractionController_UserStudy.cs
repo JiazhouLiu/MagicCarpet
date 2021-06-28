@@ -66,7 +66,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     {
         if (interactableObject.IsGrabbed())
         {
-            logManager.WriteInteractionToLog(name + " Grabbed");
+            logManager.WriteInteractionToLog("Hand Interaction", name + " Grabbed");
             //transform.localScale = Vector3.one * 0.5f;
             //transform.localEulerAngles = new Vector3(45, 0, 0);
             //lastRotation = DC.TableTopDisplay.InverseTransformPoint(transform.eulerAngles);
@@ -158,7 +158,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private void VisUsed(object sender, InteractableObjectEventArgs e)
     {
-        logManager.WriteInteractionToLog(name + " Selected");
+        logManager.WriteInteractionToLog("Hand Interaction", name + " Selected");
         if (GetComponent<Vis>().Selected)
             DC.RemoveExplicitSelection(transform);
         else
@@ -303,21 +303,21 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private void DetectOutOfScreenAndAdjustPosition() {
         if (DC.Landmark == ReferenceFrames.Floor)
         {
-            if (transform.localPosition.x < -1.75f) // too far to the left
+            if (transform.localPosition.x < (-1.5f + DC.LandmarkSizeOnGround / 2)) // too far to the left
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(-1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((-1.5f + DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
             }
-            if (transform.localPosition.x > 1.75f) // too far to the right
+            if (transform.localPosition.x > (1.5f - DC.LandmarkSizeOnGround / 2)) // too far to the right
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(1.75f, transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((1.5f - DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
             }
-            if (transform.localPosition.z < -1.75f)// too far to the back
+            if (transform.localPosition.z < (-0.5f + DC.LandmarkSizeOnGround / 2))// too far to the back
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, -1.75f), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, (-0.5f + DC.LandmarkSizeOnGround / 2)), 10 * Time.deltaTime);
             }
-            if (transform.localPosition.z > 1.75f) // too far to the front
+            if (transform.localPosition.z > (0.5f - DC.LandmarkSizeOnGround / 2)) // too far to the front
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, 1.75f), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, (0.5f - DC.LandmarkSizeOnGround / 2)), 10 * Time.deltaTime);
             }
 
             if(transform.localPosition.y != 0.025f)

@@ -171,12 +171,12 @@ public class LogManager : MonoBehaviour
         }
     }
 
-    public void WriteInteractionToLog(string info)
+    public void WriteInteractionToLog(string cat, string info)
     {
         if (writerInteraction != null)
         {
             writerInteraction.WriteLine(GetFixedTime() + "," + GetTrialNumber() + "," + GetTrialID() + "," + EM.ParticipantID + "," + GetLandmark() + "," + GetDetailedView() + "," +
-                   info);
+                   cat + "," + info);
             writerInteraction.Flush();
         }
     }

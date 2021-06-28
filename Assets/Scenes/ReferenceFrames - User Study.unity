@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3055,7 +3055,7 @@ MonoBehaviour:
   betweenVisDelta: 0.05
   ImplicitDistance: 0.2
   VisNumber: 6
-  LandmarkSizeOnGround: 0.4
+  LandmarkSizeOnGround: 0.3
   LandmarkSizeOnBody: 0.2
   LandmarkSizeOnShelves: 0.2
   GrabbedVis: 
@@ -24218,8 +24218,10 @@ MonoBehaviour:
   TrialNo: 0
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
+  leftHandIndex: 0
   rightHand: {fileID: 1945763247}
   rightControllerEvents: {fileID: 1791100208}
+  rightHandIndex: 0
   leftFoot: {fileID: 2776397578515787517}
   rightFoot: {fileID: 195106548}
   TaskBoard: {fileID: 1901172397}
