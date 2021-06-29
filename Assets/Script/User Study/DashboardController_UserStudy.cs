@@ -206,6 +206,9 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
 
         UpdateHighlighter();
+
+        foreach (string dvNames in currentDetailedViews.Keys)
+            currentDetailedViews[dvNames].GetComponent<Vis>().CopyEntity(currentLandmarks[dvNames].GetComponent<Vis>());
     }
 
     #region Experiment Use
@@ -965,11 +968,7 @@ public class DashboardController_UserStudy : MonoBehaviour
             t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(0, Vector3.zero);
             t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(1, Vector3.zero);
             t.Find("LineToDV").GetComponent<LineRenderer>().SetPosition(2, Vector3.zero);
-            foreach (Transform dv in currentDetailedViews.Values)
-            {
-                if (dv.name == t.name)
-                    dv.GetComponent<Vis>().Selected = false;
-            }
+            
             explicitlySelectedVis.Remove(t);
         }
     }

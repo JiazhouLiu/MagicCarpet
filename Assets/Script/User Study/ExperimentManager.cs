@@ -47,7 +47,6 @@ public class ExperimentManager : MonoBehaviour
     [Header("Reference")]
     public Transform LandmarkParent;
     public Transform DetailedViewParent;
-    public Transform QuestionBoard;
 
     private Transform CurrentLandmarkParent;
     private Transform CurrentDetailedViewParent;

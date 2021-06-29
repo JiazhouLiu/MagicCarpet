@@ -29,8 +29,10 @@ public class FootGestureController_UserStudy : MonoBehaviour
     [Header("PressureSensor")]
     public int pressToSelectThresholdLeft = 0;
     public int holdThresholdLeft = 500;
+    public int releaseThresholdLeft = 1000;
     public int pressToSelectThresholdRight = 0;
     public int holdThresholdRight = 500;
+    public int releaseThresholdRight = 1000;
 
     // pressure sensor
     [HideInInspector] public bool leftNormalPressFlag = false;
@@ -70,7 +72,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         // Press Detect - Left
         if (leftSR.value.Length > 0 && int.Parse(leftSR.value) <= pressToSelectThresholdLeft && !leftNormalPressFlag)
             leftNormalPressFlag = true;
-        if (leftNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > pressToSelectThresholdLeft)
+        if (leftNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > releaseThresholdLeft)
         {
             leftNormalPressFlag = false;
             if (!leftMoving && !rightMoving)
@@ -83,7 +85,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         // Press Detect - Right
         if (rightSR.value.Length > 0 && int.Parse(rightSR.value) <= pressToSelectThresholdRight && !rightNormalPressFlag)
             rightNormalPressFlag = true;
-        if (rightNormalPressFlag && rightSR.value.Length > 0 && int.Parse(rightSR.value) > pressToSelectThresholdRight)
+        if (rightNormalPressFlag && rightSR.value.Length > 0 && int.Parse(rightSR.value) > releaseThresholdRight)
         {
             rightNormalPressFlag = false;
             if (!leftMoving && !rightMoving)
@@ -111,14 +113,14 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 rightHoldingFlag = false;
         }
 
-        if (Vector3.Distance(leftFoot.position, previousLeftPosition) > 0.001f && leftHoldingFlag) // left moving
+        if (Vector3.Distance(leftFoot.position, previousLeftPosition) > 0.005f && leftHoldingFlag) // left moving
             leftMoving = true;
-        else if (Vector3.Distance(leftFoot.position, previousLeftPosition) <= 0.001f) // left still
+        else if (Vector3.Distance(leftFoot.position, previousLeftPosition) <= 0.005f) // left still
             leftMoving = false;
 
-        if (Vector3.Distance(rightFoot.position, previousRightPosition) > 0.001f && rightHoldingFlag) // right moving
+        if (Vector3.Distance(rightFoot.position, previousRightPosition) > 0.005f && rightHoldingFlag) // right moving
             rightMoving = true;
-        else if (Vector3.Distance(rightFoot.position, previousRightPosition) <= 0.001f) // right still
+        else if (Vector3.Distance(rightFoot.position, previousRightPosition) <= 0.005f) // right still
             rightMoving = false;
 
         RunPressToSlide();
@@ -219,8 +221,8 @@ public class FootGestureController_UserStudy : MonoBehaviour
     #region Utilities
     private void FootInteractionFeedback() {
         // pressure feedback right
-        if (EM.GetCurrentLandmarkFOR() == ReferenceFrames.Floor && rightSR.value.Length > 0 && float.Parse(rightSR.value) < 3000f &&
-            ((leftFootToeCollision.TouchedObjs.Count > 0) || (rightFootToeCollision.TouchedObjs.Count > 0)))
+        if (EM.GetCurrentLandmarkFOR() == ReferenceFrames.Floor && rightSR.value.Length > 0 && float.Parse(rightSR.value) < 2000f &&
+            rightFootToeCollision.TouchedObjs.Count > 0)
         {
             rightPressFeedback.gameObject.SetActive(true);
             rightPressFeedback.transform.eulerAngles = Vector3.zero;
@@ -229,9 +231,9 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
             rightFeedbackCircle.localScale = Vector3.one * ((4095f - float.Parse(rightSR.value)) / delta * 0.09f + 0.01f);
             if (rightFeedbackCircle.localScale.x > 1)
-                leftFeedbackCircle.localScale = Vector3.one;
+                rightFeedbackCircle.localScale = Vector3.one;
 
-            if (float.Parse(rightSR.value) <= pressToSelectThresholdRight)
+            if (float.Parse(rightSR.value) <= pressToSelectThresholdRight && !rightMoving)
                 rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
             else if (float.Parse(rightSR.value) < holdThresholdRight)
                 rightFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
@@ -242,8 +244,8 @@ public class FootGestureController_UserStudy : MonoBehaviour
             rightPressFeedback.gameObject.SetActive(false);
 
         // pressure feedback left
-        if (EM.GetCurrentLandmarkFOR() == ReferenceFrames.Floor && leftSR.value.Length > 0 && float.Parse(leftSR.value) < 3000f &&
-            ((leftFootToeCollision.TouchedObjs.Count > 0) || (rightFootToeCollision.TouchedObjs.Count > 0)))
+        if (EM.GetCurrentLandmarkFOR() == ReferenceFrames.Floor && leftSR.value.Length > 0 && float.Parse(leftSR.value) < 2000f &&
+            leftFootToeCollision.TouchedObjs.Count > 0)
         {
             leftPressFeedback.gameObject.SetActive(true);
             leftPressFeedback.transform.eulerAngles = Vector3.zero;
@@ -254,7 +256,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
             if (leftFeedbackCircle.localScale.x > 1)
                 leftFeedbackCircle.localScale = Vector3.one;
 
-            if (float.Parse(leftSR.value) <= pressToSelectThresholdLeft)
+            if (float.Parse(leftSR.value) <= pressToSelectThresholdLeft && !leftMoving)
                 leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(0, 0, 1, 0.4f));
             else if (float.Parse(leftSR.value) < holdThresholdLeft)
                 leftFeedbackCircle.GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", new Color(1, 0.92f, 0.016f, 0.4f));
