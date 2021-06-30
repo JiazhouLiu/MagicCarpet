@@ -370,7 +370,7 @@ public class DashboardController_UserStudy : MonoBehaviour
             foreach (Transform t in originalLandmarks)
             {
                 // Instantiate game object
-                GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity);
+                GameObject newLandmark = Instantiate(t.gameObject, Vector3.zero, Quaternion.identity, GroundDisplay);
                 newLandmark.name = t.name;
                 newLandmark.GetComponent<VisInteractionController_UserStudy>().enabled = true;
                 newLandmark.GetComponent<BoxCollider>().isTrigger = true;

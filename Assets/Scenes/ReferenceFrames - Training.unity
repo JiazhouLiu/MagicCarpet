@@ -8053,7 +8053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParticipantID: 0
-  TrialNo: 3
+  TrialNo: 4
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
   leftHandIndex: 1
@@ -10384,6 +10384,52 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1775036856}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1776792036 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5502477804502904955, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1776792037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776792036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c951a6ffeab4d4b8c48f5f9d203b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
+  white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
+  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
+  yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
+  blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
+--- !u!1 &1783051190 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5503126652532646795, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1783051191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783051190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c951a6ffeab4d4b8c48f5f9d203b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
+  white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
+  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
+  yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
+  blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
 --- !u!1 &1784982055
 GameObject:
   m_ObjectHideFlags: 0
@@ -10932,7 +10978,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.046
+      value: 0.263
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -10942,7 +10988,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.878
+      value: 0.92
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -10952,7 +10998,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.9848078
+      value: 0.99929607
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -10962,7 +11008,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.17364809
+      value: -0.037515674
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -10977,7 +11023,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 200
+      value: 184.3
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}

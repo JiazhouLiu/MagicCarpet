@@ -12427,8 +12427,10 @@ MonoBehaviour:
   rightFeedbackCircle: {fileID: 1643894674}
   pressToSelectThresholdLeft: 0
   holdThresholdLeft: 500
+  releaseThresholdLeft: 1000
   pressToSelectThresholdRight: 0
   holdThresholdRight: 500
+  releaseThresholdRight: 1000
   leftNormalPressFlag: 0
   rightNormalPressFlag: 0
   leftHoldingFlag: 0
@@ -23764,7 +23766,7 @@ MonoBehaviour:
   rightFoot: {fileID: 195106548}
   TaskBoard: {fileID: 762889605}
   logManager: {fileID: 1235773803}
-  armLength: 0.7
+  armLength: 0.6
   waist: {fileID: 1929076752}
   SphereCenter: {fileID: 4491443}
   Wall: {fileID: 1489775097}
@@ -35896,6 +35898,162 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eeda6d41317f444b900e374895f14e95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1945763252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5502425908303759379, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1945763253 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5502477804502904955, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1945763254 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5503126652532646795, guid: 56af40b9ce01df345b295050108afc34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945763246}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1945763255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945763252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 0
+  m_ObsoleteRenderingPath: 0
+  m_ObsoleteFrameSettings:
+    overrides: 0
+    enableShadow: 0
+    enableContactShadows: 0
+    enableShadowMask: 0
+    enableSSR: 0
+    enableSSAO: 0
+    enableSubsurfaceScattering: 0
+    enableTransmission: 0
+    enableAtmosphericScattering: 0
+    enableVolumetrics: 0
+    enableReprojectionForVolumetrics: 0
+    enableLightLayers: 0
+    enableExposureControl: 1
+    diffuseGlobalDimmer: 0
+    specularGlobalDimmer: 0
+    shaderLitMode: 0
+    enableDepthPrepassWithDeferredRendering: 0
+    enableTransparentPrepass: 0
+    enableMotionVectors: 0
+    enableObjectMotionVectors: 0
+    enableDecals: 0
+    enableRoughRefraction: 0
+    enableTransparentPostpass: 0
+    enableDistortion: 0
+    enablePostprocess: 0
+    enableOpaqueObjects: 0
+    enableTransparentObjects: 0
+    enableRealtimePlanarReflection: 0
+    enableMSAA: 0
+    enableAsyncCompute: 0
+    runLightListAsync: 0
+    runSSRAsync: 0
+    runSSAOAsync: 0
+    runContactShadowsAsync: 0
+    runVolumeVoxelizationAsync: 0
+    lightLoopSettings:
+      overrides: 0
+      enableDeferredTileAndCluster: 0
+      enableComputeLightEvaluation: 0
+      enableComputeLightVariants: 0
+      enableComputeMaterialVariants: 0
+      enableFptlForForwardOpaque: 0
+      enableBigTilePrepass: 0
+      isFptlEnabled: 0
+  clearColorMode: 2
+  backgroundColorHDR: {r: 0.025, g: 0.07, b: 0.19, a: 0}
+  clearDepth: 1
+  volumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  volumeAnchorOverride: {fileID: 0}
+  antialiasing: 0
+  SMAAQuality: 2
+  dithering: 0
+  stopNaNs: 0
+  taaSharpenStrength: 0.6
+  physicalParameters:
+    m_Iso: 200
+    m_ShutterSpeed: 0.005
+    m_Aperture: 16
+    m_BladeCount: 5
+    m_Curvature: {x: 2, y: 11}
+    m_BarrelClipping: 0.25
+    m_Anamorphism: 0
+  flipYMode: 0
+  fullscreenPassthrough: 0
+  allowDynamicResolution: 0
+  customRenderingSettings: 0
+  invertFaceCulling: 0
+  probeLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  hasPersistentHistory: 0
+  m_RenderingPathCustomFrameSettings:
+    bitDatas:
+      data1: 70280697347917
+      data2: 4539628424926265344
+    lodBias: 1
+    lodBiasMode: 0
+    lodBiasQualityLevel: 0
+    maximumLODLevel: 0
+    maximumLODLevelMode: 0
+    maximumLODLevelQualityLevel: 0
+    materialQuality: 0
+  renderingPathCustomFrameSettingsOverrideMask:
+    mask:
+      data1: 0
+      data2: 0
+  defaultFrameSettings: 0
+--- !u!114 &1945763256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945763253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c951a6ffeab4d4b8c48f5f9d203b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
+  white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
+  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
+  yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
+  blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
+--- !u!114 &1945763257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945763254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c951a6ffeab4d4b8c48f5f9d203b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
+  white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
+  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
+  yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
+  blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
 --- !u!1001 &1960281272
 PrefabInstance:
   m_ObjectHideFlags: 0

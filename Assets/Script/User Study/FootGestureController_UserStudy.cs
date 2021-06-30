@@ -115,12 +115,12 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
         if (Vector3.Distance(leftFoot.position, previousLeftPosition) > 0.005f && leftHoldingFlag) // left moving
             leftMoving = true;
-        else if (Vector3.Distance(leftFoot.position, previousLeftPosition) <= 0.005f) // left still
+        else if (Vector3.Distance(leftFoot.position, previousLeftPosition) <= 0.005f && leftSR.value.Length > 0 && int.Parse(leftSR.value) > releaseThresholdLeft) // left still
             leftMoving = false;
 
         if (Vector3.Distance(rightFoot.position, previousRightPosition) > 0.005f && rightHoldingFlag) // right moving
             rightMoving = true;
-        else if (Vector3.Distance(rightFoot.position, previousRightPosition) <= 0.005f) // right still
+        else if (Vector3.Distance(rightFoot.position, previousRightPosition) <= 0.005f && rightSR.value.Length > 0 && int.Parse(rightSR.value) > releaseThresholdRight) // right still
             rightMoving = false;
 
         RunPressToSlide();
