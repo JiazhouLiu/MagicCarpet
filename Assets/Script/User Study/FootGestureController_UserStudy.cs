@@ -45,13 +45,11 @@ public class FootGestureController_UserStudy : MonoBehaviour
     private Vector3 previousRightPosition;
     private bool rightMoving = false;
 
-    private List<Transform> movingOBJ;
+    private Transform movingOBJ;
 
     // Start is called before the first frame update
     void Start()
     {
-        movingOBJ = new List<Transform>();
-
         previousLeftPosition = leftFoot.position;
         previousRightPosition = rightFoot.position;
     }
@@ -118,9 +116,15 @@ public class FootGestureController_UserStudy : MonoBehaviour
         else if (Vector3.Distance(leftFoot.position, previousLeftPosition) <= 0.005f && leftSR.value.Length > 0 && int.Parse(leftSR.value) > releaseThresholdLeft) // left still
             leftMoving = false;
 
+        if(leftFoot.position.y > 0.1f)
+            leftMoving = false;
+
         if (Vector3.Distance(rightFoot.position, previousRightPosition) > 0.005f && rightHoldingFlag) // right moving
             rightMoving = true;
         else if (Vector3.Distance(rightFoot.position, previousRightPosition) <= 0.005f && rightSR.value.Length > 0 && int.Parse(rightSR.value) > releaseThresholdRight) // right still
+            rightMoving = false;
+
+        if (rightFoot.position.y > 0.1f)
             rightMoving = false;
 
         RunPressToSlide();
@@ -159,29 +163,19 @@ public class FootGestureController_UserStudy : MonoBehaviour
         {
             if (leftFootToeCollision.TouchedObjs.Count > 0)
             {
-                string objs = "";
-                foreach (Transform t in leftFootToeCollision.TouchedObjs)
-                {
-                    if (!movingOBJ.Contains(t))
-                        movingOBJ.Add(t);
-                        
-                    t.parent = leftFoot;
-                    t.GetComponent<Vis>().Moving = true;
-                    objs += t.name + ";";
-                }
-                logManager.WriteInteractionToLog("Foot Interaction", "Left Sliding" + objs);
+                movingOBJ = leftFootToeCollision.TouchedObjs[0];
 
+                movingOBJ.parent = leftFoot;
+                movingOBJ.GetComponent<Vis>().Moving = true;
+
+                logManager.WriteInteractionToLog("Foot Interaction", "Left Sliding " + movingOBJ.name);
             }
         }
         else
         {
-            if (movingOBJ.Count > 0) {
-                foreach (Transform t in movingOBJ) {
-                    t.parent = EM.GroundDisplay;
-                    t.GetComponent<Vis>().Moving = false;
-                }
-
-                movingOBJ.Clear();
+            if (movingOBJ != null) {
+                movingOBJ.parent = EM.GroundDisplay;
+                movingOBJ.GetComponent<Vis>().Moving = false;
             }                
         }
 
@@ -189,30 +183,20 @@ public class FootGestureController_UserStudy : MonoBehaviour
         {
             if (rightFootToeCollision.TouchedObjs.Count > 0)
             {
-                string objs = "";
-                foreach (Transform t in rightFootToeCollision.TouchedObjs)
-                {
-                    if (!movingOBJ.Contains(t))
-                        movingOBJ.Add(t);
+                movingOBJ = rightFootToeCollision.TouchedObjs[0];
 
-                    t.parent = rightFoot;
-                    t.GetComponent<Vis>().Moving = true;
-                    objs += t.name + ";";
-                }
-                logManager.WriteInteractionToLog("Foot Interaction", "Right Sliding" + objs);
+                movingOBJ.parent = rightFoot;
+                movingOBJ.GetComponent<Vis>().Moving = true;
+
+                logManager.WriteInteractionToLog("Foot Interaction", "Right Sliding " + movingOBJ.name);
             }
         }
         else
         {
-            if (movingOBJ.Count > 0)
+            if (movingOBJ != null)
             {
-                foreach (Transform t in movingOBJ)
-                {
-                    t.parent = EM.GroundDisplay;
-                    t.GetComponent<Vis>().Moving = false;
-                }
-
-                movingOBJ.Clear();
+                movingOBJ.parent = EM.GroundDisplay;
+                movingOBJ.GetComponent<Vis>().Moving = false;
             }
         }
     }

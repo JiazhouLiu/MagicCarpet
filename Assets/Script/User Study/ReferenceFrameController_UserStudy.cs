@@ -58,19 +58,21 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
 
             // configure dashboard position 
             transform.position = WaistTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
-            transform.position = new Vector3(transform.position.x, CameraTransform.position.y, transform.position.z);
+            transform.position = new Vector3(transform.position.x, CameraTransform.position.y - 0.3f, transform.position.z);
 
             // configure dashboard rotation
             transform.localEulerAngles = WaistTransform.localEulerAngles;
             transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 
             // configure waist vis positions
-            int i = 0;
+            //int i = 0;
+            int i = -1;
             foreach (Transform t in transform)
             {
                 float n = ((transform.childCount - 1) / 2f);
-                t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
-                t.localEulerAngles = new Vector3(0, 0, 0);
+                t.transform.localPosition = new Vector3( i * Mathf.Sqrt(3) / 2f * ForwardParameter, 0, -Mathf.Abs(i) * ForwardParameter / 2f);
+                //t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
+                t.localEulerAngles = new Vector3(0, i * 60, 0);
                 i++;
             }
 

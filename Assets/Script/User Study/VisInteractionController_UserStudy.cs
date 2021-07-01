@@ -96,7 +96,10 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         }
 
         if ((DC.Landmark == ReferenceFrames.Floor && !GetComponent<Vis>().Moving) || ((DC.Landmark == ReferenceFrames.Shelves || DC.Landmark == ReferenceFrames.Body) && !isGrabbing))
-            DetectOutOfScreenAndAdjustPosition();            
+            DetectOutOfScreenAndAdjustPosition();
+
+        if (DC.Landmark == ReferenceFrames.Floor && GetComponent<Vis>().Moving)
+            AdjustFloorVisPosition();
     }
 
     #region Interaction Event: Trigger, grabbing, detection
@@ -319,12 +322,6 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             {
                 transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, (0.5f - DC.LandmarkSizeOnGround / 2)), 10 * Time.deltaTime);
             }
-
-            if(transform.localPosition.y != 0.025f)
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z), 10 * Time.deltaTime);
-
-            if (transform.localEulerAngles.x != 90)
-                transform.localEulerAngles = Vector3.Lerp(transform.localEulerAngles, new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z), 10 * Time.deltaTime);
         }
         else if (DC.Landmark == ReferenceFrames.Shelves)
         {
@@ -347,11 +344,19 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         }
         else {
             if (closestPointOnSphere != Vector3.zero)
-                transform.localPosition = Vector3.Lerp(transform.localPosition, closestPointOnSphere, 10 * Time.deltaTime);
-            //    loopCount = 0;
-            //    FindNearestLandingPosition();
-            //}  
+                transform.localPosition = Vector3.Lerp(transform.localPosition, closestPointOnSphere, 10 * Time.deltaTime); 
         }
+    }
+
+    private void AdjustFloorVisPosition() {
+        if (transform.localPosition.y != 0.025f)
+            transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z), 20 * Time.deltaTime);
+        //transform.localPosition = new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z);
+
+
+        if (transform.localEulerAngles.x != 90)
+            transform.localEulerAngles = Vector3.Lerp(transform.localEulerAngles, new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z), 20 * Time.deltaTime);
+        //transform.localEulerAngles = new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z);
     }
 
 
