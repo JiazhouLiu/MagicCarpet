@@ -47,6 +47,8 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
     private Transform movingOBJ;
 
+    private Vector3 previousMovingPosition = Vector3.zero;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -165,17 +167,22 @@ public class FootGestureController_UserStudy : MonoBehaviour
             {
                 movingOBJ = leftFootToeCollision.TouchedObjs[0];
 
-                movingOBJ.parent = leftFoot;
-                movingOBJ.GetComponent<Vis>().Moving = true;
+                if (movingOBJ.parent != leftFoot) {
+                    movingOBJ.parent = leftFoot;
+                    movingOBJ.GetComponent<Vis>().Moving = true;
+                }
 
                 logManager.WriteInteractionToLog("Foot Interaction", "Left Sliding " + movingOBJ.name);
+                previousMovingPosition = movingOBJ.position;
             }
+            
         }
         else
         {
             if (movingOBJ != null) {
                 movingOBJ.parent = EM.GroundDisplay;
                 movingOBJ.GetComponent<Vis>().Moving = false;
+                previousMovingPosition = Vector3.zero;
             }                
         }
 
@@ -185,11 +192,16 @@ public class FootGestureController_UserStudy : MonoBehaviour
             {
                 movingOBJ = rightFootToeCollision.TouchedObjs[0];
 
-                movingOBJ.parent = rightFoot;
-                movingOBJ.GetComponent<Vis>().Moving = true;
+                if (movingOBJ.parent != rightFoot)
+                {
+                    movingOBJ.parent = rightFoot;
+                    movingOBJ.GetComponent<Vis>().Moving = true;
+                }
 
                 logManager.WriteInteractionToLog("Foot Interaction", "Right Sliding " + movingOBJ.name);
+                previousMovingPosition = movingOBJ.position;
             }
+            
         }
         else
         {
@@ -197,7 +209,13 @@ public class FootGestureController_UserStudy : MonoBehaviour
             {
                 movingOBJ.parent = EM.GroundDisplay;
                 movingOBJ.GetComponent<Vis>().Moving = false;
+                previousMovingPosition = Vector3.zero;
             }
+        }
+
+        if (previousMovingPosition != Vector3.zero && Vector3.Distance(previousMovingPosition, movingOBJ.position) > 0.5f)
+        {
+            movingOBJ.position = previousMovingPosition;
         }
     }
     #endregion

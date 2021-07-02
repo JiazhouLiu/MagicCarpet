@@ -43,6 +43,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private int loopCount = 0;
     List<Transform> landmarks;
 
+
     private void Awake()
     {
 
@@ -322,6 +323,12 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             {
                 transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, (0.5f - DC.LandmarkSizeOnGround / 2)), 10 * Time.deltaTime);
             }
+
+            if (transform.localPosition.y != 0.025f)
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z), 20 * Time.deltaTime);
+
+            if (transform.localEulerAngles.x != 90)
+                transform.localEulerAngles = Vector3.Lerp(transform.localEulerAngles, new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z), 20 * Time.deltaTime);
         }
         else if (DC.Landmark == ReferenceFrames.Shelves)
         {
@@ -349,14 +356,12 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     }
 
     private void AdjustFloorVisPosition() {
-        if (transform.localPosition.y != 0.025f)
-            transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z), 20 * Time.deltaTime);
-        //transform.localPosition = new Vector3(transform.localPosition.x, 0.025f, transform.localPosition.z);
+        if (transform.position.y != 0.025f)
+            transform.position = new Vector3(transform.position.x, 0.025f, transform.position.z);
 
 
-        if (transform.localEulerAngles.x != 90)
-            transform.localEulerAngles = Vector3.Lerp(transform.localEulerAngles, new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z), 20 * Time.deltaTime);
-        //transform.localEulerAngles = new Vector3(90, transform.localEulerAngles.y, transform.localEulerAngles.z);
+        if (transform.eulerAngles.x != 90)
+            transform.eulerAngles = new Vector3(90, transform.eulerAngles.y, transform.eulerAngles.z);
     }
 
 

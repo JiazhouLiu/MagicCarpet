@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ControllerColor : MonoBehaviour
 {
+    public enum Controller { Left, Right };
+
     public GameObject ObjectTooltip;
     public Material white;
     public Material green;
     public Material yellow;
     public Material blue;
+    public Controller controller;
 
     private void Start()
     {
@@ -48,9 +52,18 @@ public class ControllerColor : MonoBehaviour
                 if (handgrip.GetChild(0).childCount == 0)
                 {
                     GameObject tooltip = Instantiate(ObjectTooltip, new Vector3(0, 0, 0), Quaternion.identity, handgrip.GetChild(0));
-                    tooltip.transform.localPosition = Vector3.zero + transform.right * 0.1f;
-                    tooltip.transform.eulerAngles = transform.eulerAngles;
-                    tooltip.transform.localEulerAngles += Vector3.left * 90;
+                    
+                    if (controller == Controller.Left)
+                    {
+                        tooltip.transform.localEulerAngles = new Vector3(200, 90, 0);
+                        tooltip.transform.localPosition = new Vector3(0.0183f, 0.0151f, -0.0597f);
+                    }
+                    else {
+                        tooltip.transform.localEulerAngles = new Vector3(150, 90, 180);
+                        tooltip.transform.localPosition = new Vector3(0.0232f, -0.0037f, -0.0597f);
+                    }
+                    tooltip.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Move";
+                    tooltip.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = "Move";
                 }
                 handgrip.GetComponent<MeshRenderer>().material = yellow;
             }
@@ -60,10 +73,22 @@ public class ControllerColor : MonoBehaviour
                 if (trigger.GetChild(0).childCount == 0)
                 {
                     GameObject tooltip = Instantiate(ObjectTooltip, new Vector3(0, 0, 0), Quaternion.identity, trigger.GetChild(0));
-                    tooltip.transform.localPosition = Vector3.zero + transform.right * 0.1f;
-                    tooltip.transform.eulerAngles = transform.eulerAngles;
-                    tooltip.transform.localEulerAngles += Vector3.left * 90;
 
+                    tooltip.transform.eulerAngles = transform.eulerAngles;
+                    tooltip.transform.localEulerAngles = new Vector3(tooltip.transform.localEulerAngles.x - 90, tooltip.transform.localEulerAngles.y, tooltip.transform.localEulerAngles.z + 180);
+
+                    if (controller == Controller.Left)
+                    {
+                        tooltip.transform.localPosition = new Vector3(-0.0722f, 0.0121f, -0.007f);
+                    }
+                    else
+                    {
+                        tooltip.transform.localEulerAngles = new Vector3(-80,0,180);
+                        tooltip.transform.localPosition = new Vector3(-0.0722f, -0.0208f, -0.0235f);
+                    }
+
+                    tooltip.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Select";
+                    tooltip.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = "Select";
                 }
                 trigger.GetComponent<MeshRenderer>().material = blue;
             }
@@ -73,10 +98,12 @@ public class ControllerColor : MonoBehaviour
                 if (Xbutton.GetChild(0).childCount == 0)
                 {
                     GameObject tooltip = Instantiate(ObjectTooltip, new Vector3(0, 0, 0), Quaternion.identity, Xbutton.GetChild(0));
-                    tooltip.transform.localPosition = Vector3.zero + transform.right * 0.1f;
                     tooltip.transform.eulerAngles = transform.eulerAngles;
                     tooltip.transform.localEulerAngles += Vector3.left * 90;
+                    tooltip.transform.localPosition = new Vector3(-0.05f, -0.01f, -0.005f);
 
+                    tooltip.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Task";
+                    tooltip.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = "Task";
                 }
                 Xbutton.GetComponent<MeshRenderer>().material = green;
             }
@@ -86,10 +113,11 @@ public class ControllerColor : MonoBehaviour
                 if (Abutton.GetChild(0).childCount == 0)
                 {
                     GameObject tooltip = Instantiate(ObjectTooltip, new Vector3(0, 0, 0), Quaternion.identity, Abutton.GetChild(0));
-                    tooltip.transform.localPosition = Vector3.zero + transform.right * 0.1f;
-                    tooltip.transform.eulerAngles = transform.eulerAngles;
-                    tooltip.transform.localEulerAngles += Vector3.left * 90;
+                    tooltip.transform.localEulerAngles = new Vector3(-100, 0, 0);
+                    tooltip.transform.localPosition = new Vector3(-0.05f, -0.02f, -0.01f);
 
+                    tooltip.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Task";
+                    tooltip.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = "Task";
                 }
                 Abutton.GetComponent<MeshRenderer>().material = green;
             }

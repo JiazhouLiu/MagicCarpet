@@ -337,6 +337,7 @@ public class ExperimentManager : MonoBehaviour
     public void NextQuestion() {
         logManager.WriteInteractionToLog("Completion", timer.ToString());
         TrialNo++;
+        
         if (ParticipantID == 0)
         {
             if (TrialNo <= 4)

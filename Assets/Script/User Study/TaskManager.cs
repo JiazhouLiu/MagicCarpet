@@ -13,12 +13,15 @@ public class TaskManager : MonoBehaviour
     public Transform QuestionBoard;
     public Transform ConfirmBoard;
     public TextAsset QuestionFile;
+    public Text TitleText;
+    public Text BodyText;
+    public bool TrainingScene = false;
     [HideInInspector]
     public List<string> questions;
 
     private int questionID;
     private int prevQuestionID;
-
+    [HideInInspector]
     public bool Answered = false;
 
     private bool QuestionButtonUsed = false;
@@ -26,6 +29,7 @@ public class TaskManager : MonoBehaviour
 
     private char lineSeperater = '\n'; // It defines line seperate character
     private char fieldSeperator = ','; // It defines field seperate chracter
+    private char AlineSeperater = '&';
 
     // Start is called before the first frame update
     void Awake()
@@ -48,6 +52,14 @@ public class TaskManager : MonoBehaviour
 
     private void UpdateUI(int questionID) {
         DisplayQuestionOnBoard(questions[questionID - 1]);
+        if (TrainingScene)
+            TitleText.text = "Training Question " + questionID + "/4";
+        else {
+            if ((questionID - 1) % 5 == 0)
+                TitleText.text = "Training Question " + questionID + "/20";
+            else
+                TitleText.text = "Experiment Question " + questionID + "/20";
+        }
     }
 
     private void ReadQuestionsFromFile()
@@ -59,10 +71,10 @@ public class TaskManager : MonoBehaviour
 
     private void DisplayQuestionOnBoard(string question)
     {
-        string[] lines = question.Split(lineSeperater);
+        string[] lines = question.Split(AlineSeperater);
         string final = "";
         foreach (string s in lines)
-            final += s;
-        QuestionBoard.GetChild(0).GetChild(0).GetComponent<Text>().text = final;
+            final += s + "\n";
+        BodyText.text = final;
     }
 }
