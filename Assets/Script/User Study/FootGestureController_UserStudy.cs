@@ -49,6 +49,9 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
     private Vector3 previousMovingPosition = Vector3.zero;
 
+    private float leftTotalDistance = 0;
+    private float rightTotalDistance = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -75,7 +78,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         if (leftNormalPressFlag && leftSR.value.Length > 0 && int.Parse(leftSR.value) > releaseThresholdLeft)
         {
             leftNormalPressFlag = false;
-            if (!leftMoving && !rightMoving)
+            if (leftTotalDistance < 0.1f && rightTotalDistance < 0.1f)
             {
                 logManager.WriteInteractionToLog("Foot Interaction", "Left Foot Press");
                 RunPressToSelect();
@@ -88,7 +91,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         if (rightNormalPressFlag && rightSR.value.Length > 0 && int.Parse(rightSR.value) > releaseThresholdRight)
         {
             rightNormalPressFlag = false;
-            if (!leftMoving && !rightMoving)
+            if (leftTotalDistance < 0.1f && rightTotalDistance < 0.1f)
             {
                 logManager.WriteInteractionToLog("Foot Interaction", "Right Foot Press");
                 RunPressToSelect();
@@ -128,6 +131,16 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
         if (rightFoot.position.y > 0.1f)
             rightMoving = false;
+
+        if (leftMoving)
+            leftTotalDistance += Vector3.Distance(leftFoot.position, previousLeftPosition);
+        else
+            leftTotalDistance = 0;
+
+        if (rightMoving)
+            rightTotalDistance += Vector3.Distance(rightFoot.position, previousRightPosition);
+        else
+            rightTotalDistance = 0;
 
         RunPressToSlide();
     }

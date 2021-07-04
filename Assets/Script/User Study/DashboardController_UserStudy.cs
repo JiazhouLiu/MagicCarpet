@@ -163,7 +163,7 @@ public class DashboardController_UserStudy : MonoBehaviour
 
             if (CheckHumanWaistRotating())
             {
-                selectedVis = RearrangeDisplayBasedOnAngle(selectedVis);
+                selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
                 currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
                 if (DetailedView == ReferenceFrames.Body)
                 {
@@ -446,13 +446,10 @@ public class DashboardController_UserStudy : MonoBehaviour
     #region Update Function
     private void RePositionLandmarks(ReferenceFrames rf)
     {
-        foreach (Transform t in currentLandmarks.Values)
-        {
-            if (rf == ReferenceFrames.Body)
-                WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Body);
-            if (rf == ReferenceFrames.Shelves)
-                TableTopDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Shelves);
-        }
+        if (rf == ReferenceFrames.Body)
+            WaistLevelDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Body);
+        if (rf == ReferenceFrames.Shelves)
+            TableTopDisplay.GetComponent<ReferenceFrameController_UserStudy>().InitialiseLandmarkPositions(currentLandmarks.Values.ToList(), ReferenceFrames.Shelves);
     }
     private void UpdateVisFromPositionChange(Transform implicitObject)
     {
@@ -460,8 +457,8 @@ public class DashboardController_UserStudy : MonoBehaviour
 
         if (selectedVis.Count > 0)
         {
-            if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
-                selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
+            //if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
+            selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
             currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
 
             foreach (Transform t in selectedVis)
@@ -478,7 +475,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         if (selectedVis.Count > 0)
         {
             if (Landmark == ReferenceFrames.Shelves || Landmark == ReferenceFrames.Body)
-                selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
+                    selectedVis = RearrangeDisplayBasedOnLandmarkPosition(selectedVis);
             currentDetailedViews = RearrangeVisOnDashBoard(selectedVis, currentDetailedViews);
 
             foreach (Transform t in selectedVis)
@@ -552,9 +549,9 @@ public class DashboardController_UserStudy : MonoBehaviour
             if(pinNumber == 3)
                 PinnedVis = pinnedVis.Remove(pinnedVis.Length - 1);
             else if(pinNumber == 2)
-                PinnedVis = pinnedVis + ",";
+                PinnedVis = pinnedVis;
             else
-                PinnedVis = pinnedVis + ",,";
+                PinnedVis = pinnedVis + ",";
         }
         else
             PinnedVis = ",,";
@@ -642,21 +639,21 @@ public class DashboardController_UserStudy : MonoBehaviour
         }
     }
 
-    private List<Transform> RearrangeDisplayBasedOnAngle(List<Transform> markers)
-    {
-        List<Transform> finalList = new List<Transform>();
-        if (markers != null && markers.Count > 0)
-        {
-            Dictionary<Transform, float> markerAnglesToHuman = new Dictionary<Transform, float>();
+    //private List<Transform> RearrangeDisplayBasedOnAngle(List<Transform> markers)
+    //{
+    //    List<Transform> finalList = new List<Transform>();
+    //    if (markers != null && markers.Count > 0)
+    //    {
+    //        Dictionary<Transform, float> markerAnglesToHuman = new Dictionary<Transform, float>();
 
-            foreach (Transform t in markers)
-                markerAnglesToHuman.Add(t, Vector3.SignedAngle(HumanWaist.forward, t.position - HumanWaist.position, Vector3.up));
+    //        foreach (Transform t in markers)
+    //            markerAnglesToHuman.Add(t, Vector3.SignedAngle(HumanWaist.forward, t.position - HumanWaist.position, Vector3.up));
 
-            foreach (KeyValuePair<Transform, float> item in markerAnglesToHuman.OrderBy(key => key.Value))
-                finalList.Add(item.Key);
-        }
-        return finalList;
-    }
+    //        foreach (KeyValuePair<Transform, float> item in markerAnglesToHuman.OrderBy(key => key.Value))
+    //            finalList.Add(item.Key);
+    //    }
+    //    return finalList;
+    //}
 
     private List<Transform> RearrangeDisplayBasedOnLandmarkPosition(List<Transform> markers)
     {
@@ -679,6 +676,26 @@ public class DashboardController_UserStudy : MonoBehaviour
 
                 foreach (KeyValuePair<Transform, float> item in markerLocPositionX.OrderBy(key => key.Value))
                     finalList.Add(item.Key);
+            }
+        } else if (Landmark == ReferenceFrames.Floor) {
+            if (markers != null && markers.Count > 0)
+            {
+                Dictionary<Transform, float> markerLocPositionX = new Dictionary<Transform, float>();
+
+                foreach (Transform t in markers)
+                {
+                    float positionX;
+                    if (t.parent == GroundDisplay)
+                        positionX = t.localPosition.x;
+                    else
+                        positionX = GroundDisplay.InverseTransformPoint(t.position).x;
+                    markerLocPositionX.Add(t, positionX);
+                }
+
+                foreach (KeyValuePair<Transform, float> item in markerLocPositionX.OrderBy(key => key.Value)) {
+                    finalList.Add(item.Key);
+                }
+                    
             }
         }
         else
@@ -757,7 +774,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             // update vis on detailed views
             UpdateDetailedViews(newVisDict, currentDetailedViews);
 
-            showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+            //showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+            showOnDashboard = RearrangeDisplayBasedOnLandmarkPosition(showOnDashboard);
             return showOnDashboard;
         }
         else
@@ -793,7 +811,8 @@ public class DashboardController_UserStudy : MonoBehaviour
             // update vis on detailed views
             UpdateDetailedViews(newVisDict, currentDetailedViews);
 
-            showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
+            showOnDashboard = RearrangeDisplayBasedOnLandmarkPosition(showOnDashboard);
+            //showOnDashboard = RearrangeDisplayBasedOnAngle(showOnDashboard);
             return showOnDashboard;
         }
         else

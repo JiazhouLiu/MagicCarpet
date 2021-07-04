@@ -78,7 +78,7 @@ public class LogManager : MonoBehaviour
 
             // interaction log
             writerInteraction = new StreamWriter(writerInteractionFilePath, false);
-            string interactionFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction";
+            string interactionFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction,Details";
             writerInteraction.WriteLine(interactionFileHeader);
             //writerInteraction.Close();
 

@@ -66,14 +66,14 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
 
             // configure waist vis positions
             //int i = 0;
-            int i = -1;
+            int i = 1;
             foreach (Transform t in transform)
             {
                 float n = ((transform.childCount - 1) / 2f);
                 t.transform.localPosition = new Vector3( i * Mathf.Sqrt(3) / 2f * ForwardParameter, 0, -Mathf.Abs(i) * ForwardParameter / 2f);
                 //t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
                 t.localEulerAngles = new Vector3(0, i * 60, 0);
-                i++;
+                i--;
             }
 
             foreach (Transform t in transform)
@@ -199,7 +199,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
                 t.localPosition = newPosition + Vector3.up * 0.2f;
 
                 t.GetComponent<Rigidbody>().isKinematic = false;
-                t.GetComponent<Rigidbody>().AddForce(t.InverseTransformPoint(-t.up * 10), ForceMode.Force);
+                t.GetComponent<Rigidbody>().AddForce(t.InverseTransformPoint(-t.up * 1f), ForceMode.Force);
             }
         }
     }
@@ -212,7 +212,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         if (currentRF == ReferenceFrames.Floor)
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnGround;
-            tmpPosition = new Vector3(Random.Range(-1.5f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1.5f - (DC_UserStudy.LandmarkSizeOnGround / 2)), 0.1f, 
+            tmpPosition = new Vector3(Random.Range(-1f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1f - (DC_UserStudy.LandmarkSizeOnGround / 2)), 0.1f, 
                 Random.Range(-0.5f + (DC_UserStudy.LandmarkSizeOnGround / 2), 0.5f - (DC_UserStudy.LandmarkSizeOnGround / 2)));
         }
         else if (currentRF == ReferenceFrames.Shelves)
