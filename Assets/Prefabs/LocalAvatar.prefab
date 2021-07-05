@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3375756437400856675}
   - component: {fileID: 3375756437395193723}
   - component: {fileID: 3375756437395189515}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LocalAvatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,9 +56,9 @@ MonoBehaviour:
     UpdateRate: 0.033333335
   StartWithControllers: 0
   FirstPersonLayer:
-    layerIndex: 0
+    layerIndex: 8
   ThirdPersonLayer:
-    layerIndex: 0
+    layerIndex: 8
   ShowFirstPerson: 1
   ShowThirdPerson: 1
   LevelOfDetail: 5
@@ -85,8 +85,8 @@ MonoBehaviour:
     type: 3}
   EyeLens: {fileID: 4800000, guid: dc66a7d7d762cc4489b187a2f7e1f1bc, type: 3}
   ControllerShader: {fileID: 4800000, guid: dc66a7d7d762cc4489b187a2f7e1f1bc, type: 3}
-  CanOwnMicrophone: 1
-  EnableLaughter: 1
+  CanOwnMicrophone: 0
+  EnableLaughter: 0
   MouthAnchor: {fileID: 0}
   LeftHandCustomPose: {fileID: 0}
   RightHandCustomPose: {fileID: 0}
