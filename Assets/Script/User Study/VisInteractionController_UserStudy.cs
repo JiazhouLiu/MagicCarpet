@@ -307,13 +307,13 @@ public class VisInteractionController_UserStudy : MonoBehaviour
     private void DetectOutOfScreenAndAdjustPosition() {
         if (DC.Landmark == ReferenceFrames.Floor)
         {
-            if (transform.localPosition.x < (-1f + DC.LandmarkSizeOnGround / 2)) // too far to the left
+            if (transform.localPosition.x < (-1.5f + DC.LandmarkSizeOnGround / 2)) // too far to the left
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((-1f + DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((-1.5f + DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
             }
-            if (transform.localPosition.x > (1f - DC.LandmarkSizeOnGround / 2)) // too far to the right
+            if (transform.localPosition.x > (1.5f - DC.LandmarkSizeOnGround / 2)) // too far to the right
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((1f - DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((1.5f - DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
             }
             if (transform.localPosition.z < (-0.5f + DC.LandmarkSizeOnGround / 2))// too far to the back
             {

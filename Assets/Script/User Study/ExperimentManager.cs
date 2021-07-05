@@ -344,6 +344,7 @@ public class ExperimentManager : MonoBehaviour
             {
                 NextBtnPressed = true;
                 timer = 0;
+                timerPaused = false;
                 vibFlag = false;
             }
             else
@@ -356,6 +357,7 @@ public class ExperimentManager : MonoBehaviour
             {
                 NextBtnPressed = true;
                 timer = 0;
+                timerPaused = false;
                 vibFlag = false;
             }
             else
