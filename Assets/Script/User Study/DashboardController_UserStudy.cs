@@ -491,6 +491,7 @@ public class DashboardController_UserStudy : MonoBehaviour
         // log related
         string grabbedVis = "";
         string pinnedVis = "";
+        int grabNumber = 0;
         int pinNumber = 0;
         string names = "";
         string positions = "";
@@ -510,6 +511,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 highlighter.color = Color.yellow;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
                 grabbedVis += landmark.name + ",";
+                grabNumber++;
                 states += "moving;";
             }
             else if (explicitlySelectedVis.Contains(landmark))
@@ -537,11 +539,11 @@ public class DashboardController_UserStudy : MonoBehaviour
             states += ",";
         }
 
-        if (grabbedVis.Length > 0) { 
-            if(grabbedVis.Contains(','))
+        if (grabNumber > 0) { 
+            if(grabNumber == 2)
                 GrabbedVis = grabbedVis.Remove(grabbedVis.Length - 1);
             else
-                GrabbedVis = grabbedVis + ",";
+                GrabbedVis = grabbedVis;
         }else
             GrabbedVis = ",";
 
