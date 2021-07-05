@@ -466,6 +466,7 @@ MonoBehaviour:
   mappedTransform: {fileID: 1419236298}
   circle: {fileID: 0}
   display3VisAngle: 30
+  HeadDisplayAngle: 45
   display: 4
   ForwardParameter: 0
   VisSize: 0.8
@@ -4148,6 +4149,7 @@ MonoBehaviour:
   mappedTransform: {fileID: 528842827}
   circle: {fileID: 863267461}
   display3VisAngle: 30
+  HeadDisplayAngle: 46
   display: 0
   ForwardParameter: 1
   VisSize: 0.8
@@ -15889,6 +15891,7 @@ MonoBehaviour:
   mappedTransform: {fileID: 134848114}
   circle: {fileID: 0}
   display3VisAngle: 30
+  HeadDisplayAngle: 45
   display: 2
   ForwardParameter: 0
   VisSize: 0
@@ -18289,6 +18292,7 @@ MonoBehaviour:
   mappedTransform: {fileID: 4491443}
   circle: {fileID: 1899046902}
   display3VisAngle: 30
+  HeadDisplayAngle: 45
   display: 1
   ForwardParameter: 0.5
   VisSize: 0.5
@@ -27450,14 +27454,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1419236296}
-  m_LocalRotation: {x: -0.258819, y: 0, z: 0, w: 0.9659259}
+  m_LocalRotation: {x: -0.08715578, y: 0, z: 0, w: 0.9961947}
   m_LocalPosition: {x: 0, y: 0.81, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1740778339}
   m_Father: {fileID: 0}
   m_RootOrder: 28
-  m_LocalEulerAnglesHint: {x: -30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -10, y: 0, z: 0}
 --- !u!114 &1419236299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28494,6 +28498,7 @@ MonoBehaviour:
   mappedTransform: {fileID: 1489775097}
   circle: {fileID: 0}
   display3VisAngle: 30
+  HeadDisplayAngle: 45
   display: 3
   ForwardParameter: 0
   VisSize: 0.8

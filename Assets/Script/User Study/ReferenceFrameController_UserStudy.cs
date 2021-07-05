@@ -13,6 +13,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
     [Header("Circle")]
     public LineRenderer circle;
     public float display3VisAngle = 30;
+    public float HeadDisplayAngle = 45;
 
     [Header("Variables")]
     public DisplayDashboard display = new DisplayDashboard();
@@ -70,9 +71,9 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
             foreach (Transform t in transform)
             {
                 float n = ((transform.childCount - 1) / 2f);
-                t.transform.localPosition = new Vector3( i * Mathf.Sqrt(3) / 2f * ForwardParameter, 0, -Mathf.Abs(i) * ForwardParameter / 2f);
+                t.transform.localPosition = new Vector3( i * Mathf.Sin(HeadDisplayAngle * Mathf.Deg2Rad) * ForwardParameter, 0, -Mathf.Abs(i) * ForwardParameter * (1 - Mathf.Cos(HeadDisplayAngle * Mathf.Deg2Rad)));
                 //t.transform.localPosition = new Vector3((n - i) * (VisSize + HSpacing * VisSize), 0, 0);
-                t.localEulerAngles = new Vector3(0, i * 60, 0);
+                t.localEulerAngles = new Vector3(0, i * HeadDisplayAngle, 0);
                 i--;
             }
 
