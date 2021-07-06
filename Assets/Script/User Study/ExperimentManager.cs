@@ -42,6 +42,8 @@ public class ExperimentManager : MonoBehaviour
     public bool Reset = false;
     [HideInInspector]
     public bool NextBtnPressed = false;
+    [HideInInspector]
+    public bool PrevBtnPressed = false;
 
 
     [Header("Reference")]
@@ -83,6 +85,12 @@ public class ExperimentManager : MonoBehaviour
             NextBtnPressed = false;
         }
 
+        if (!Reset && PrevBtnPressed)
+        {
+            Reset = true;
+            PrevBtnPressed = false;
+        }
+
         if (!timerPaused)
             timer += Time.deltaTime;
 
@@ -100,6 +108,12 @@ public class ExperimentManager : MonoBehaviour
             SteamVR_Controller.Input(leftHandIndex).TriggerHapticPulse(1500);
             SteamVR_Controller.Input(rightHandIndex).TriggerHapticPulse(1500);
         }
+
+        if (Input.GetKeyDown("n"))
+            NextQuestion();
+
+        if (Input.GetKeyDown("p"))
+            PrevQuestion();
     }
 
     #region Getter functions
@@ -356,6 +370,40 @@ public class ExperimentManager : MonoBehaviour
             if (TrialNo <= 20)
             {
                 NextBtnPressed = true;
+                timer = 0;
+                timerPaused = false;
+                vibFlag = false;
+            }
+            else
+            {
+                logManager.QuitGame();
+            }
+        }
+    }
+
+    public void PrevQuestion()
+    {
+        TrialNo--;
+
+        if (ParticipantID == 0)
+        {
+            if (TrialNo > 0)
+            {
+                PrevBtnPressed = true;
+                timer = 0;
+                timerPaused = false;
+                vibFlag = false;
+            }
+            else
+            {
+                logManager.QuitGame();
+            }
+        }
+        else
+        {
+            if (TrialNo > 0)
+            {
+                PrevBtnPressed = true;
                 timer = 0;
                 timerPaused = false;
                 vibFlag = false;

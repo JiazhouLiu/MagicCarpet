@@ -23917,7 +23917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParticipantID: 1
-  TrialNo: 11
+  TrialNo: 0
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
   leftHandIndex: 1

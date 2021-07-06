@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.009206869, g: 0.013522718, b: 0.02098811, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7660,7 +7660,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParticipantID: 0
-  TrialNo: 4
+  TrialNo: 0
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
   leftHandIndex: 1
