@@ -55,10 +55,10 @@ public class TaskManager : MonoBehaviour
         if (TrainingScene)
             TitleText.text = "Training Question " + questionID + "/4";
         else {
-            if ((questionID - 1) % 5 == 0)
-                TitleText.text = "Training Question " + questionID + "/20";
+            if ((questionID - 1) % 4 == 0)
+                TitleText.text = "Training Question " + questionID + "/16";
             else
-                TitleText.text = "Experiment Question " + questionID + "/20";
+                TitleText.text = "Experiment Question " + questionID + "/16";
         }
     }
 

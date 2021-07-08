@@ -151,17 +151,17 @@ public class ExperimentManager : MonoBehaviour
                     QuestionID = TrialNo;
                     CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                     CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
-                    if (TrialNo <= 5)
+                    if (TrialNo <= 4)
                     {
                         CurrentLandmarkFOR = ReferenceFrames.Shelves;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
                     }
-                    else if (TrialNo <= 10)
+                    else if (TrialNo <= 8)
                     {
                         CurrentLandmarkFOR = ReferenceFrames.Body;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
                     }
-                    else if (TrialNo <= 15)
+                    else if (TrialNo <= 12)
                     {
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
@@ -173,25 +173,25 @@ public class ExperimentManager : MonoBehaviour
                     }
                     break;
                 case 2:
-                    if (TrialNo <= 5)
+                    if (TrialNo <= 4)
                     {
-                        QuestionID = TrialNo + 5;
+                        QuestionID = TrialNo + 4;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Body;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
                     }
-                    else if (TrialNo <= 10)
+                    else if (TrialNo <= 8)
                     {
-                        QuestionID = TrialNo + 10;
+                        QuestionID = TrialNo + 8;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
                         CurrentDetailedViewFOR = ReferenceFrames.Body;
                     }
-                    else if (TrialNo <= 15)
+                    else if (TrialNo <= 12)
                     {
-                        QuestionID = TrialNo - 10;
+                        QuestionID = TrialNo - 8;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Shelves;
@@ -199,7 +199,7 @@ public class ExperimentManager : MonoBehaviour
                     }
                     else
                     {
-                        QuestionID = TrialNo - 5;
+                        QuestionID = TrialNo - 4;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
@@ -207,25 +207,25 @@ public class ExperimentManager : MonoBehaviour
                     }
                     break;
                 case 3:
-                    if (TrialNo <= 5)
+                    if (TrialNo <= 4)
                     {
-                        QuestionID = TrialNo + 15;
+                        QuestionID = TrialNo + 12;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
                         CurrentDetailedViewFOR = ReferenceFrames.Body;
                     }
-                    else if (TrialNo <= 10)
+                    else if (TrialNo <= 8)
                     {
-                        QuestionID = TrialNo + 5;
+                        QuestionID = TrialNo + 4;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
                     }
-                    else if (TrialNo <= 15)
+                    else if (TrialNo <= 12)
                     {
-                        QuestionID = TrialNo - 5;
+                        QuestionID = TrialNo - 4;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Body;
@@ -233,7 +233,7 @@ public class ExperimentManager : MonoBehaviour
                     }
                     else
                     {
-                        QuestionID = TrialNo - 15;
+                        QuestionID = TrialNo - 12;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Shelves;
@@ -241,25 +241,25 @@ public class ExperimentManager : MonoBehaviour
                     }
                     break;
                 case 0:
-                    if (TrialNo <= 5)
+                    if (TrialNo <= 4)
                     {
-                        QuestionID = TrialNo + 10;
+                        QuestionID = TrialNo + 8;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
                     }
-                    else if (TrialNo <= 10)
+                    else if (TrialNo <= 8)
                     {
-                        QuestionID = TrialNo - 5;
+                        QuestionID = TrialNo - 4;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Shelves;
                         CurrentDetailedViewFOR = ReferenceFrames.Shelves;
                     }
-                    else if (TrialNo <= 15)
+                    else if (TrialNo <= 12)
                     {
-                        QuestionID = TrialNo + 5;
+                        QuestionID = TrialNo + 4;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Floor;
@@ -267,7 +267,7 @@ public class ExperimentManager : MonoBehaviour
                     }
                     else
                     {
-                        QuestionID = TrialNo - 10;
+                        QuestionID = TrialNo - 8;
                         CurrentLandmarkParent = LandmarkParent.Find(QuestionID.ToString());
                         CurrentDetailedViewParent = DetailedViewParent.Find(QuestionID.ToString());
                         CurrentLandmarkFOR = ReferenceFrames.Body;
@@ -304,10 +304,10 @@ public class ExperimentManager : MonoBehaviour
     }
 
     public string GetTrialID() {
-        if ((TrialNo - 1) % 5 == 0)
+        if ((TrialNo - 1) % 4 == 0)
             return "Training";
         else
-            return (TrialNo - ((TrialNo - 1) / 5) - 1).ToString();
+            return (TrialNo - ((TrialNo - 1) / 4) - 1).ToString();
     }
 
     #endregion
@@ -367,7 +367,7 @@ public class ExperimentManager : MonoBehaviour
             }
         }
         else {
-            if (TrialNo <= 20)
+            if (TrialNo <= 16)
             {
                 NextBtnPressed = true;
                 timer = 0;

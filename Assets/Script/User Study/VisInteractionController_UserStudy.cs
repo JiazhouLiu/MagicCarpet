@@ -315,9 +315,9 @@ public class VisInteractionController_UserStudy : MonoBehaviour
             {
                 transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3((1f - DC.LandmarkSizeOnGround / 2), transform.localPosition.y, transform.localPosition.z), 10 * Time.deltaTime);
             }
-            if (transform.localPosition.z < (0f + DC.LandmarkSizeOnGround / 2))// too far to the back
+            if (transform.localPosition.z < (-0.5f + DC.LandmarkSizeOnGround / 2))// too far to the back
             {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, (0f + DC.LandmarkSizeOnGround / 2)), 10 * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, (-0.5f + DC.LandmarkSizeOnGround / 2)), 10 * Time.deltaTime);
             }
             if (transform.localPosition.z > (1f - DC.LandmarkSizeOnGround / 2)) // too far to the front
             {

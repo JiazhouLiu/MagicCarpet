@@ -214,7 +214,7 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         {
             landmarkSize = DC_UserStudy.LandmarkSizeOnGround;
             tmpPosition = new Vector3(Random.Range(-1f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1f - (DC_UserStudy.LandmarkSizeOnGround / 2)), 0.1f, 
-                Random.Range(0f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1f - (DC_UserStudy.LandmarkSizeOnGround / 2)));
+                Random.Range(-0.5f + (DC_UserStudy.LandmarkSizeOnGround / 2), 1f - (DC_UserStudy.LandmarkSizeOnGround / 2)));
         }
         else if (currentRF == ReferenceFrames.Shelves)
         {
