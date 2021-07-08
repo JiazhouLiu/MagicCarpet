@@ -23,12 +23,10 @@ public class TaskManager : MonoBehaviour
     private int prevQuestionID;
     [HideInInspector]
     public bool Answered = false;
-
-    private bool QuestionButtonUsed = false;
-    private bool AnswerButtonUsed = false;
+    [HideInInspector]
+    public bool initialised = false;
 
     private char lineSeperater = '\n'; // It defines line seperate character
-    private char fieldSeperator = ','; // It defines field seperate chracter
     private char AlineSeperater = '&';
 
     // Start is called before the first frame update
@@ -47,6 +45,21 @@ public class TaskManager : MonoBehaviour
         if (questionID != prevQuestionID) {
             prevQuestionID = questionID;
             UpdateUI(questionID);
+        }
+
+        if (!initialised && Camera.main != null) {
+            initialised = true;
+
+            Vector3 oldAngle = Camera.main.transform.eulerAngles;
+            Camera.main.transform.eulerAngles = new Vector3(0, oldAngle.y, oldAngle.z);
+            Vector3 forward = Camera.main.transform.forward;
+            Camera.main.transform.eulerAngles = oldAngle;
+
+            transform.position = Camera.main.transform.TransformPoint(Vector3.zero) + forward * EM.armLength;
+            transform.position -= Vector3.up * 0.1f;
+
+            transform.LookAt(Camera.main.transform);
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x - 90, transform.localEulerAngles.y, transform.localEulerAngles.z + 180);
         }
     }
 

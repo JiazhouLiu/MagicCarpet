@@ -10593,16 +10593,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: TaskBoard
       objectReference: {fileID: 0}
-    - target: {fileID: 49123165228625283, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 49123165228625284, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: TrainingScene
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 49123165228625284, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: EM
@@ -10616,7 +10606,7 @@ PrefabInstance:
     - target: {fileID: 49123165228625285, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.03
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 49123165228625285, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
@@ -10662,11 +10652,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 49123166072235178, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 48
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac18890a09c106e4681eeed2cd1c504f, type: 3}

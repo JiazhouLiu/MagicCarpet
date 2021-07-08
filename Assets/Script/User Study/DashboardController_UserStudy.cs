@@ -502,8 +502,8 @@ public class DashboardController_UserStudy : MonoBehaviour
         foreach (Transform landmark in currentLandmarks.Values)
         {
             names += landmark.name + ",";
-            positions += "(" + landmark.position.x + ";" + landmark.position.y + ";" + landmark.position.z + "),";
-            rotations += "(" + landmark.eulerAngles.x + ";" + landmark.eulerAngles.y + ";" + landmark.eulerAngles.z + "),";
+            positions += landmark.position.x + "," + landmark.position.y + "," + landmark.position.z + ",";
+            rotations += landmark.eulerAngles.x + "," + landmark.eulerAngles.y + "," + landmark.eulerAngles.z + ",";
 
             Light highlighter = landmark.GetChild(2).GetComponent<Light>();
             if (landmark.GetComponent<Vis>().Moving)

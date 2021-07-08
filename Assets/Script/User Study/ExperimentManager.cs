@@ -64,8 +64,8 @@ public class ExperimentManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        leftControllerEvents.ButtonOneReleased += LeftTaskBoardToggle;
-        rightControllerEvents.ButtonOneReleased += RightTaskBoardToggle;
+        //leftControllerEvents.ButtonOneReleased += LeftTaskBoardToggle;
+        //rightControllerEvents.ButtonOneReleased += RightTaskBoardToggle;
     }
 
     // Update is called once per frame
@@ -313,36 +313,36 @@ public class ExperimentManager : MonoBehaviour
     #endregion
 
     #region Setter functions
-    private void LeftTaskBoardToggle(object sender, ControllerInteractionEventArgs e) {
-        if (TaskBoard.gameObject.activeSelf)
-        {
-            logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Hide");
-            TaskBoard.gameObject.SetActive(false);
-        }
-        else
-        {
-            logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Show");
-            TaskBoard.gameObject.SetActive(true);
-            TaskBoard.SetParent(leftHand);
-            TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
-            TaskBoard.localEulerAngles = Vector3.zero;
-        }
-    }
+    //private void LeftTaskBoardToggle(object sender, ControllerInteractionEventArgs e) {
+    //    if (TaskBoard.gameObject.activeSelf)
+    //    {
+    //        logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Hide");
+    //        TaskBoard.gameObject.SetActive(false);
+    //    }
+    //    else
+    //    {
+    //        logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Show");
+    //        TaskBoard.gameObject.SetActive(true);
+    //        TaskBoard.SetParent(leftHand);
+    //        TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
+    //        TaskBoard.localEulerAngles = Vector3.zero;
+    //    }
+    //}
 
-    private void RightTaskBoardToggle(object sender, ControllerInteractionEventArgs e)
-    {
-        if (TaskBoard.gameObject.activeSelf) {
-            logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Hide");
-            TaskBoard.gameObject.SetActive(false);
-        }
-        else {
-            logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Show");
-            TaskBoard.gameObject.SetActive(true);
-            TaskBoard.SetParent(rightHand);
-            TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
-            TaskBoard.localEulerAngles = Vector3.zero;
-        }
-    }
+    //private void RightTaskBoardToggle(object sender, ControllerInteractionEventArgs e)
+    //{
+    //    if (TaskBoard.gameObject.activeSelf) {
+    //        logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Hide");
+    //        TaskBoard.gameObject.SetActive(false);
+    //    }
+    //    else {
+    //        logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Show");
+    //        TaskBoard.gameObject.SetActive(true);
+    //        TaskBoard.SetParent(rightHand);
+    //        TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
+    //        TaskBoard.localEulerAngles = Vector3.zero;
+    //    }
+    //}
 
     public void UpdateTrialID() {
         NextBtnPressed = true;
@@ -360,6 +360,7 @@ public class ExperimentManager : MonoBehaviour
                 timer = 0;
                 timerPaused = false;
                 vibFlag = false;
+                TaskBoard.GetComponent<TaskManager>().initialised = false;
             }
             else
             {
@@ -373,6 +374,7 @@ public class ExperimentManager : MonoBehaviour
                 timer = 0;
                 timerPaused = false;
                 vibFlag = false;
+                TaskBoard.GetComponent<TaskManager>().initialised = false;
             }
             else
             {

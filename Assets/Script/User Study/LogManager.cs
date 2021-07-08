@@ -85,9 +85,14 @@ public class LogManager : MonoBehaviour
             // Answers data log
             writerTask = new StreamWriter(writerTaskFilePath, false);
             string taskFileHeader = "TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView," +
+                "TaskboardPosition.x,TaskboardPosition.y,TaskboardPosition.z,TaskboardRotation.x,TaskboardRotation.y,TaskboardRotation.z," + 
                 "Landmark1Name,Landmark2Name,Landmark3Name,Landmark4Name,Landmark5Name,Landmark6Name," +
-                "Landmark1Pos,Landmark2Pos,Landmark3Pos,Landmark4Pos,Landmark5Pos,Landmark6Pos," +
-                "Landmark1Rot,Landmark2Rot,Landmark3Rot,Landmark4Rot,Landmark5Rot,Landmark6Rot," +
+                "Landmark1Position.x,Landmark1Position.y,Landmark1Position.z,Landmark2Position.x,Landmark2Position.y,Landmark2Position.z," +
+                "Landmark3Position.x,Landmark3Position.y,Landmark3Position.z,Landmark4Position.x,Landmark4Position.y,Landmark4Position.z," +
+                "Landmark5Position.x,Landmark5Position.y,Landmark5Position.z,Landmark6Position.x,Landmark6Position.y,Landmark6Position.z," +
+                "Landmark1Rotation.x,Landmark1Rotation.y,Landmark1Rotation.z,Landmark2Rotation.x,Landmark2Rotation.y,Landmark2Rotation.z," +
+                "Landmark3Rotation.x,Landmark3Rotation.y,Landmark3Rotation.z,Landmark4Rotation.x,Landmark4Rotation.y,Landmark4Rotation.z," +
+                "Landmark5Rotation.x,Landmark5Rotation.y,Landmark5Rotation.z,Landmark6Rotation.x,Landmark6Rotation.y,Landmark6Rotation.z," +
                 "Landmark1State,Landmark2State,Landmark3State,Landmark4State,Landmark5State,Landmark6State";
             writerTask.WriteLine(taskFileHeader);
             //writerTask.Close();
@@ -166,6 +171,7 @@ public class LogManager : MonoBehaviour
         if (writerTask != null)
         {
             writerTask.WriteLine(GetFixedTime() + "," + GetTrialNumber() + "," + GetTrialID() + "," + EM.ParticipantID + "," + GetLandmark() + "," + GetDetailedView() + "," +
+                VectorToString(TM.transform.position) + "," + VectorToString(TM.transform.eulerAngles) + "," +
                 GetLandmarkName() + "," + GetLandmarkPosition() + "," + GetLandmarkRotation() + "," + GetLandmarkState());
             writerTask.Flush();
         }
