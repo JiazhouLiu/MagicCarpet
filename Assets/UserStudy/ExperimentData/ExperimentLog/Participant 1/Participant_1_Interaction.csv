@@ -1,3 +1,17 @@
 TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction,Details
-120,1,Training,1,Shelves,Shelves,TaskBoard,Left Taskboard Show
-133.34,1,Training,1,Shelves,Shelves,Completion,133.3725
+22.91974,1,Training,1,Shelves,Shelves,Completion,22.94948
+24.81973,2,1,1,Shelves,Shelves,Completion,1.894218
+26.5197,3,2,1,Shelves,Shelves,Completion,1.700397
+29.23079,4,3,1,Shelves,Shelves,Completion,2.711441
+30.53077,5,Training,1,Body,Shelves,Completion,1.299821
+31.74187,6,4,1,Body,Shelves,Completion,1.215114
+32.67519,7,5,1,Body,Shelves,Completion,0.9256605
+33.46407,8,6,1,Body,Shelves,Completion,0.7927037
+34.35295,9,Training,1,Floor,Shelves,Completion,0.8924416
+35.07516,10,7,1,Floor,Shelves,Completion,0.7185842
+35.55294,11,8,1,Floor,Shelves,Completion,0.4771751
+36.03071,12,9,1,Floor,Shelves,Completion,0.4775995
+36.60848,13,Training,1,Floor,Body,Completion,0.5778593
+37.14181,14,10,1,Floor,Body,Completion,0.5339214
+37.59736,15,11,1,Floor,Body,Completion,0.4549364
+38.10847,16,12,1,Floor,Body,Completion,0.5148893

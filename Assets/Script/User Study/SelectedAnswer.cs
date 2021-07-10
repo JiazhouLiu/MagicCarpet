@@ -11,6 +11,10 @@ public class SelectedAnswer : MonoBehaviour
     [SerializeField]
     private VRTK_InteractableObject interactableObject;
     [SerializeField]
+    private VRTK_ControllerEvents leftCE;
+    [SerializeField]
+    private VRTK_ControllerEvents rightCE;
+    [SerializeField]
     private bool selected;
 
     private bool selecting = false;
@@ -28,21 +32,13 @@ public class SelectedAnswer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (selected) {
-            if (TM.transform.parent.name.Contains("left"))
-                SteamVR_Controller.Input(TM.EM.rightHandIndex).TriggerHapticPulse(1500);
-            else
-                SteamVR_Controller.Input(TM.EM.leftHandIndex).TriggerHapticPulse(1500);
-
+        if (selected)
             transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 0.01f, transform.localPosition.z), Time.deltaTime * 10);
-        }
         else
             transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, 1f, transform.localPosition.z), Time.deltaTime * 10);
 
         if (interactableObject.IsUsing())
-        {
             selecting = true;
-        }
         else
         {
             if (selecting) {
@@ -50,6 +46,11 @@ public class SelectedAnswer : MonoBehaviour
                 ButtonFunction();
             }
         }
+
+        if (leftCE.triggerClicked)
+            SteamVR_Controller.Input(TM.EM.leftHandIndex).TriggerHapticPulse(1500);
+        if (rightCE.triggerClicked)
+            SteamVR_Controller.Input(TM.EM.rightHandIndex).TriggerHapticPulse(1500);
     }
 
     private void ButtonFunction() {
@@ -67,7 +68,6 @@ public class SelectedAnswer : MonoBehaviour
                 TM.RedoButton.gameObject.SetActive(false);
 
                 TM.Answered = false;
-                TM.gameObject.SetActive(false);
                 TM.EM.NextQuestion();
                 break;
             case "GoBack":
