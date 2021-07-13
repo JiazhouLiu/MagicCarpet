@@ -45,7 +45,6 @@ public class ExperimentManager : MonoBehaviour
     [HideInInspector]
     public bool PrevBtnPressed = false;
 
-
     [Header("Reference")]
     public Transform LandmarkParent;
     public Transform DetailedViewParent;
@@ -56,17 +55,12 @@ public class ExperimentManager : MonoBehaviour
     private ReferenceFrames CurrentDetailedViewFOR;
 
     private bool startFlag = true;
-    private bool vibFlag = false;
 
     private float timer = 0;
     private bool timerPaused = false;
 
     // Start is called before the first frame update
-    void Start()
-    {
-        //leftControllerEvents.ButtonOneReleased += LeftTaskBoardToggle;
-        //rightControllerEvents.ButtonOneReleased += RightTaskBoardToggle;
-    }
+    void Start(){}
 
     // Update is called once per frame
     void Update()
@@ -91,29 +85,23 @@ public class ExperimentManager : MonoBehaviour
             PrevBtnPressed = false;
         }
 
-        if (!timerPaused)
+        if (!timerPaused) // run timer
             timer += Time.deltaTime;
 
-        if (timer > 120 && !vibFlag) { // if over 2 min, vibration and show question board
-            vibFlag = true;
-
-            logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Show");
-            TaskBoard.gameObject.SetActive(true);
-            TaskBoard.SetParent(leftHand);
-            TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
-            TaskBoard.localEulerAngles = Vector3.zero;
-        }
-
-        if (timer > 120 && timer <= 122) {
+        if (timer > 120 && timer <= 122) // vibration notification
+        {
             SteamVR_Controller.Input(leftHandIndex).TriggerHapticPulse(1500);
             SteamVR_Controller.Input(rightHandIndex).TriggerHapticPulse(1500);
         }
 
-        if (Input.GetKeyDown("n"))
+        if (Input.GetKeyDown("n")) // next task
             NextQuestion();
 
-        if (Input.GetKeyDown("p"))
+        if (Input.GetKeyDown("p")) // previous task
             PrevQuestion();
+
+        if(Input.GetKeyDown("r")) // reset task board position
+            TaskBoard.GetComponent<TaskManager>().initialised = false;
     }
 
     #region Getter functions
@@ -313,37 +301,6 @@ public class ExperimentManager : MonoBehaviour
     #endregion
 
     #region Setter functions
-    //private void LeftTaskBoardToggle(object sender, ControllerInteractionEventArgs e) {
-    //    if (TaskBoard.gameObject.activeSelf)
-    //    {
-    //        logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Hide");
-    //        TaskBoard.gameObject.SetActive(false);
-    //    }
-    //    else
-    //    {
-    //        logManager.WriteInteractionToLog("TaskBoard", "Left Taskboard Show");
-    //        TaskBoard.gameObject.SetActive(true);
-    //        TaskBoard.SetParent(leftHand);
-    //        TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
-    //        TaskBoard.localEulerAngles = Vector3.zero;
-    //    }
-    //}
-
-    //private void RightTaskBoardToggle(object sender, ControllerInteractionEventArgs e)
-    //{
-    //    if (TaskBoard.gameObject.activeSelf) {
-    //        logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Hide");
-    //        TaskBoard.gameObject.SetActive(false);
-    //    }
-    //    else {
-    //        logManager.WriteInteractionToLog("TaskBoard", "Right Taskboard Show");
-    //        TaskBoard.gameObject.SetActive(true);
-    //        TaskBoard.SetParent(rightHand);
-    //        TaskBoard.localPosition = new Vector3(0, 0.03f, 0);
-    //        TaskBoard.localEulerAngles = Vector3.zero;
-    //    }
-    //}
-
     public void UpdateTrialID() {
         NextBtnPressed = true;
     }
@@ -359,13 +316,10 @@ public class ExperimentManager : MonoBehaviour
                 NextBtnPressed = true;
                 timer = 0;
                 timerPaused = false;
-                vibFlag = false;
                 TaskBoard.GetComponent<TaskManager>().initialised = false;
             }
             else
-            {
                 logManager.QuitGame();
-            }
         }
         else {
             if (TrialNo <= 16)
@@ -373,13 +327,10 @@ public class ExperimentManager : MonoBehaviour
                 NextBtnPressed = true;
                 timer = 0;
                 timerPaused = false;
-                vibFlag = false;
                 TaskBoard.GetComponent<TaskManager>().initialised = false;
             }
             else
-            {
                 logManager.QuitGame();
-            }
         }
     }
 
@@ -394,12 +345,9 @@ public class ExperimentManager : MonoBehaviour
                 PrevBtnPressed = true;
                 timer = 0;
                 timerPaused = false;
-                vibFlag = false;
             }
             else
-            {
                 logManager.QuitGame();
-            }
         }
         else
         {
@@ -408,13 +356,15 @@ public class ExperimentManager : MonoBehaviour
                 PrevBtnPressed = true;
                 timer = 0;
                 timerPaused = false;
-                vibFlag = false;
             }
             else
-            {
                 logManager.QuitGame();
-            }
         }
+    }
+    public void StartTimer()
+    {
+        timer = 0;
+        timerPaused = false;
     }
 
     public void PauseTimer() {

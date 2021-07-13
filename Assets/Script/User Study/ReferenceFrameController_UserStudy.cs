@@ -43,15 +43,6 @@ public class ReferenceFrameController_UserStudy : MonoBehaviour
         if (DC_UserStudy.DetailedView == ReferenceFrames.Body && 
             display == DisplayDashboard.HeadDisplay && CameraTransform != null)
         {// script for head-level dashboard
-
-            //Vector3 oldAngle = CameraTransform.eulerAngles;
-            //CameraTransform.eulerAngles = new Vector3(0, oldAngle.y, oldAngle.z);
-            //Vector3 forward = CameraTransform.forward;
-            //CameraTransform.eulerAngles = oldAngle;
-
-            //// configure dashboard position 
-            //transform.position = CameraTransform.TransformPoint(Vector3.zero) + forward * ForwardParameter;
-
             Vector3 oldAngle = WaistTransform.eulerAngles;
             WaistTransform.eulerAngles = new Vector3(0, oldAngle.y, oldAngle.z);
             Vector3 forward = WaistTransform.forward;

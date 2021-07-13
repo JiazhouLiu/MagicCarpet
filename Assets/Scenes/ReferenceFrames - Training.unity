@@ -10468,7 +10468,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
   white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
-  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
   yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
   blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
   controller: 1
@@ -10492,7 +10491,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
   white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
-  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
   yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
   blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
   controller: 0
@@ -10678,11 +10676,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 49123164621993507, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 49123164621993508, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: leftCE
@@ -10693,41 +10686,6 @@ PrefabInstance:
       propertyPath: rightCE
       value: 
       objectReference: {fileID: 1791100208}
-    - target: {fileID: 49123164882238798, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 49123164882238799, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: leftCE
-      value: 
-      objectReference: {fileID: 226439762}
-    - target: {fileID: 49123164882238799, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: rightCE
-      value: 
-      objectReference: {fileID: 1791100208}
-    - target: {fileID: 49123164924538435, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 49123164924538436, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: leftCE
-      value: 
-      objectReference: {fileID: 226439762}
-    - target: {fileID: 49123164924538436, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: rightCE
-      value: 
-      objectReference: {fileID: 1791100208}
-    - target: {fileID: 49123165217207788, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 49123165217207789, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: leftCE
@@ -10748,11 +10706,6 @@ PrefabInstance:
       propertyPath: EM
       value: 
       objectReference: {fileID: 1235773801}
-    - target: {fileID: 49123165228625284, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: QuestionFile
-      value: 
-      objectReference: {fileID: 4900000, guid: f342dfc30cd842f47a0dd42cad45880e, type: 3}
     - target: {fileID: 49123165228625285, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10761,7 +10714,7 @@ PrefabInstance:
     - target: {fileID: 49123165228625285, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.355
       objectReference: {fileID: 0}
     - target: {fileID: 49123165228625285, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
@@ -10808,27 +10761,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 49123166072235178, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 45
-      objectReference: {fileID: 0}
-    - target: {fileID: 49123166072235178, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_Text
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 49123166537593330, guid: ac18890a09c106e4681eeed2cd1c504f,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 49123166537593331, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: leftCE
       value: 
       objectReference: {fileID: 226439762}
     - target: {fileID: 49123166537593331, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: rightCE
+      value: 
+      objectReference: {fileID: 1791100208}
+    - target: {fileID: 8121665038867854867, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: leftCE
+      value: 
+      objectReference: {fileID: 226439762}
+    - target: {fileID: 8121665038867854867, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: rightCE
       value: 

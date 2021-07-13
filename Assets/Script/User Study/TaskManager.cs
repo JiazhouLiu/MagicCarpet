@@ -7,9 +7,10 @@ using VRTK;
 public class TaskManager : MonoBehaviour
 {
     public ExperimentManager EM;
+    public Transform StartBoard;
+    public Text StartTitle;
+    public Transform StartButton;
     public Transform AnswerButton;
-    public Transform RedoButton;
-    public Transform NextButton;
     public Transform QuestionBoard;
     public Transform ConfirmBoard;
     public TextAsset QuestionFile;
@@ -21,8 +22,6 @@ public class TaskManager : MonoBehaviour
 
     private int questionID;
     private int prevQuestionID;
-    [HideInInspector]
-    public bool Answered = false;
     [HideInInspector]
     public bool initialised = false;
 
@@ -69,9 +68,14 @@ public class TaskManager : MonoBehaviour
             TitleText.text = "Training Question " + questionID + "/4";
         else {
             if ((EM.TrialNo - 1) % 4 == 0)
+            {
                 TitleText.text = "Training Question " + EM.TrialNo + "/16";
-            else
+                StartTitle.text = "Have a rest please!";
+            }
+            else {
                 TitleText.text = "Experiment Question " + EM.TrialNo + "/16";
+                StartTitle.text = "Are you ready?";
+            }
         }
     }
 

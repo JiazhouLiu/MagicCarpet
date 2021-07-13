@@ -512,7 +512,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
                 grabbedVis += landmark.name + ",";
                 grabNumber++;
-                states += "moving;";
+                states += "moving";
             }
             else if (explicitlySelectedVis.Contains(landmark))
             {
@@ -520,7 +520,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
                 pinnedVis += landmark.name + ",";
                 pinNumber++;
-                states += "grabbing;";
+                states += "grabbing";
             }
             else if (selectedVis.Contains(landmark))
             {
@@ -528,7 +528,7 @@ public class DashboardController_UserStudy : MonoBehaviour
                 landmark.GetComponent<Vis>().Highlighted = true;
                 currentDetailedViews[landmark.name].GetComponent<Vis>().Highlighted = true;
                 landmark.GetChild(2).GetComponent<HDAdditionalLightData>().SetIntensity(highlighterIntensity);
-                states += "highlighting;";
+                states += "highlighting";
             }
             else
             {

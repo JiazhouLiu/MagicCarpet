@@ -40,14 +40,8 @@ public class VisInteractionController_UserStudy : MonoBehaviour
 
     private Vector3 closestPointOnSphere = Vector3.zero;
 
-    private int loopCount = 0;
-    List<Transform> landmarks;
-
-
     private void Awake()
     {
-
-        landmarks = new List<Transform>();
         // Subscribe to events
         interactableObject.InteractableObjectGrabbed -= VisGrabbed;
         interactableObject.InteractableObjectGrabbed += VisGrabbed;
@@ -68,9 +62,7 @@ public class VisInteractionController_UserStudy : MonoBehaviour
         if (interactableObject.IsGrabbed())
         {
             logManager.WriteInteractionToLog("Hand Interaction", name + " Grabbed");
-            //transform.localScale = Vector3.one * 0.5f;
-            //transform.localEulerAngles = new Vector3(45, 0, 0);
-            //lastRotation = DC.TableTopDisplay.InverseTransformPoint(transform.eulerAngles);
+
             if (DC.Landmark == ReferenceFrames.Shelves)
             {
                 Quaternion localRotation = Quaternion.Inverse(EM.TableTopDisplay.rotation) * transform.rotation;

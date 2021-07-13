@@ -10561,7 +10561,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &492077268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15195,6 +15195,11 @@ PrefabInstance:
       propertyPath: TrainingScene
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 49123165228625284, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: QuestionFile
+      value: 
+      objectReference: {fileID: 4900000, guid: e5e2aa89bd100674b9d72e4336e88c39, type: 3}
     - target: {fileID: 49123165228625285, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -15261,6 +15266,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 226439762}
     - target: {fileID: 49123166537593331, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: rightCE
+      value: 
+      objectReference: {fileID: 1791100208}
+    - target: {fileID: 8121665038867854867, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: leftCE
+      value: 
+      objectReference: {fileID: 226439762}
+    - target: {fileID: 8121665038867854867, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: rightCE
       value: 
@@ -32121,7 +32136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1732189143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36343,7 +36358,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
   white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
-  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
   yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
   blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
   controller: 0
@@ -36361,7 +36375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectTooltip: {fileID: 182086, guid: 9ab61c80dfd411f4c86b8553b0c42cf1, type: 3}
   white: {fileID: 2100000, guid: 4cc05c7daaa866f4d9fa89735c459622, type: 2}
-  green: {fileID: 2100000, guid: c390fb0de46b2c64485323027793d887, type: 2}
   yellow: {fileID: 2100000, guid: 72864ed423e17c0408be57285e7ef97c, type: 2}
   blue: {fileID: 2100000, guid: 9696b9578353e7c4d808e67b4d911646, type: 2}
   controller: 0
@@ -38572,7 +38585,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2078243980}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d85a6052e9a16e41bbbc3e03d1ab729, type: 3}
   m_Name: 

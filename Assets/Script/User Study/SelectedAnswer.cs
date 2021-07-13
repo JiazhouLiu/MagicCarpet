@@ -24,9 +24,7 @@ public class SelectedAnswer : MonoBehaviour
     {
         // Subscribe to events
         interactableObject.InteractableObjectUsed -= VisUsed;
-        //interactableObject.InteractableObjectUnused -= VisUnused;
         interactableObject.InteractableObjectUsed += VisUsed;
-        //interactableObject.InteractableObjectUnused += VisUnused;
     }
 
     // Update is called once per frame
@@ -56,142 +54,46 @@ public class SelectedAnswer : MonoBehaviour
     private void ButtonFunction() {
         switch (name)
         {
+            case "Start":
+                TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Start");
+                selected = false;
+
+                TM.StartBoard.gameObject.SetActive(false); // hide start board
+                TM.QuestionBoard.gameObject.SetActive(true); // show question board
+
+                TM.EM.StartTimer(); // start timer
+                break;
+            case "Answer":
+                TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Answer");
+                selected = false;
+
+                TM.ConfirmBoard.gameObject.SetActive(true); // show confirmation board
+                TM.QuestionBoard.gameObject.SetActive(false); // hide question board
+
+                TM.EM.PauseTimer(); // pause timer
+                break;
             case "Confirm":
                 TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Confirm");
                 selected = false;
 
-                TM.ConfirmBoard.gameObject.SetActive(false);
-                TM.QuestionBoard.gameObject.SetActive(true);
+                TM.StartBoard.gameObject.SetActive(true); // show start board
+                TM.ConfirmBoard.gameObject.SetActive(false); // hide confirmation board
 
-                TM.AnswerButton.gameObject.SetActive(true);
-                TM.NextButton.gameObject.SetActive(false);
-                TM.RedoButton.gameObject.SetActive(false);
-
-                TM.Answered = false;
-                TM.EM.NextQuestion();
+                TM.EM.NextQuestion(); // next question
                 break;
             case "GoBack":
                 TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Go Back");
 
                 selected = false;
-                TM.ConfirmBoard.gameObject.SetActive(false);
-                TM.QuestionBoard.gameObject.SetActive(true);
+                TM.ConfirmBoard.gameObject.SetActive(false); // hide confirmation board
+                TM.QuestionBoard.gameObject.SetActive(true); // show question board
 
-                TM.AnswerButton.gameObject.SetActive(true);
-                TM.NextButton.gameObject.SetActive(false);
-                TM.RedoButton.gameObject.SetActive(false);
-
-                TM.EM.ResumeTimer();
-                break;
-            case "Answer":
-                TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Answer");
-
-                selected = false;
-                TM.AnswerButton.gameObject.SetActive(false);
-                TM.NextButton.gameObject.SetActive(true);
-                TM.RedoButton.gameObject.SetActive(true);
-
-                TM.EM.PauseTimer();
-                break;
-            case "Re-do":
-                TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Re-do");
-
-                selected = false;
-                TM.ConfirmBoard.gameObject.SetActive(false);
-                TM.QuestionBoard.gameObject.SetActive(true);
-
-                TM.AnswerButton.gameObject.SetActive(true);
-                TM.NextButton.gameObject.SetActive(false);
-                TM.RedoButton.gameObject.SetActive(false);
-
-                TM.EM.ResumeTimer();
-                break;
-            case "Next":
-                TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Next");
-
-                selected = false;
-                TM.ConfirmBoard.gameObject.SetActive(true);
-                TM.QuestionBoard.gameObject.SetActive(false);
-
-                TM.AnswerButton.gameObject.SetActive(true);
-                TM.NextButton.gameObject.SetActive(false);
-                TM.RedoButton.gameObject.SetActive(false);
+                TM.EM.ResumeTimer(); // resume timer
                 break;
             default:
                 break;
         }
     }
-
-    //private void VisUnused(object sender, InteractableObjectEventArgs e) {
-    //    switch (name)
-    //    {
-    //        case "Confirm":
-    //            TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Confirm");
-    //            selected = false;
-                
-    //            TM.ConfirmBoard.gameObject.SetActive(false);
-    //            TM.QuestionBoard.gameObject.SetActive(true);
-
-    //            TM.AnswerButton.gameObject.SetActive(true);
-    //            TM.NextButton.gameObject.SetActive(false);
-    //            TM.RedoButton.gameObject.SetActive(false);
-
-    //            TM.Answered = false;
-    //            TM.gameObject.SetActive(false);
-    //            TM.EM.NextQuestion();
-    //            break;
-    //        case "GoBack":
-    //            TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Go Back");
-
-    //            selected = false;
-    //            TM.ConfirmBoard.gameObject.SetActive(false);
-    //            TM.QuestionBoard.gameObject.SetActive(true);
-
-    //            TM.AnswerButton.gameObject.SetActive(true);
-    //            TM.NextButton.gameObject.SetActive(false);
-    //            TM.RedoButton.gameObject.SetActive(false);
-
-    //            TM.EM.ResumeTimer();
-    //            break;
-    //        case "Answer":
-    //            TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Answer");
-
-    //            selected = false;
-    //            TM.AnswerButton.gameObject.SetActive(false);
-    //            TM.NextButton.gameObject.SetActive(true);
-    //            TM.RedoButton.gameObject.SetActive(true);
-
-    //            TM.EM.PauseTimer();
-    //            break;
-    //        case "Re-do":
-    //            TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Re-do");
-
-    //            selected = false;
-    //            TM.ConfirmBoard.gameObject.SetActive(false);
-    //            TM.QuestionBoard.gameObject.SetActive(true);
-
-    //            TM.AnswerButton.gameObject.SetActive(true);
-    //            TM.NextButton.gameObject.SetActive(false);
-    //            TM.RedoButton.gameObject.SetActive(false);
-
-    //            TM.EM.ResumeTimer();
-    //            break;
-    //        case "Next":
-    //            TM.EM.logManager.WriteInteractionToLog("TaskBoard Button", "Next");
-
-    //            selected = false;
-    //            TM.ConfirmBoard.gameObject.SetActive(true);
-    //            TM.QuestionBoard.gameObject.SetActive(false);
-
-    //            TM.AnswerButton.gameObject.SetActive(true);
-    //            TM.NextButton.gameObject.SetActive(false);
-    //            TM.RedoButton.gameObject.SetActive(false);
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
-
     private void VisUsed(object sender, InteractableObjectEventArgs e)
     {
         if (selected)

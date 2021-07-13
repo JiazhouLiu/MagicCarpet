@@ -10,7 +10,6 @@ public class ControllerColor : MonoBehaviour
 
     public GameObject ObjectTooltip;
     public Material white;
-    public Material green;
     public Material yellow;
     public Material blue;
     public Controller controller;
@@ -46,6 +45,10 @@ public class ControllerColor : MonoBehaviour
                 yButton.GetComponent<MeshRenderer>().material = white;
             if (bButton != null)
                 bButton.GetComponent<MeshRenderer>().material = white;
+            if (Xbutton != null)
+                Xbutton.GetComponent<MeshRenderer>().material = white;
+            if (Abutton != null)
+                Abutton.GetComponent<MeshRenderer>().material = white;
 
             if (handgrip != null)
             {
@@ -93,34 +96,7 @@ public class ControllerColor : MonoBehaviour
                 trigger.GetComponent<MeshRenderer>().material = blue;
             }
 
-            if (Xbutton != null)
-            {
-                if (Xbutton.GetChild(0).childCount == 0)
-                {
-                    GameObject tooltip = Instantiate(ObjectTooltip, new Vector3(0, 0, 0), Quaternion.identity, Xbutton.GetChild(0));
-                    tooltip.transform.eulerAngles = transform.eulerAngles;
-                    tooltip.transform.localEulerAngles += Vector3.left * 90;
-                    tooltip.transform.localPosition = new Vector3(-0.05f, -0.01f, -0.005f);
-
-                    tooltip.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Task";
-                    tooltip.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = "Task";
-                }
-                Xbutton.GetComponent<MeshRenderer>().material = green;
-            }
-
-            if (Abutton != null)
-            {
-                if (Abutton.GetChild(0).childCount == 0)
-                {
-                    GameObject tooltip = Instantiate(ObjectTooltip, new Vector3(0, 0, 0), Quaternion.identity, Abutton.GetChild(0));
-                    tooltip.transform.localEulerAngles = new Vector3(-100, 0, 0);
-                    tooltip.transform.localPosition = new Vector3(-0.05f, -0.02f, -0.01f);
-
-                    tooltip.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Task";
-                    tooltip.transform.GetChild(1).GetChild(2).GetComponent<Text>().text = "Task";
-                }
-                Abutton.GetComponent<MeshRenderer>().material = green;
-            }
+            
         }
     }
 }
