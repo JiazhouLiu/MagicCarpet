@@ -4374,7 +4374,7 @@ MonoBehaviour:
   rightSR: {fileID: 3964280016841834271}
   rightPressFeedback: {fileID: 185994227}
   rightFeedbackCircle: {fileID: 1643894674}
-  pressToSelectThresholdLeft: 0
+  pressToSelectThresholdLeft: 100
   holdThresholdLeft: 500
   releaseThresholdLeft: 1000
   pressToSelectThresholdRight: 0
@@ -7750,7 +7750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParticipantID: 0
-  TrialNo: 2
+  TrialNo: 3
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
   leftHandIndex: 1

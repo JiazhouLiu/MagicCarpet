@@ -87,8 +87,6 @@ public class ShoeRecieve : MonoBehaviour
         yield return new WaitForSeconds(1f);
         CheckPortThread = new Thread(new ThreadStart(TryPort));
         CheckPortThread.Start();
-
-
     }
 
     void ReadSerial()
@@ -97,7 +95,7 @@ public class ShoeRecieve : MonoBehaviour
         {
             try
             {
-                //Debug.Log(sp.BytesToRead);
+                Debug.Log(sp.BytesToRead);
                 if (sp.BytesToRead > 1)
                 {
 
@@ -114,7 +112,7 @@ public class ShoeRecieve : MonoBehaviour
                 continue;
                 //ReadThread.Abort();
             }
-            //Thread.Sleep(100);
+            Thread.Sleep(100);
         }
     }
 

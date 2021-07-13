@@ -116,7 +116,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 rightHoldingFlag = false;
         }
 
-        if (Vector3.Distance(leftFoot.position, previousLeftPosition) > 0.005f && leftHoldingFlag) // left moving
+        if (Vector3.Distance(leftFoot.position, previousLeftPosition) > 0.005f && leftHoldingFlag && !rightMoving) // left moving
             leftMoving = true;
         else if (Vector3.Distance(leftFoot.position, previousLeftPosition) <= 0.005f && leftSR.value.Length > 0 && int.Parse(leftSR.value) > releaseThresholdLeft) // left still
             leftMoving = false;
@@ -124,7 +124,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
         if(leftFoot.position.y > 0.1f)
             leftMoving = false;
 
-        if (Vector3.Distance(rightFoot.position, previousRightPosition) > 0.005f && rightHoldingFlag) // right moving
+        if (Vector3.Distance(rightFoot.position, previousRightPosition) > 0.005f && rightHoldingFlag && !leftMoving) // right moving
             rightMoving = true;
         else if (Vector3.Distance(rightFoot.position, previousRightPosition) <= 0.005f && rightSR.value.Length > 0 && int.Parse(rightSR.value) > releaseThresholdRight) // right still
             rightMoving = false;
@@ -174,11 +174,13 @@ public class FootGestureController_UserStudy : MonoBehaviour
 
     private void RunPressToSlide()
     {
-        if (leftMoving)
+        if (leftMoving && !rightMoving)
         {
+            Debug.Log("left moving");
             if (leftFootToeCollision.TouchedObjs.Count > 0)
             {
                 movingOBJ = leftFootToeCollision.TouchedObjs[0];
+                Debug.Log("moving OBJ: " + movingOBJ.name);
 
                 if (movingOBJ.parent != leftFoot) {
                     movingOBJ.parent = leftFoot;
@@ -190,16 +192,7 @@ public class FootGestureController_UserStudy : MonoBehaviour
             }
             
         }
-        else
-        {
-            if (movingOBJ != null) {
-                movingOBJ.parent = EM.GroundDisplay;
-                movingOBJ.GetComponent<Vis>().Moving = false;
-                previousMovingPosition = Vector3.zero;
-            }                
-        }
-
-        if (rightMoving)
+        else if (!leftMoving && rightMoving)
         {
             if (rightFootToeCollision.TouchedObjs.Count > 0)
             {
@@ -214,17 +207,17 @@ public class FootGestureController_UserStudy : MonoBehaviour
                 logManager.WriteInteractionToLog("Foot Interaction", "Right Sliding " + movingOBJ.name);
                 previousMovingPosition = movingOBJ.position;
             }
-            
+
         }
-        else
+        else if (!leftMoving && !rightMoving)
         {
-            if (movingOBJ != null)
-            {
+            if (movingOBJ != null) {
                 movingOBJ.parent = EM.GroundDisplay;
                 movingOBJ.GetComponent<Vis>().Moving = false;
                 previousMovingPosition = Vector3.zero;
-            }
+            }                
         }
+
 
         if (previousMovingPosition != Vector3.zero && Vector3.Distance(previousMovingPosition, movingOBJ.position) > 0.5f)
         {
