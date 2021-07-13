@@ -6,80 +6,48 @@ public class ViconMixedRealityCalibration : MonoBehaviour
 {
     /* This is to automatically match the vicon and HPReverbG2 worlds. You will need the two 3d printed controllerframes to be tracking in vicon, and the left and right 
       controllers turned on and sitting inside them, rotated so that the internal posts are nudged up against the controller. Only one way they can sit.
-      You will need to add left and right controllers as children of Cameraoffset in XRrig, and add tracked posedriver to them. 
+      You will need to add left and right controllers as children of Cameraoffset in XRrig, and add tracked posedriver to them. Or if using another Vr sdk, there should be a camera parent, and two controller positions. 
       
       Place reasonable distance apart, but will probably both need to be in view of the headset.
-      There is a 5/10 second delay to allow both controllers to be on and tracked by the headset. Will probably be unpleasant when the world shifts.  
-      XR rig will be rotated on the y axis until the vicon controller frames are of equal distance from their matching frames to get rotation offset, then moved for position offset.
-      Cannot test for equality with floats because of floating point errors, so the distance test might be dumb. Feel free to clean up the algorithm
+      There is a 10 second delay to allow both controllers to be on and tracked by the headset.   
+   
       */
 
     public Transform XRrig;
-    public Transform leftController;
+    public Transform leftController; // mixed reality controllers
     public Transform rightController;
-    public Transform viconLeft;
+    public Transform viconLeft; //tracked vicon frames
     public Transform viconRight;
-    float leftDistance;
-    float rightDistance;
-    bool calibrationInProgress;
-    float ClosestRotationDifference = 100f;
-    float rotationDistance;
-    Vector3 positionOffset = new Vector3();
+
 
     void Start()
     {
         StartCoroutine(Delay());
     }
-    void Update()
-    {
-        if (calibrationInProgress)
-        {
-            leftDistance = Vector3.Distance(viconLeft.position, leftController.position);
-            rightDistance = Vector3.Distance(viconRight.position, rightController.position);
-            rotationDistance = leftDistance - rightDistance;
-            if (rotationDistance > 0.02f ) 
-            {
-                XRrig.eulerAngles = new Vector3(XRrig.eulerAngles.x, XRrig.eulerAngles.y + 0.005f, XRrig.eulerAngles.z);
-                print("WAS Greater" + rotationDistance);//+ "Closest distance is " + ClosestRotationDifference);
-                ClosestRotationDifference = rotationDistance;
-                positionOffset = (viconRight.position - rightController.position);
-                XRrig.position = XRrig.position + positionOffset;
 
-            }
-            else if (rotationDistance < -0.02f)
-            {
-                XRrig.eulerAngles = new Vector3(XRrig.eulerAngles.x, XRrig.eulerAngles.y - 0.005f, XRrig.eulerAngles.z);
-                print("WAS LESS" + rotationDistance);//+ "Closest distance is " + ClosestRotationDifference);
-                ClosestRotationDifference = rotationDistance;
-                positionOffset = (viconRight.position - rightController.position);
-                XRrig.position = XRrig.position + positionOffset;
-            }
-            else
-            {
-                calibrationInProgress = false;
-                print("Rot Calibrated!");
-                positionOffset = (viconRight.position - rightController.position);
-                XRrig.position = XRrig.position + positionOffset;
-            }
-          //  print(rotationDistance);
-        }
-        //leftDistance = Vector3.Distance(viconLeft.position, leftController.position);
-        //rightDistance = Vector3.Distance(viconRight.position, rightController.position);
-        //rotationDistance = Mathf.Abs(leftDistance - rightDistance);
-        // print(rotationDistance);
-        // print("rightDistance is" + rightDistance.ToString("F4"));
-        //leftDistance = Vector3.Distance(viconLeft.position, leftController.position);
-        //rightDistance = Vector3.Distance(viconRight.position, rightController.position);
-        //rotationDistance = leftDistance - rightDistance;
-       // print(rotationDistance);
-    }
     IEnumerator Delay()
     {
         yield return new WaitForSeconds(10f);
-        calibrationInProgress = true;
-
-
+        ApplyOffset();
 
     }
-    
+    void ApplyOffset()
+    {
+        //Get the angle of the tracked vicon controller frames
+        Vector3 viconVector = viconLeft.position - viconRight.position;
+        float viconAngle = Vector3.SignedAngle(viconVector, Vector3.forward, Vector3.up);
+
+        // Get the angle of the XR controllers
+        Vector3 controllerVector = leftController.position - rightController.position;
+        float controllerAngle = Vector3.SignedAngle(controllerVector, Vector3.forward, Vector3.up);
+
+        // apply rotation offset to the XR camera and controller parent
+        float RotOffset = controllerAngle - viconAngle;
+        XRrig.eulerAngles = new Vector3(XRrig.eulerAngles.x, XRrig.eulerAngles.y + RotOffset, XRrig.eulerAngles.z);
+
+        // apply position offset to xr parent. 
+        Vector3 PosOffset = viconRight.position - rightController.position;
+        XRrig.position += PosOffset;
+        print("Calibrated! Rotated " + RotOffset + " degrees, moved " + PosOffset.ToString("F4"));
+    }
 }

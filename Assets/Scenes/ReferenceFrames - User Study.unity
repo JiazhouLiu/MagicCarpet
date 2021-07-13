@@ -24016,8 +24016,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d9d4df9a31290f468b82a0c2a796f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ParticipantID: 1
-  TrialNo: 0
+  ParticipantID: 2
+  TrialNo: 9
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
   leftHandIndex: 1
@@ -36029,7 +36029,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.034
+      value: -0.046
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
@@ -36039,7 +36039,7 @@ PrefabInstance:
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.063
+      value: 0.009
       objectReference: {fileID: 0}
     - target: {fileID: 5497463615879534379, guid: 56af40b9ce01df345b295050108afc34,
         type: 3}
