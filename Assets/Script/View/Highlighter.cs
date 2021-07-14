@@ -8,6 +8,7 @@ public class Highlighter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetComponent<HDAdditionalLightData>().SetAreaLightSize(new Vector2(transform.parent.localScale.x, transform.parent.localScale.y));
+        if(GetComponent<HDAdditionalLightData>().shapeWidth != transform.parent.localScale.x)
+            GetComponent<HDAdditionalLightData>().SetAreaLightSize(new Vector2(transform.parent.localScale.x, transform.parent.localScale.y));
     }
 }

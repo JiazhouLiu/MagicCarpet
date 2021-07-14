@@ -358,7 +358,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c7585776c6a22da40a0f5f4cc13080a2, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -857,7 +857,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 0
@@ -1153,6 +1153,7 @@ MonoBehaviour:
   currentRigidbody: {fileID: -8006799864392820250}
   backgroundMR: {fileID: 3268269654657033820}
   isGrabbing: 0
+  initialisePosition: 1
 --- !u!114 &6119622426693836558
 MonoBehaviour:
   m_ObjectHideFlags: 0

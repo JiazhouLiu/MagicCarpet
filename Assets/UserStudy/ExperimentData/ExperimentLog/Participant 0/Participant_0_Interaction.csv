@@ -4113,3 +4113,5 @@ TimeSinceStart,TrialNo,TrialID,ParticipantID,Landmark,DetailedView,Interaction,D
 1595.516,3,2,0,Floor,Shelves,Foot Interaction,Left Sliding Vis4
 1603.316,3,2,0,Floor,Shelves,Foot Interaction,Right Foot Press
 1604.816,3,2,0,Floor,Shelves,Foot Interaction,Right Foot Press
+2012.162,3,2,0,Floor,Shelves,Completion,108.2274
+2016.142,4,3,0,Floor,Body,Completion,3.972868
