@@ -12971,9 +12971,9 @@ MonoBehaviour:
   rightSR: {fileID: 3964280016841834271}
   rightPressFeedback: {fileID: 185994227}
   rightFeedbackCircle: {fileID: 1643894674}
-  pressToSelectThresholdLeft: 0
-  holdThresholdLeft: 500
-  releaseThresholdLeft: 1000
+  pressToSelectThresholdLeft: 100
+  holdThresholdLeft: 1000
+  releaseThresholdLeft: 1500
   pressToSelectThresholdRight: 0
   holdThresholdRight: 500
   releaseThresholdRight: 1000
@@ -15685,6 +15685,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 49123165772453955, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 49123166176191766, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 49123166537593330, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: m_LocalScale.y
@@ -15700,6 +15710,11 @@ PrefabInstance:
       propertyPath: rightCE
       value: 
       objectReference: {fileID: 1791100208}
+    - target: {fileID: 6996163938780563560, guid: ac18890a09c106e4681eeed2cd1c504f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8121665038867854867, guid: ac18890a09c106e4681eeed2cd1c504f,
         type: 3}
       propertyPath: leftCE
@@ -24462,7 +24477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParticipantID: 1
-  TrialNo: 0
+  TrialNo: 9
   leftHand: {fileID: 1945763248}
   leftControllerEvents: {fileID: 226439762}
   leftHandIndex: 1
@@ -41027,7 +41042,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3cb2dae7ac1961468249c7d8d62c18a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  COM: COM10
+  portName: COM10
+  baudRate: 115200
+  parity: 0
+  dataBits: 8
+  stopBits: 1
   value: 
 --- !u!65 &2776397578515787521
 BoxCollider:
@@ -41438,5 +41457,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3cb2dae7ac1961468249c7d8d62c18a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  COM: COM17
+  portName: COM17
+  baudRate: 115200
+  parity: 0
+  dataBits: 8
+  stopBits: 1
   value: 

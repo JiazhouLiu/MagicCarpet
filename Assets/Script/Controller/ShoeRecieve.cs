@@ -24,10 +24,10 @@ public class ShoeRecieve : MonoBehaviour
 {
 
     [Header("Serial port name")] public string portName = "COM9";
-    [Header("baud rate")] public int baudRate = 115200;
-    [Header("Check bit")] public Parity parity = Parity.None;
-    [Header("Data Bit")] public int dataBits = 8;
-    [Header("Stop Bit")] public StopBits stopBits = StopBits.One;
+    [HideInInspector] public int baudRate = 115200;
+    [HideInInspector] public Parity parity = Parity.None;
+    [HideInInspector] public int dataBits = 8;
+    [HideInInspector] public StopBits stopBits = StopBits.One;
 
     public string value;
 
@@ -37,40 +37,11 @@ public class ShoeRecieve : MonoBehaviour
 
     private SerialPort sp = null;
     private Thread ReadThread;
-    private byte[] datasBytes;
-    private int i = 0;
     //Thread CheckPortThread;
 
     void Start()
     {
-        //sp = new SerialPort(COM, 115200);
-        //sp.ReadTimeout = 3000;
-        //sp.WriteTimeout = 3000;
-        //sp.WriteTimeout = 3000;
-        //sp.Parity = Parity.None;
-        //sp.DataBits = 8;
-        //sp.StopBits = StopBits.One;
-        //sp.RtsEnable = true;
-        //sp.Handshake = Handshake.None;
-        //sp.NewLine = "\n";  // Need this or ReadLine() fails
-        //sp.Open();
-
-        //try
-        //{
-        //    sp.Open();
-        //}
-        //catch (SystemException f)
-        //{
-        //    print(name + ": FAILED TO OPEN PORT");
-
-        //}
-
         OpenPortControl();
-
-        if (sp.IsOpen)
-            print("SerialOpen!");
-        else
-            print(name + ": FAILED TO OPEN PORT");
     }
 
     void ReadSerial()
@@ -107,10 +78,24 @@ public class ShoeRecieve : MonoBehaviour
         // Serial port initialization
         if (!sp.IsOpen)
         {
-            sp.Open();
+            try
+            {
+                sp.Open();
+            }
+            catch (SystemException f)
+            {
+                print(name + ": FAILED TO OPEN PORT");
+
+            }
         }
-        ReadThread = new Thread(ReceiveData); // This thread is used to receive serial data 
-        ReadThread.Start();
+
+        if (sp.IsOpen) {
+            ReadThread = new Thread(ReceiveData); // This thread is used to receive serial data 
+            ReadThread.Start();
+            print("SerialOpen!");
+        }
+        else
+            print(name + ": FAILED TO OPEN PORT 2");
     }
 
     public void ClosePortControl()
@@ -121,41 +106,31 @@ public class ShoeRecieve : MonoBehaviour
             sp.Dispose(); // Release the serial port from the memory
         }
 
+        if (ReadThread != null)
+            ReadThread.Abort();
     }
 
     private void ReceiveData()
     {
-        int bytesToRead = 0;
-        while (true)
+        while (ReadThread.IsAlive)
         {
-            if (sp != null && sp.IsOpen)
+            try
             {
-                try
+                //Debug.Log(sp.BytesToRead);
+                if (sp.BytesToRead > 1)
                 {
-                    datasBytes = new byte[1024];
-                    bytesToRead = sp.Read(datasBytes, 0, datasBytes.Length);
-                    if (bytesToRead == 0)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        string strbytes = Encoding.Default.GetString(datasBytes);
-                        i++;
-                        if (i > 0)
-                        {
-                            value = strbytes[0].ToString();
-                        }
-                        //Debug.Log(strbytes);
-                    }
-
+                    string indata = sp.ReadLine();
+                    value = indata;
                 }
-                catch (Exception e)
-                {
-                    Debug.Log(e.Message);
-                }
+                else
+                    continue;
             }
-            Thread.Sleep(100);
+            catch (SystemException f)
+            {
+                print(f);
+                continue;
+            }
+            //Thread.Sleep(100);
         }
     }
 
