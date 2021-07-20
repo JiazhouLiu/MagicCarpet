@@ -22,7 +22,7 @@ public class DataLoggingManagerEditor : Editor
         }
         else
         {
-            EditorGUILayout.HelpBox("CURRENTLY LOGGING GROUP " + dataLogger.GroupID + "!", MessageType.Info);
+            EditorGUILayout.HelpBox("CURRENTLY LOGGING PARTICIPANT " + dataLogger.ParticipantID + "!", MessageType.Info);
             if (GUILayout.Button("Stop Logging"))
             {
                 dataLogger.StopLogging();

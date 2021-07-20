@@ -76,8 +76,10 @@ public class DashboardController_UserStudy : MonoBehaviour
     private List<Transform> selectedVis;
     private List<Transform> explicitlySelectedVis;
 
-    private Dictionary<string, Transform> currentLandmarks;
-    private Dictionary<string, Transform> currentDetailedViews;
+    [HideInInspector]
+    public Dictionary<string, Transform> currentLandmarks;
+    [HideInInspector]
+    public Dictionary<string, Transform> currentDetailedViews;
 
     private float highlighterIntensity = 10;
     private bool InitialiseTable = false;
